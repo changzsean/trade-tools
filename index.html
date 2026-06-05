@@ -7,9 +7,9 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-  body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
-  .sidebar { width: 220px; background: #0f172a; min-height: 100vh; position: fixed; top:0; left:0; z-index:100; transition: transform 0.3s; }
-  .main-content { margin-left: 220px; min-height: 100vh; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; margin:0; padding-left:220px; min-height:100vh; background:#f8fafc; box-sizing:border-box; }
+  .sidebar { position:fixed; left:0; top:0; width:220px; height:100vh; background:#0f172a; overflow-y:auto; z-index:100; transition:transform 0.3s; }
+  .main-content { width:100%; min-height:100vh; }
   .nav-link { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px; color:#94a3b8; cursor:pointer; transition:all 0.2s; font-size:14px; }
   .nav-link:hover { background:#1e293b; color:#fff; }
   .nav-link.active { background:#2563eb; color:#fff; }
@@ -36,14 +36,14 @@
   .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center; }
   .modal.show { display:flex; }
   @media print {
+    body { padding-left:0 !important; }
     .sidebar, .no-print { display:none !important; }
-    .main-content { margin-left:0 !important; }
     .print-area { width:100% !important; }
   }
   @media (max-width:768px) {
+    body { padding-left:0; }
     .sidebar { transform:translateX(-100%); }
     .sidebar.open { transform:translateX(0); }
-    .main-content { margin-left:0; }
   }
   .hs-result { background:#f8fafc; border-radius:8px; padding:12px; border-left:4px solid #2563eb; }
   .profit-positive { color:#16a34a; font-weight:600; }
@@ -64,6 +64,9 @@
     #piFormPanel { display:none !important; }
     #piPreviewPanel { width:100% !important; box-shadow:none !important; padding:0 !important; }
     .pi-print-btn { display:none !important; }
+    .no-print { display:none !important; }
+    #bgPrintReport { display:block !important; }
+    #sec-bgcheck > *:not(#bgPrintReport) { display:none !important; }
     body { background:#fff; }
   }
 </style>
@@ -114,7 +117,9 @@
     <div class="nav-link" onclick="showSection('crm')">
       <i class="fas fa-address-book w-4 text-center"></i> 客户 CRM
     </div>
-  </nav>
+    <div class="nav-link" onclick="showSection('bgcheck')" style="color:#f87171;">
+      <i class="fas fa-shield-halved w-4 text-center"></i> 客户背调
+    </div>
   </nav>
   <div class="mt-auto pt-4 border-t border-slate-700 space-y-2">
     <div class="nav-link text-xs" onclick="openAdModal()" style="color:#f59e0b;">
@@ -128,7 +133,7 @@
 </div>
 
 <!-- Main Content -->
-<div class="main-content" id="mainContent" style="padding:24px;" id="mainContent">
+<div class="main-content" id="mainContent" style="padding:24px;">
 
   <!-- Mobile Header -->
   <div class="md:hidden flex items-center gap-3 mb-4 no-print">
@@ -141,12 +146,102 @@
   <!-- ========== HOME ========== -->
   <div class="section active" id="sec-home" style="padding:0;margin:-24px;">
 
-    <!-- HERO -->
-    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,#1d4ed8 100%);padding:60px 48px 48px;position:relative;overflow:hidden;">
-      <!-- background decoration -->
-      <div style="position:absolute;right:-60px;top:-60px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,0.04);"></div>
-      <div style="position:absolute;right:60px;bottom:-80px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.04);"></div>
-      <div class="no-print" style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
+    <!-- HERO BANNER -->
+    <div style="background:linear-gradient(135deg,#0f172a 0%,#1a2f6e 50%,#1e3a8a 100%);padding:48px 48px 40px;position:relative;overflow:hidden;min-height:340px;">
+      <!-- World Map SVG Banner (right side decoration) -->
+      <svg style="position:absolute;right:0;top:0;height:100%;width:55%;opacity:0.18;pointer-events:none;" viewBox="0 0 500 300" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+        <!-- dot grid background -->
+        <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1" fill="white" opacity="0.4"/>
+        </pattern>
+        <rect width="500" height="300" fill="url(#dots)"/>
+        <!-- North America -->
+        <path d="M42,38 L80,22 L118,26 L138,50 L148,88 L132,126 L110,150 L84,158 L62,138 L45,105 L36,68 Z" fill="white" stroke="white" stroke-width="0.5"/>
+        <!-- Greenland -->
+        <path d="M112,8 L140,4 L155,18 L145,32 L120,36 L106,22 Z" fill="white" stroke="white" stroke-width="0.3" opacity="0.6"/>
+        <!-- South America -->
+        <path d="M102,174 L140,164 L160,180 L170,228 L158,284 L130,308 L102,298 L88,258 L90,210 Z" fill="white" stroke="white" stroke-width="0.5"/>
+        <!-- Europe -->
+        <path d="M212,32 L255,22 L278,36 L282,62 L252,72 L230,76 L210,60 Z" fill="white" stroke="white" stroke-width="0.5"/>
+        <!-- Scandinavia -->
+        <path d="M228,10 L252,6 L262,26 L240,30 Z" fill="white" stroke="white" stroke-width="0.3" opacity="0.7"/>
+        <!-- Africa -->
+        <path d="M210,82 L282,76 L310,116 L305,196 L268,248 L228,242 L198,195 L192,140 Z" fill="white" stroke="white" stroke-width="0.5"/>
+        <!-- Asia (main) -->
+        <path d="M280,26 L415,16 L468,38 L472,78 L448,118 L392,140 L332,136 L294,116 L278,80 Z" fill="white" stroke="white" stroke-width="0.5"/>
+        <!-- Arabian Peninsula -->
+        <path d="M292,100 L328,96 L336,128 L310,138 L290,122 Z" fill="white" stroke="white" stroke-width="0.3" opacity="0.8"/>
+        <!-- India -->
+        <path d="M348,112 L386,108 L392,148 L368,172 L342,152 Z" fill="white" stroke="white" stroke-width="0.3" opacity="0.8"/>
+        <!-- Southeast Asia -->
+        <path d="M408,116 L452,112 L456,140 L430,150 L408,142 Z" fill="white" stroke="white" stroke-width="0.3" opacity="0.8"/>
+        <!-- Japan -->
+        <path d="M452,56 L470,50 L476,68 L460,74 Z" fill="white" stroke="white" stroke-width="0.3" opacity="0.8"/>
+        <!-- Australia -->
+        <path d="M412,190 L476,184 L484,226 L456,246 L414,236 Z" fill="white" stroke="white" stroke-width="0.5"/>
+        <!-- UK/Ireland -->
+        <path d="M206,34 L218,28 L222,44 L210,48 Z" fill="white" stroke="white" stroke-width="0.3" opacity="0.7"/>
+      </svg>
+
+      <!-- Trade routes (animated) -->
+      <svg style="position:absolute;right:0;top:0;height:100%;width:55%;pointer-events:none;" viewBox="0 0 500 300" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <style>
+            .trade-route { stroke-dasharray:6,4; animation:dash 3s linear infinite; }
+            .trade-route2 { stroke-dasharray:6,4; animation:dash 4s linear infinite; }
+            .trade-route3 { stroke-dasharray:6,4; animation:dash 5s linear infinite; }
+            @keyframes dash { to { stroke-dashoffset:-200; } }
+            .city-pulse { animation:pulse 2s ease-in-out infinite; }
+            .city-pulse2 { animation:pulse 2.5s ease-in-out infinite; }
+            @keyframes pulse { 0%,100%{r:4;opacity:0.9;} 50%{r:7;opacity:0.4;} }
+          </style>
+        </defs>
+        <!-- Route: Shanghai → Rotterdam -->
+        <path d="M448,72 Q350,20 240,44" fill="none" stroke="#60a5fa" stroke-width="1.2" class="trade-route" opacity="0.7"/>
+        <!-- Route: Shanghai → Los Angeles -->
+        <path d="M448,72 Q480,100 430,130 Q200,180 68,100" fill="none" stroke="#34d399" stroke-width="1.2" class="trade-route2" opacity="0.6"/>
+        <!-- Route: Rotterdam → New York -->
+        <path d="M240,44 Q180,30 112,72" fill="none" stroke="#a78bfa" stroke-width="1.2" class="trade-route3" opacity="0.6"/>
+        <!-- Route: Shanghai → Singapore -->
+        <path d="M448,72 Q445,100 430,140" fill="none" stroke="#fbbf24" stroke-width="1" class="trade-route" opacity="0.5"/>
+        <!-- Route: Dubai → Rotterdam -->
+        <path d="M310,110 Q280,70 240,44" fill="none" stroke="#f87171" stroke-width="1" class="trade-route2" opacity="0.5"/>
+        <!-- City dots -->
+        <!-- Shanghai -->
+        <circle cx="448" cy="72" r="4" fill="#60a5fa" class="city-pulse"/>
+        <circle cx="448" cy="72" r="2" fill="white"/>
+        <!-- Rotterdam -->
+        <circle cx="240" cy="44" r="4" fill="#a78bfa" class="city-pulse2"/>
+        <circle cx="240" cy="44" r="2" fill="white"/>
+        <!-- Los Angeles -->
+        <circle cx="68" cy="100" r="4" fill="#34d399" class="city-pulse"/>
+        <circle cx="68" cy="100" r="2" fill="white"/>
+        <!-- New York -->
+        <circle cx="112" cy="72" r="3" fill="#a78bfa" class="city-pulse2"/>
+        <circle cx="112" cy="72" r="2" fill="white"/>
+        <!-- Singapore -->
+        <circle cx="430" cy="142" r="3" fill="#fbbf24" class="city-pulse"/>
+        <circle cx="430" cy="142" r="1.5" fill="white"/>
+        <!-- Dubai -->
+        <circle cx="310" cy="110" r="3" fill="#f87171" class="city-pulse2"/>
+        <circle cx="310" cy="110" r="1.5" fill="white"/>
+        <!-- Tokyo -->
+        <circle cx="464" cy="60" r="3" fill="#60a5fa" class="city-pulse"/>
+        <circle cx="464" cy="60" r="1.5" fill="white"/>
+        <!-- Sydney -->
+        <circle cx="452" cy="224" r="3" fill="#34d399" class="city-pulse2"/>
+        <circle cx="452" cy="224" r="1.5" fill="white"/>
+        <!-- Hamburg -->
+        <circle cx="248" cy="36" r="2.5" fill="#fbbf24" class="city-pulse"/>
+        <!-- City labels -->
+        <text x="452" y="68" font-size="7" fill="white" opacity="0.6" font-family="Arial">上海</text>
+        <text x="222" y="40" font-size="7" fill="white" opacity="0.6" font-family="Arial">鹿特丹</text>
+        <text x="52" y="96" font-size="7" fill="white" opacity="0.6" font-family="Arial">洛杉矶</text>
+        <text x="415" y="138" font-size="7" fill="white" opacity="0.6" font-family="Arial">新加坡</text>
+        <text x="295" y="107" font-size="7" fill="white" opacity="0.6" font-family="Arial">迪拜</text>
+      </svg>
+
+      <div class="no-print" style="display:flex;align-items:center;gap:16px;margin-bottom:28px;position:relative;z-index:1;">
         <!-- Big logo -->
         <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="56" height="56" rx="14" fill="#2563eb"/>
@@ -162,35 +257,35 @@
           <div style="color:#93c5fd;font-size:14px;margin-top:2px;">beseda.com.cn &nbsp;·&nbsp; 专为外贸人打造的效率平台</div>
         </div>
       </div>
-      <div style="color:#e2e8f0;font-size:16px;max-width:560px;line-height:1.8;margin-bottom:32px;">
-        汇率换算、HS Code查询、运费计算、PI发票生成、客户CRM……<br>
+      <div style="color:#e2e8f0;font-size:16px;max-width:520px;line-height:1.8;margin-bottom:32px;position:relative;z-index:1;">
+        汇率换算、HS Code查询、运费计算、PI发票生成、<br>客户CRM、<strong style="color:#fbbf24;">外贸客户背调</strong>……<br>
         <strong style="color:white;">把每一次外贸操作，都变得更快、更准、更专业。</strong>
       </div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;">
-        <button onclick="showSection('currency')" style="background:#2563eb;color:white;border:none;padding:12px 24px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;position:relative;z-index:1;">
+        <button onclick="showSection('currency')" style="background:#2563eb;color:white;border:none;padding:12px 24px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(37,99,235,0.4);">
           <i class="fas fa-bolt"></i> 立即使用工具
         </button>
-        <button onclick="openAdModal()" style="background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.25);padding:12px 24px;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px;">
-          <i class="fas fa-bullhorn" style="color:#fbbf24;"></i> 广告招商合作
+        <button onclick="showSection('bgcheck')" style="background:rgba(248,113,113,0.15);color:#fca5a5;border:1px solid rgba(248,113,113,0.4);padding:12px 24px;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-shield-halved"></i> 客户背调
         </button>
-        <button onclick="openContactModal()" style="background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.25);padding:12px 24px;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px;">
-          <i class="fas fa-code" style="color:#34d399;"></i> 定制系统
+        <button onclick="openAdModal()" style="background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2);padding:12px 24px;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-bullhorn" style="color:#fbbf24;"></i> 广告招商
         </button>
       </div>
       <!-- Live rates bar -->
-      <div style="margin-top:32px;background:rgba(255,255,255,0.08);border-radius:10px;padding:12px 20px;display:flex;gap:32px;flex-wrap:wrap;">
-        <div style="color:#93c5fd;font-size:13px;">实时汇率</div>
+      <div style="margin-top:28px;background:rgba(255,255,255,0.07);border-radius:10px;padding:12px 20px;display:flex;gap:32px;flex-wrap:wrap;position:relative;z-index:1;backdrop-filter:blur(4px);">
+        <div style="color:#93c5fd;font-size:13px;font-weight:600;">实时汇率</div>
         <div style="color:white;font-size:13px;">USD/CNY &nbsp;<strong id="statRate">--</strong></div>
         <div style="color:white;font-size:13px;">EUR/CNY &nbsp;<strong id="statRateEur">--</strong></div>
-        <div style="color:#64748b;font-size:12px;margin-left:auto;" id="statUpdate">加载中...</div>
+        <div style="color:#475569;font-size:12px;margin-left:auto;" id="statUpdate">加载中...</div>
       </div>
     </div>
 
     <!-- TOOLS GRID -->
     <div style="padding:40px 48px;">
       <div style="text-align:center;margin-bottom:32px;">
-        <div style="font-size:22px;font-weight:800;color:#0f172a;">6 大核心工具，免费使用</div>
-        <div style="color:#64748b;margin-top:8px;font-size:15px;">覆盖外贸从询价到收款的全流程场景</div>
+        <div style="font-size:22px;font-weight:800;color:#0f172a;">7 大核心工具，完全免费</div>
+        <div style="color:#64748b;margin-top:8px;font-size:15px;">覆盖外贸从询价、背调、报价到收款的全流程</div>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div class="tool-card" onclick="showSection('currency')" style="border:1px solid #e2e8f0;">
@@ -234,6 +329,14 @@
           </div>
           <div style="font-weight:700;font-size:15px;color:#0f172a;">客户 CRM</div>
           <div style="color:#64748b;font-size:13px;margin-top:6px;">客户信息、跟进状态、本地永久保存</div>
+        </div>
+        <div class="tool-card" onclick="showSection('bgcheck')" style="border:1px solid #fee2e2;background:#fffafa;">
+          <div style="width:44px;height:44px;background:#fef2f2;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;position:relative;">
+            <i class="fas fa-shield-halved" style="color:#dc2626;font-size:18px;"></i>
+            <span style="position:absolute;top:-4px;right:-4px;background:#dc2626;color:white;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700;">NEW</span>
+          </div>
+          <div style="font-weight:700;font-size:15px;color:#0f172a;">客户背调工具</div>
+          <div style="color:#64748b;font-size:13px;margin-top:6px;">制裁名单·信用查询·风险评分·背调报告</div>
         </div>
       </div>
     </div>
@@ -898,6 +1001,123 @@
 
 </div><!-- end main -->
 
+<!-- ========== BGCHECK ========== -->
+<div class="section" id="sec-bgcheck">
+
+  <!-- Title -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;" class="no-print">
+    <div>
+      <h2 style="font-size:20px;font-weight:800;color:#0f172a;margin:0;">🛡️ 外贸客户开发背调工具</h2>
+      <p style="color:#64748b;font-size:13px;margin-top:4px;">填写客户信息 → 生成专业背调报告 → 一键存入 CRM</p>
+    </div>
+    <div style="display:flex;gap:8px;" id="bgActionBtns">
+      <button onclick="printBGReport()" style="background:#f1f5f9;color:#374151;border:none;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:none;" id="bgPrintBtn">
+        <i class="fas fa-print" style="margin-right:5px;"></i>打印报告
+      </button>
+      <button onclick="bgSaveToCRM()" style="background:#16a34a;color:white;border:none;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:none;" id="bgCRMBtn">
+        <i class="fas fa-address-book" style="margin-right:5px;"></i>保存到 CRM
+      </button>
+    </div>
+  </div>
+
+  <!-- Input Form -->
+  <div style="background:white;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:20px;margin-bottom:16px;" class="no-print">
+    <div style="font-size:13px;font-weight:700;color:#2563eb;margin-bottom:14px;display:flex;align-items:center;gap:6px;">
+      <span style="background:#eff6ff;padding:2px 8px;border-radius:5px;font-size:12px;">第一步</span> 填写客户基本信息（必填：公司名 + 国家）
+    </div>
+
+    <!-- Row 1: 公司名 + 国家 -->
+    <div style="display:flex;gap:12px;margin-bottom:10px;">
+      <div style="flex:2;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px;">公司名称（英文）<span style="color:#dc2626;">*</span></div>
+        <input class="inp" id="bg_company" placeholder="如：ABC Trading Co., Ltd." style="font-size:13px;">
+      </div>
+      <div style="flex:1.5;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px;">所在国家/地区 <span style="color:#dc2626;">*</span></div>
+        <select class="inp" id="bg_country" style="font-size:13px;">
+          <option value="">-- 请选择国家 --</option>
+          <optgroup label="🇺🇸 英语国家"><option value="US">美国</option><option value="GB">英国</option><option value="AU">澳大利亚</option><option value="CA">加拿大</option><option value="NZ">新西兰</option></optgroup>
+          <optgroup label="🇪🇺 欧洲"><option value="DE">德国</option><option value="FR">法国</option><option value="NL">荷兰</option><option value="IT">意大利</option><option value="ES">西班牙</option><option value="PL">波兰</option><option value="SE">瑞典</option><option value="CH">瑞士</option><option value="BE">比利时</option><option value="PT">葡萄牙</option><option value="UA">乌克兰</option></optgroup>
+          <optgroup label="🌏 亚洲"><option value="JP">日本</option><option value="KR">韩国</option><option value="SG">新加坡</option><option value="HK">香港</option><option value="TW">台湾</option><option value="IN">印度</option><option value="MY">马来西亚</option><option value="TH">泰国</option><option value="VN">越南</option><option value="ID">印尼</option><option value="PH">菲律宾</option><option value="PK">巴基斯坦</option><option value="BD">孟加拉</option><option value="TR">土耳其</option></optgroup>
+          <optgroup label="🌍 中东/非洲"><option value="AE">阿联酋</option><option value="SA">沙特</option><option value="IL">以色列</option><option value="EG">埃及</option><option value="NG">尼日利亚</option><option value="ZA">南非</option><option value="KE">肯尼亚</option><option value="MA">摩洛哥</option></optgroup>
+          <optgroup label="🌎 美洲"><option value="MX">墨西哥</option><option value="BR">巴西</option><option value="AR">阿根廷</option><option value="CL">智利</option><option value="CO">哥伦比亚</option></optgroup>
+          <optgroup label="⚠️ 高风险/制裁"><option value="RU">俄罗斯 ⚠️</option><option value="BY">白俄罗斯 ⚠️</option><option value="IR">伊朗 🚫</option><option value="KP">朝鲜 🚫</option><option value="SY">叙利亚 🚫</option><option value="CU">古巴 ⚠️</option><option value="VE">委内瑞拉 ⚠️</option><option value="MM">缅甸 ⚠️</option></optgroup>
+        </select>
+      </div>
+      <div style="flex:1.2;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px;">客户类型 <span style="color:#dc2626;">*</span></div>
+        <select class="inp" id="bg_type" style="font-size:13px;">
+          <option value="distributor">经销商 / 分销商</option>
+          <option value="enduser">终端客户 / 运营商</option>
+          <option value="oem">OEM买家 / 品牌商</option>
+          <option value="retailer">零售商 / 电商卖家</option>
+          <option value="agent">采购代理 / 贸易商</option>
+          <option value="project">工程项目采购</option>
+          <option value="unknown">未知 / 待确认</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Row 2: 联系人 + 邮箱 + 电话 -->
+    <div style="display:flex;gap:12px;margin-bottom:10px;">
+      <div style="flex:1;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px;">联系人姓名</div>
+        <input class="inp" id="bg_contact" placeholder="John Smith" style="font-size:13px;">
+      </div>
+      <div style="flex:1.3;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px;">联系邮箱</div>
+        <input class="inp" id="bg_email" placeholder="john@example.com" style="font-size:13px;">
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px;">电话</div>
+        <input class="inp" id="bg_phone" placeholder="+1-xxx-xxxx" style="font-size:13px;">
+      </div>
+    </div>
+
+    <!-- Row 3: 网址 + 产品 + 付款 + 按钮 -->
+    <div style="display:flex;gap:12px;align-items:flex-end;">
+      <div style="flex:1.5;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px;">公司网址</div>
+        <input class="inp" id="bg_website" placeholder="https://example.com" style="font-size:13px;">
+      </div>
+      <div style="flex:1.5;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px;">主要产品 / 行业</div>
+        <input class="inp" id="bg_product" placeholder="如：LED灯具 / 自动售货机" style="font-size:13px;">
+      </div>
+      <div style="flex:1.2;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px;">付款方式</div>
+        <select class="inp" id="bg_payment" style="font-size:13px;">
+          <option value="tt">T/T 银行电汇</option>
+          <option value="lc">L/C 信用证</option>
+          <option value="dp">D/P 付款交单</option>
+          <option value="wu">⚠️ Western Union</option>
+          <option value="crypto">⚠️ 加密货币</option>
+          <option value="other">其他</option>
+        </select>
+      </div>
+      <button onclick="bgGenerate()" style="background:#2563eb;color:white;border:none;padding:0 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;height:38px;white-space:nowrap;flex-shrink:0;box-shadow:0 2px 8px rgba(37,99,235,0.3);">
+        <i class="fas fa-file-alt" style="margin-right:6px;"></i>生成背调报告
+      </button>
+    </div>
+  </div>
+
+  <!-- Report output area -->
+  <div id="bgReportArea">
+    <!-- Empty state -->
+    <div id="bgEmptyState" style="background:white;border-radius:12px;padding:60px 20px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+      <div style="font-size:48px;margin-bottom:16px;">🛡️</div>
+      <div style="font-size:16px;font-weight:700;color:#374151;margin-bottom:8px;">填写上方信息，点击「生成背调报告」</div>
+      <div style="color:#94a3b8;font-size:13px;max-width:400px;margin:0 auto;line-height:1.7;">
+        系统将自动生成包含客户画像、风险评估、痛点分析、开发策略、邮件模板、跟进节奏的完整背调报告，并可一键保存到 CRM。
+      </div>
+    </div>
+    <!-- Report renders here -->
+    <div id="bgReport" style="display:none;"></div>
+  </div>
+
+  <div id="bgPrintReport" style="display:none;"></div>
+</div>
+
 <!-- ========== AD MODAL ========== -->
 <div class="modal" id="adModal">
   <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4">
@@ -1080,7 +1300,6 @@ function showSection(id) {
   document.querySelectorAll('.nav-link').forEach(n => {
     if (n.textContent.trim().includes(navLabels[id])) n.classList.add('active');
   });
-  // restore padding for non-home sections
   document.getElementById('mainContent').style.padding = (id === 'home') ? '0' : '24px';
   if (id === 'home') updateHomeStats();
   if (id === 'currency') convert();
@@ -1088,13 +1307,14 @@ function showSection(id) {
   if (id === 'profit') calcProfit();
   if (id === 'pi') { renderPIForm(); renderPI(); }
   if (id === 'crm') renderCRM();
+  if (id === 'bgcheck') { /* ready */ }
   // close mobile sidebar
   document.getElementById('sidebar').classList.remove('open');
 }
 
 const navLabels = {
   home: '首页', currency: '汇率', hscode: 'HS Code',
-  shipping: '运费', profit: '报价', pi: 'PI', crm: '客户'
+  shipping: '运费', profit: '报价', pi: 'PI', crm: '客户', bgcheck: '背调'
 };
 
 // ===== EXCHANGE RATES =====
@@ -1858,6 +2078,586 @@ function initPI() {
   renderPI();
   // Load seller template if saved
   piLoadTemplate();
+}
+
+// ===== BACKGROUND CHECK ENGINE =====
+let bgReportData = null; // stores last generated report data for CRM save
+
+const countryRisk = {
+  // Low risk
+  US:{level:1,name:'美国',label:'低风险',color:'#16a34a',note:'成熟市场，法律健全，信用体系完善'},
+  GB:{level:1,name:'英国',label:'低风险',color:'#16a34a',note:'英联邦法系，贸易纠纷解决机制完善'},
+  DE:{level:1,name:'德国',label:'低风险',color:'#16a34a',note:'欧盟核心，工业强国，合同履约率高'},
+  FR:{level:1,name:'法国',label:'低风险',color:'#16a34a',note:'欧盟成员，法律健全'},
+  NL:{level:1,name:'荷兰',label:'低风险',color:'#16a34a',note:'欧洲贸易中心，信用评级优良'},
+  JP:{level:1,name:'日本',label:'低风险',color:'#16a34a',note:'信用文化强，付款守时'},
+  KR:{level:1,name:'韩国',label:'低风险',color:'#16a34a',note:'发达经济体，贸易活跃'},
+  SG:{level:1,name:'新加坡',label:'低风险',color:'#16a34a',note:'亚洲金融中心，营商环境全球顶级'},
+  AU:{level:1,name:'澳大利亚',label:'低风险',color:'#16a34a',note:'英联邦法系，信用体系健全'},
+  CA:{level:1,name:'加拿大',label:'低风险',color:'#16a34a',note:'北美自贸区，法律完善'},
+  CH:{level:1,name:'瑞士',label:'低风险',color:'#16a34a',note:'金融中立国，合同履约率高'},
+  SE:{level:1,name:'瑞典',label:'低风险',color:'#16a34a',note:'北欧高信用国家'},
+  AT:{level:1,name:'奥地利',label:'低风险',color:'#16a34a',note:'欧盟成员国'},
+  BE:{level:1,name:'比利时',label:'低风险',color:'#16a34a',note:'欧盟总部所在地'},
+  HK:{level:1,name:'香港',label:'低风险',color:'#16a34a',note:'国际金融中心，普通法体系'},
+  TW:{level:1,name:'台湾',label:'低风险',color:'#16a34a',note:'科技制造基地，贸易活跃'},
+  IL:{level:1,name:'以色列',label:'低风险',color:'#16a34a',note:'科技强国，合同意识强'},
+  NZ:{level:1,name:'新西兰',label:'低风险',color:'#16a34a',note:'营商环境全球前列'},
+  // Medium-low risk
+  IT:{level:2,name:'意大利',label:'较低风险',color:'#65a30d',note:'欧盟成员，付款周期较长，建议信用证'},
+  ES:{level:2,name:'西班牙',label:'较低风险',color:'#65a30d',note:'欧盟成员，部分企业付款较慢'},
+  PT:{level:2,name:'葡萄牙',label:'较低风险',color:'#65a30d',note:'欧盟成员'},
+  PL:{level:2,name:'波兰',label:'较低风险',color:'#65a30d',note:'东欧最大经济体'},
+  CZ:{level:2,name:'捷克',label:'较低风险',color:'#65a30d',note:'欧盟成员，工业基础好'},
+  AE:{level:2,name:'阿联酋',label:'较低风险',color:'#65a30d',note:'中东贸易枢纽，注意区分个人与企业'},
+  SA:{level:2,name:'沙特阿拉伯',label:'较低风险',color:'#65a30d',note:'石油大国，建议预付款或信用证'},
+  MY:{level:2,name:'马来西亚',label:'较低风险',color:'#65a30d',note:'东盟成员，营商环境较好'},
+  TH:{level:2,name:'泰国',label:'较低风险',color:'#65a30d',note:'东盟成员'},
+  ZA:{level:2,name:'南非',label:'较低风险',color:'#65a30d',note:'非洲最发达经济体，注意外汇管制'},
+  CL:{level:2,name:'智利',label:'较低风险',color:'#65a30d',note:'南美洲信用最好的国家之一'},
+  // Medium-high risk
+  IN:{level:3,name:'印度',label:'中等风险',color:'#d97706',note:'市场大但讨价还价激烈，付款拖延常见，建议100%预付'},
+  TR:{level:3,name:'土耳其',label:'中等风险',color:'#d97706',note:'外汇波动大，政治风险较高，建议信用证'},
+  VN:{level:3,name:'越南',label:'中等风险',color:'#d97706',note:'制造业转移目标地，部分小企业信用待查'},
+  ID:{level:3,name:'印尼',label:'中等风险',color:'#d97706',note:'东盟大国，注意核实企业合法性'},
+  PH:{level:3,name:'菲律宾',label:'中等风险',color:'#d97706',note:'注意付款能力，建议30%定金'},
+  EG:{level:3,name:'埃及',label:'中等风险',color:'#d97706',note:'外汇管制严格，付款常有延迟'},
+  MA:{level:3,name:'摩洛哥',label:'中等风险',color:'#d97706',note:'北非最稳定市场，注意语言（法语）'},
+  MX:{level:3,name:'墨西哥',label:'中等风险',color:'#d97706',note:'北美制造业大国，贸易诈骗时有发生'},
+  BR:{level:3,name:'巴西',label:'中等风险',color:'#d97706',note:'南美最大市场，外汇管制，进口限制多'},
+  AR:{level:3,name:'阿根廷',label:'中等风险',color:'#d97706',note:'外汇危机频繁，建议预付款'},
+  CO:{level:3,name:'哥伦比亚',label:'中等风险',color:'#d97706',note:'注意合规性风险'},
+  PE:{level:3,name:'秘鲁',label:'中等风险',color:'#d97706',note:'安第斯国家，小批量需谨慎'},
+  UA:{level:3,name:'乌克兰',label:'中等风险',color:'#d97706',note:'战争影响，贸易风险较高'},
+  RO:{level:3,name:'罗马尼亚',label:'中等风险',color:'#d97706',note:'欧盟成员但经济发展不均'},
+  // High risk
+  PK:{level:4,name:'巴基斯坦',label:'高风险',color:'#dc2626',note:'外汇短缺严峻，付款能力堪忧，强烈建议100%预付'},
+  BD:{level:4,name:'孟加拉国',label:'高风险',color:'#dc2626',note:'外汇严重不足，建议信用证或提前全款'},
+  NG:{level:4,name:'尼日利亚',label:'高风险',color:'#dc2626',note:'贸易诈骗高发地，419骗局发源地，需极度谨慎'},
+  KE:{level:4,name:'肯尼亚',label:'高风险',color:'#dc2626',note:'东非最大经济体，但诈骗风险高'},
+  GH:{level:4,name:'加纳',label:'高风险',color:'#dc2626',note:'西非，贸易风险较高'},
+  MM:{level:4,name:'缅甸',label:'高风险',color:'#dc2626',note:'政局不稳，受到部分制裁，需谨慎'},
+  SD:{level:4,name:'苏丹',label:'高风险',color:'#dc2626',note:'受制裁，外汇危机，不建议贸易'},
+  VE:{level:4,name:'委内瑞拉',label:'高风险',color:'#dc2626',note:'美国制裁对象，经济崩溃，外汇几乎不可用'},
+  // Sanctioned
+  RU:{level:5,name:'俄罗斯',label:'制裁风险',color:'#7c3aed',note:'2022年后受欧美广泛制裁，出口管制严格，涉及两用物品禁止出口，务必合规审查'},
+  BY:{level:5,name:'白俄罗斯',label:'制裁风险',color:'#7c3aed',note:'受欧美制裁，配合俄罗斯制裁规避风险高'},
+  IR:{level:5,name:'伊朗',label:'全面制裁🚫',color:'#991b1b',note:'美国OFAC全面制裁，出口违禁，法律风险极高，绝对不要与其贸易'},
+  KP:{level:5,name:'朝鲜',label:'全面制裁🚫',color:'#991b1b',note:'联合国全面制裁，与其贸易属于违法行为'},
+  SY:{level:5,name:'叙利亚',label:'全面制裁🚫',color:'#991b1b',note:'美国及欧盟制裁，贸易严格受限'},
+  CU:{level:5,name:'古巴',label:'制裁风险',color:'#7c3aed',note:'美国贸易封锁，美元结算受限'},
+};
+
+// Customer type templates (based on uploaded report structure)
+const customerTypes = {
+  distributor: {
+    name:'经销商/分销商', icon:'🏪',
+    profile:'该客户很可能是本地市场的渠道分销商，负责向终端客户销售并提供服务支持。其核心价值在于覆盖本地分销网络，适合发展为长期合作伙伴。',
+    businessFocus:['区域销售网络','终端客户服务','售后维修支持','备件供应管理'],
+    painPoints:[
+      {pt:'产品质量稳定性',why:'他们对终端客户负责，机器故障直接影响口碑',how:'强调成熟机型、质检流程、海外案例'},
+      {pt:'售后配件供应',why:'售后服务商必须有备件，否则维修周期过长',how:'提供spare parts package、长期配件供应、易损件清单'},
+      {pt:'英文技术支持',why:'本地服务团队需要快速排障',how:'提供English manual、video guide、remote troubleshooting'},
+      {pt:'利润空间',why:'渠道商需要合理毛利才能长期合作',how:'不要卷低价，讲margin improvement + stable quality'},
+      {pt:'供应链稳定性',why:'经销商最怕供应商断货或交期不稳',how:'强调产能、常规机型交期、可持续供货承诺'},
+    ],
+    strategy:'以"渠道合作/OEM贴牌"为第一切入点，而非普通单台机器询盘。强调售后体系、配件供应和品牌定制能力，建立长期供应关系。',
+    approach:'不要按普通终端询盘开发。核心话术方向：OEM/private-label、stable spare parts supply、remote technical support for distribution。',
+    emailSubjects:['OEM/Private Label Vending Machine Partnership Proposal','Stable Supply for Your Distribution Business','OEM Smart Machine + Spare Parts Support for Distributors'],
+    followUp:[
+      {day:'第 1 天',action:'发送第一封开发信，突出 OEM / 渠道合作方向',goal:'建立首次触达'},
+      {day:'第 2-3 天',action:'LinkedIn 添加相关负责人（CEO/President/Sourcing）',goal:'绕开公共邮箱'},
+      {day:'第 3-4 天',action:'电话跟进，询问 sourcing / supplier partnership 负责人',goal:'触达真实决策人'},
+      {day:'第 5-7 天',action:'发送第二封邮件，附 2-3 个匹配型号',goal:'具体产品对标'},
+      {day:'第 10-14 天',action:'发送售后体系/备件包方案',goal:'打消售后顾虑'},
+      {day:'每月持续',action:'推送 1 次新品或海外成功案例',goal:'进入备选供应商名单'},
+    ],
+  },
+  enduser: {
+    name:'终端用户/运营商', icon:'🏭',
+    profile:'该客户直接采购设备自行运营，关注投资回报比（ROI）和设备稳定性。通常对价格敏感，但更在意运营期间的设备可靠性和维护成本。',
+    businessFocus:['设备自主运营','降低运营成本','提升用户体验','快速回本'],
+    painPoints:[
+      {pt:'设备故障率',why:'设备停机直接损失收入',how:'强调故障率数据、质保期、维修响应速度'},
+      {pt:'运营维护成本',why:'终端运营商最怕持续的维护费用',how:'突出耐用设计、易维护结构、远程监控'},
+      {pt:'收款系统兼容',why:'目标市场支付习惯不同',how:'明确说明支持哪些支付方式（如MDB、Nayax、信用卡）'},
+      {pt:'性价比',why:'运营商需要快速回本',how:'提供ROI计算支持，展示单台投资回报周期'},
+      {pt:'技术支持门槛',why:'非专业团队需要简单易操作',how:'提供简明英文手册、视频教程、远程支持'},
+    ],
+    strategy:'以产品品质和性价比为主打，配合完善保修方案和操作简便性。可提供ROI计算表格，帮助客户评估投资回报。',
+    approach:'重点展示设备稳定性数据、保修条款、简易操作和快速支持。避免过多讲OEM，而要讲"买了就能用，出问题有人管"。',
+    emailSubjects:['Reliable Vending Machines with Full After-sales Support','ROI-Optimized Vending Machines for Your Operation','Smart Vending Solutions with Remote Monitoring'],
+    followUp:[
+      {day:'第 1 天',action:'发送产品介绍+ROI估算表',goal:'引发兴趣'},
+      {day:'第 3 天',action:'发送同类客户案例',goal:'建立信任'},
+      {day:'第 5 天',action:'询问具体使用场景和数量需求',goal:'了解需求'},
+      {day:'第 7 天',action:'发送定制方案/报价',goal:'推进谈判'},
+      {day:'第 14 天',action:'跟进样品/验厂意向',goal:'实质进展'},
+    ],
+  },
+  oem: {
+    name:'OEM买家/品牌商', icon:'🏷️',
+    profile:'该客户有自己的品牌，寻找生产制造合作方。核心需求是定制化生产能力、稳定品控和交期保障。',
+    businessFocus:['自有品牌建设','定制化生产','品控一致性','交期稳定'],
+    painPoints:[
+      {pt:'品控一致性',why:'品牌客户对外观和功能一致性要求极高',how:'展示质检体系、出厂测试标准、产品一致性证明'},
+      {pt:'设计定制能力',why:'需要与自有品牌形象匹配',how:'展示定制案例：Logo、颜色、界面、语言、包装'},
+      {pt:'保密性',why:'OEM客户不希望设计被泄露',how:'提供NDA协议，强调保密条款'},
+      {pt:'MOQ灵活性',why:'品牌初期可能需要小批量试单',how:'提供样品订单、试单政策、混柜方案'},
+      {pt:'交期稳定性',why:'品牌上市计划依赖交期',how:'明确产能和交期承诺，提供生产排期'},
+    ],
+    strategy:'重点展示工厂实力、OEM定制能力和品控体系。主动提出签署NDA，展示历史OEM合作案例（脱敏）。',
+    approach:'强调"我们是制造商，不是贸易商"，展示工厂规模、产线、认证和出口经验。提供详细OEM流程说明。',
+    emailSubjects:['OEM Vending Machine Manufacturing Partnership','Private Label Vending Machine Production Proposal','Custom OEM Vending Machine - Factory Direct'],
+    followUp:[
+      {day:'第 1 天',action:'发送工厂介绍+OEM能力说明',goal:'建立供应商形象'},
+      {day:'第 2-3 天',action:'发送定制案例图册（脱敏）',goal:'展示执行力'},
+      {day:'第 5 天',action:'发送NDA模板，提议签署保密协议',goal:'建立信任'},
+      {day:'第 7-10 天',action:'讨论具体定制需求，发送打样方案',goal:'推进合作'},
+      {day:'第 14 天',action:'提供样品价格和MOQ方案',goal:'实质进展'},
+    ],
+  },
+  retailer: {
+    name:'零售商/电商卖家', icon:'🛒',
+    profile:'该客户通过零售渠道或电商平台销售产品，注重款式多样性、价格竞争力和物流效率。',
+    businessFocus:['产品差异化','价格竞争力','快速上新','库存周转'],
+    painPoints:[
+      {pt:'产品差异化',why:'电商卖家需要与同行形成差异',how:'提供独特款式、定制颜色、专属配置'},
+      {pt:'价格竞争力',why:'线上竞争激烈，价格直接影响转化',how:'提供有竞争力的出口价，明确MOQ'},
+      {pt:'物流效率',why:'发货速度影响买家评价',how:'说明备货周期、物流合作方和清关支持'},
+      {pt:'退换货政策',why:'电商退货率较高',how:'提供清晰的质保政策和售后处理流程'},
+      {pt:'包装要求',why:'零售包装需符合平台规范',how:'可定制零售包装，支持OEM包装设计'},
+    ],
+    strategy:'突出产品款式多样性、小批量起订、快速打样和物流支持。可提供drop shipping或备货支持方案。',
+    approach:'把产品卖点转化为电商销售话术，提供高清图片、尺寸数据和用户场景图。',
+    emailSubjects:['Wholesale Vending Machines with Competitive Pricing','Small MOQ Vending Machine Supply for Retailers','New Model Vending Machines - Ready to Ship'],
+    followUp:[
+      {day:'第 1 天',action:'发送产品目录+出口价格表',goal:'引发询盘'},
+      {day:'第 3 天',action:'发送产品高清图+使用场景图',goal:'提升转化'},
+      {day:'第 5 天',action:'询问具体需求，提供报价',goal:'推进'},
+      {day:'第 10 天',action:'提供样品订购方案',goal:'实质进展'},
+    ],
+  },
+  agent: {
+    name:'采购代理/贸易商', icon:'🤝',
+    profile:'该客户作为中间商，代表其下游客户进行采购。关注价格空间、货期和配合度，通常不是最终决策方。',
+    businessFocus:['价格空间','快速响应','灵活配合','订单整合'],
+    painPoints:[
+      {pt:'价格竞争力',why:'贸易商需要价格空间才能赚差价',how:'提供有竞争力的出厂价，保留其利润空间'},
+      {pt:'交期配合',why:'贸易商通常需要整合多个订单，交期要配合',how:'明确最短交期和生产排期'},
+      {pt:'配合度',why:'贸易商需要供应商配合各种要求（包装/文件）',how:'强调服务意识和灵活配合能力'},
+      {pt:'样品效率',why:'贸易商频繁需要样品给下游客户确认',how:'提供快速样品和样品价格政策'},
+    ],
+    strategy:'把贸易商当合作伙伴，给予价格空间和充分配合。快速响应，提供完整出口文件支持。',
+    approach:'不要忽视贸易商，他们背后可能有优质终端客户。保持良好合作关系，可以通过贸易商触达更多市场。',
+    emailSubjects:['Factory Price Vending Machines for Trading Partners','Flexible OEM Supply for Trade Companies','Competitive Price + Fast Delivery for Your Clients'],
+    followUp:[
+      {day:'第 1 天',action:'发送工厂价格表和产品目录',goal:'建立报价基础'},
+      {day:'第 3 天',action:'了解其下游客户需求',goal:'精准匹配'},
+      {day:'第 5 天',action:'发送定制方案和交期',goal:'推进'},
+    ],
+  },
+  project: {
+    name:'工程项目采购', icon:'🏗️',
+    profile:'该客户为特定工程或项目批量采购设备，通常有明确规格要求和交付节点，决策周期较长但订单量大。',
+    businessFocus:['规格合规','批量交付','项目周期','成本控制'],
+    painPoints:[
+      {pt:'规格合规性',why:'项目有严格技术规格要求',how:'提供详细技术参数、认证文件、测试报告'},
+      {pt:'批量交付能力',why:'项目需要按时批量交货',how:'明确产能、分批发货方案、物流安排'},
+      {pt:'认证要求',why:'工程采购通常需要特定认证',how:'提前了解目标市场认证需求（CE/UL/FCC等）'},
+      {pt:'价格透明度',why:'项目采购通常需要详细报价清单',how:'提供完整含税报价和付款条款'},
+    ],
+    strategy:'重点展示产能、认证资质、批量交付案例。提供详细技术文件和项目配合方案。',
+    approach:'按项目采购思路报价，提供详细BOM、技术规格书和项目合作协议模板。',
+    emailSubjects:['Bulk Vending Machine Supply for Project Procurement','Certified Vending Machine Supply with Full Technical Documentation','Project-based Vending Machine Partnership'],
+    followUp:[
+      {day:'第 1 天',action:'发送公司资质、产能和认证文件',goal:'建立专业形象'},
+      {day:'第 3-5 天',action:'了解项目规格和时间节点',goal:'精准评估'},
+      {day:'第 7 天',action:'提供项目报价方案',goal:'推进谈判'},
+    ],
+  },
+  unknown: {
+    name:'待确认', icon:'❓',
+    profile:'客户类型尚待核实。建议通过网站调研、LinkedIn查询和初步沟通明确其业务模式，再制定针对性开发策略。',
+    businessFocus:['待了解'],
+    painPoints:[
+      {pt:'需进一步了解',why:'尚未掌握足够客户信息',how:'发送通用公司介绍，通过回复内容判断客户类型'},
+    ],
+    strategy:'先发送公司介绍和产品目录，通过初步沟通了解客户真实需求后再制定针对性方案。',
+    approach:'保持开放姿态，以了解需求为目标，避免过于强推特定产品线。',
+    emailSubjects:['Partnership Inquiry - Vending Machine Manufacturer','Vending Machine Supply Cooperation Proposal','Product Catalog & Company Introduction'],
+    followUp:[
+      {day:'第 1 天',action:'发送公司介绍和产品目录',goal:'建立初始联系'},
+      {day:'第 3-5 天',action:'跟进并了解具体需求',goal:'明确客户类型'},
+      {day:'第 7 天',action:'根据反馈制定针对性方案',goal:'推进'},
+    ],
+  },
+};
+
+// Search databases
+function getBGSearchLinks(company, countryName) {
+  const enc = encodeURIComponent(company || 'company');
+  const cn = encodeURIComponent(countryName || '');
+  return [
+    {icon:'🔍',name:'Google 综合搜索',url:`https://www.google.com/search?q=${enc}+${cn}`,desc:'公司+国家综合搜索'},
+    {icon:'⚠️',name:'Google 风险排查',url:`https://www.google.com/search?q=${enc}+scam+fraud+complaint+review`,desc:'诈骗/投诉/差评记录'},
+    {icon:'💼',name:'LinkedIn 企业页',url:`https://www.linkedin.com/search/results/companies/?keywords=${enc}`,desc:'公司主页及关键联系人'},
+    {icon:'🏢',name:'OpenCorporates',url:`https://opencorporates.com/companies?q=${enc}`,desc:'全球工商注册数据库'},
+    {icon:'🌐',name:'Kompass 企业库',url:`https://www.kompass.com/a/search/?q=${enc}`,desc:'国际企业黄页'},
+    {icon:'🇺🇸',name:'OFAC 制裁名单',url:`https://sanctionssearch.ofac.treas.gov/`,desc:'美国财政部制裁SDN名单'},
+    {icon:'🇪🇺',name:'EU 制裁地图',url:`https://www.sanctionsmap.eu/`,desc:'欧盟对外制裁清单'},
+    {icon:'🇺🇳',name:'UN 制裁名单',url:`https://www.un.org/securitycouncil/sanctions/materials`,desc:'联合国安理会制裁'},
+    {icon:'📊',name:'邓白氏 D&B',url:`https://www.dnb.com/business-directory/company-information.html`,desc:'企业信用评级查询'},
+    {icon:'🚢',name:'ImportYeti',url:`https://www.importyeti.com/company/${enc.replace(/%20/g,'-').toLowerCase()}`,desc:'美国进出口提单记录'},
+    {icon:'🔎',name:'Panjiva 贸易数据',url:`https://panjiva.com/search?q=${enc}&search_type=suppliers`,desc:'全球供应链贸易数据'},
+    {icon:'🌏',name:'阿里国际站',url:`https://www.alibaba.com/trade/search?f=0&IndexArea=company_en&SearchText=${enc}`,desc:'国际站企业搜索'},
+  ];
+}
+
+function bgCalculateScore(cr, paymentVal, hasEmail, hasWebsite, hasPhone) {
+  let score = 5.0; // base out of 10
+  const adj = {1:2.5, 2:1.5, 3:0, 4:-1.5, 5:-3.0};
+  if (cr) score += (adj[cr.level] || 0);
+  if (paymentVal === 'tt' || paymentVal === 'lc') score += 0.5;
+  if (paymentVal === 'wu' || paymentVal === 'crypto') score -= 1.5;
+  if (hasEmail) score += 0.5;
+  if (hasWebsite) score += 0.5;
+  if (hasPhone) score += 0.5;
+  return Math.max(1, Math.min(10, Math.round(score * 10) / 10));
+}
+
+function bgGenerate() {
+  const company = document.getElementById('bg_company').value.trim();
+  if (!company) { showToast('请填写公司名称'); return; }
+
+  const countryCode = document.getElementById('bg_country').value;
+  const typeKey = document.getElementById('bg_type').value;
+  const product = document.getElementById('bg_product').value.trim();
+  const payment = document.getElementById('bg_payment').value;
+  const contact = document.getElementById('bg_contact').value.trim();
+  const email = document.getElementById('bg_email').value.trim();
+  const phone = document.getElementById('bg_phone').value.trim();
+  const website = document.getElementById('bg_website').value.trim();
+
+  const cr = countryRisk[countryCode] || null;
+  const ct = customerTypes[typeKey] || customerTypes.unknown;
+  const score = bgCalculateScore(cr, payment, !!email, !!website, !!phone);
+  const grade = score >= 8 ? 'A' : score >= 6 ? 'B' : score >= 4 ? 'C' : 'D';
+  const gradeColor = {A:'#16a34a',B:'#2563eb',C:'#d97706',D:'#dc2626'}[grade];
+  const gradeBg = {A:'#dcfce7',B:'#dbeafe',C:'#fef9c3',D:'#fee2e2'}[grade];
+  const gradeLabel = {A:'A 级重点客户',B:'B 级可开发客户',C:'C 级普通跟进',D:'D 级谨慎处理'}[grade];
+
+  const enc = encodeURIComponent(company);
+  const countryName = cr ? cr.name : (countryCode || '未知');
+  const today = new Date().toLocaleDateString('zh-CN');
+  const searchLinks = getBGSearchLinks(company, countryName);
+
+  // Email domain check
+  let emailHtml = '';
+  if (email) {
+    const domain = email.split('@')[1] || '';
+    const freeDomains = ['gmail.com','yahoo.com','hotmail.com','outlook.com','163.com','126.com','qq.com','sina.com','foxmail.com','aol.com','icloud.com'];
+    const isFree = freeDomains.some(d => domain.toLowerCase() === d);
+    const webDomain = website.replace(/https?:\/\//,'').replace(/\/.*/,'').replace(/^www\./,'');
+    const domainMatch = webDomain && domain.toLowerCase().includes(webDomain.toLowerCase());
+    emailHtml = `
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+        <span style="background:${isFree?'#fff7ed':'#f0fdf4'};border:1px solid ${isFree?'#fed7aa':'#bbf7d0'};color:${isFree?'#92400e':'#166534'};padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">${isFree?'⚠️ 免费邮箱':'✅ 企业邮箱'} @${domain}</span>
+        ${webDomain?`<span style="background:${domainMatch?'#f0fdf4':'#fef9c3'};border:1px solid ${domainMatch?'#bbf7d0':'#fde68a'};color:${domainMatch?'#166534':'#92400e'};padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">${domainMatch?'✅ 域名与网站一致':'⚠️ 域名与网站不一致'}</span>`:''}
+      </div>`;
+  }
+
+  // Save for CRM
+  bgReportData = { company, countryCode, countryName, typeKey, typeName: ct.name, product, payment, contact, email, phone, website, score, grade, gradeLabel, today };
+
+  const paymentText = document.getElementById('bg_payment').options[document.getElementById('bg_payment').selectedIndex].text;
+  const sanctionWarning = cr && cr.level >= 5 ? `<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:14px 18px;margin-bottom:12px;">
+    <div style="font-weight:800;color:#dc2626;font-size:14px;margin-bottom:4px;">⛔ 制裁风险预警</div>
+    <div style="color:#7f1d1d;font-size:13px;">${cr.note}。出口前务必咨询专业合规顾问，违规将承担法律责任。</div>
+  </div>` : '';
+
+  const reportHTML = `
+  <div style="font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;color:#1f2937;line-height:1.72;">
+
+    <!-- HERO HEADER -->
+    <div style="background:linear-gradient(135deg,#0f3d5e 0%,#0b6fa4 70%,#1193c5 100%);color:white;border-radius:16px;padding:32px 36px;margin-bottom:20px;position:relative;overflow:hidden;">
+      <div style="position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,0.08);"></div>
+      <div style="font-size:13px;opacity:0.8;margin-bottom:6px;">客户开发背调报告 · 百事达外贸工具箱</div>
+      <div style="font-size:26px;font-weight:800;margin-bottom:6px;">${company}</div>
+      <div style="opacity:0.85;font-size:14px;margin-bottom:20px;">
+        目标客户：${company} &nbsp;|&nbsp; 客户类型：${ct.icon} ${ct.name} &nbsp;|&nbsp; 国家：${countryName}
+        ${product ? ' &nbsp;|&nbsp; 主要产品：'+product : ''}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+        <div style="background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.22);border-radius:12px;padding:12px 14px;">
+          <div style="font-size:11px;opacity:0.75;">客户等级</div>
+          <div style="font-size:20px;font-weight:800;color:${grade==='A'?'#fde68a':grade==='B'?'#93c5fd':grade==='C'?'#fcd34d':'#fca5a5'};">${grade} 级</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.22);border-radius:12px;padding:12px 14px;">
+          <div style="font-size:11px;opacity:0.75;">开发评分</div>
+          <div style="font-size:20px;font-weight:800;">${score} / 10</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.22);border-radius:12px;padding:12px 14px;">
+          <div style="font-size:11px;opacity:0.75;">国家风险</div>
+          <div style="font-size:16px;font-weight:700;">${cr ? cr.label : '待查询'}</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.22);border-radius:12px;padding:12px 14px;">
+          <div style="font-size:11px;opacity:0.75;">生成日期</div>
+          <div style="font-size:15px;font-weight:600;">${today}</div>
+        </div>
+      </div>
+    </div>
+
+    ${sanctionWarning}
+
+    <!-- SECTION 1: 核心结论 -->
+    <div style="background:white;border:1px solid #e5e7eb;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+      <div style="font-size:18px;font-weight:800;color:#0f3d5e;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+        <span style="background:#eff6ff;color:#1d4ed8;padding:4px 12px;border-radius:8px;font-size:13px;">一</span>
+        核心开发结论
+      </div>
+      <div style="display:grid;grid-template-columns:200px 1fr;gap:16px;">
+        <div style="background:linear-gradient(180deg,#fff7e6,#fff);border:1px solid #fde68a;border-radius:14px;padding:20px;text-align:center;">
+          <div style="font-size:52px;font-weight:900;color:#f59e0b;line-height:1;">${score}</div>
+          <div style="font-size:16px;color:#92400e;font-weight:700;">/ 10</div>
+          <div style="margin-top:10px;background:${gradeBg};border:1px solid;border-color:${gradeColor};color:${gradeColor};padding:5px 14px;border-radius:20px;font-weight:800;font-size:14px;">${gradeLabel}</div>
+        </div>
+        <div>
+          <div style="background:#f0f9ff;border-left:4px solid #0b6fa4;padding:14px 18px;border-radius:10px;margin-bottom:12px;">
+            <strong>正确打法：</strong>${ct.strategy}
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            ${ct.businessFocus.map(f=>`<span style="background:#eaf6ff;color:#0f3d5e;border:1px solid #cbe7ff;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;">${f}</span>`).join('')}
+            ${cr?`<span style="background:${gradeBg};color:${gradeColor};border:1px solid;border-color:${gradeColor};padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;">${cr.label}</span>`:''}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: 客户画像 -->
+    <div style="background:white;border:1px solid #e5e7eb;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+      <div style="font-size:18px;font-weight:800;color:#0f3d5e;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+        <span style="background:#eff6ff;color:#1d4ed8;padding:4px 12px;border-radius:8px;font-size:13px;">二</span>
+        客户画像
+      </div>
+      <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 18px;border-radius:10px;margin-bottom:14px;">
+        ${ct.icon} <strong>${ct.name}</strong> — ${ct.profile}
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
+        <thead><tr style="background:#eef6fb;"><th style="padding:10px 12px;text-align:left;border:1px solid #e5e7eb;color:#143955;">维度</th><th style="padding:10px 12px;border:1px solid #e5e7eb;color:#143955;">信息</th><th style="padding:10px 12px;border:1px solid #e5e7eb;color:#143955;">开发意义</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:10px 12px;border:1px solid #e5e7eb;font-weight:600;">公司名称</td><td style="padding:10px 12px;border:1px solid #e5e7eb;">${company}</td><td style="padding:10px 12px;border:1px solid #e5e7eb;color:#6b7280;">目标开发公司</td></tr>
+          <tr style="background:#fbfdff;"><td style="padding:10px 12px;border:1px solid #e5e7eb;font-weight:600;">所在国家</td><td style="padding:10px 12px;border:1px solid #e5e7eb;">${countryName}${cr?` — ${cr.label}`:''}</td><td style="padding:10px 12px;border:1px solid #e5e7eb;color:#6b7280;">${cr?cr.note:'需进一步核实'}</td></tr>
+          <tr><td style="padding:10px 12px;border:1px solid #e5e7eb;font-weight:600;">客户类型</td><td style="padding:10px 12px;border:1px solid #e5e7eb;">${ct.icon} ${ct.name}</td><td style="padding:10px 12px;border:1px solid #e5e7eb;color:#6b7280;">${ct.approach}</td></tr>
+          <tr style="background:#fbfdff;"><td style="padding:10px 12px;border:1px solid #e5e7eb;font-weight:600;">主要产品</td><td style="padding:10px 12px;border:1px solid #e5e7eb;">${product||'待了解'}</td><td style="padding:10px 12px;border:1px solid #e5e7eb;color:#6b7280;">围绕产品需求制定开发方案</td></tr>
+          <tr><td style="padding:10px 12px;border:1px solid #e5e7eb;font-weight:600;">付款方式</td><td style="padding:10px 12px;border:1px solid #e5e7eb;">${paymentText}</td><td style="padding:10px 12px;border:1px solid #e5e7eb;color:#6b7280;">${payment==='tt'||payment==='lc'?'正规付款方式，风险较低':payment==='wu'||payment==='crypto'?'⚠️ 非常规付款，需谨慎':'正常付款方式'}</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SECTION 3: 风险评估 -->
+    <div style="background:white;border:1px solid #e5e7eb;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+      <div style="font-size:18px;font-weight:800;color:#0f3d5e;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+        <span style="background:#eff6ff;color:#1d4ed8;padding:4px 12px;border-radius:8px;font-size:13px;">三</span>
+        风险评估
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:8px;">🌍 国家信用风险</div>
+          <div style="background:${cr?{1:'#f0fdf4',2:'#f0fdf4',3:'#fef9c3',4:'#fee2e2',5:'#f3e8ff'}[cr.level]:'#f8fafc'};border-radius:10px;padding:12px 14px;">
+            ${cr?`<div style="font-weight:700;color:${cr.color};">${cr.name} — ${cr.label}</div><div style="font-size:12px;color:#475569;margin-top:3px;">${cr.note}</div>`:'<div style="color:#94a3b8;font-size:13px;">未选择国家</div>'}
+          </div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:8px;">📧 邮箱分析</div>
+          <div style="background:#f8fafc;border-radius:10px;padding:12px 14px;">
+            ${email?`<div style="font-size:13px;font-weight:600;">${email}</div>${emailHtml}`:'<div style="color:#94a3b8;font-size:13px;">未填写联系邮箱</div>'}
+          </div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:8px;">💳 付款风险</div>
+          <div style="background:${payment==='wu'||payment==='crypto'?'#fff7ed':'#f0fdf4'};border-radius:10px;padding:12px 14px;">
+            <div style="font-size:13px;font-weight:600;color:${payment==='wu'||payment==='crypto'?'#92400e':'#166534'};">${paymentText}</div>
+            <div style="font-size:12px;margin-top:3px;color:#475569;">${payment==='tt'?'银行电汇是最安全的国际付款方式':payment==='lc'?'信用证风险可控，适合大额订单':payment==='wu'||payment==='crypto'?'⚠️ 非常规付款方式，需提高警惕':'注意核实付款渠道安全性'}</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:8px;">🔍 需自行核查</div>
+          <div style="background:#f8fafc;border-radius:10px;padding:10px 12px;">
+            <div style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#374151;">
+              <div>• OFAC/EU/UN 制裁名单</div>
+              <div>• 工商注册信息（OpenCorporates）</div>
+              <div>• 历史贸易记录（ImportYeti）</div>
+              <div>• LinkedIn 企业主页核实</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4: 痛点分析 -->
+    <div style="background:white;border:1px solid #e5e7eb;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+      <div style="font-size:18px;font-weight:800;color:#0f3d5e;margin-bottom:4px;display:flex;align-items:center;gap:8px;">
+        <span style="background:#eff6ff;color:#1d4ed8;padding:4px 12px;border-radius:8px;font-size:13px;">四</span>
+        客户痛点判断
+      </div>
+      <div style="color:#6b7280;font-size:13px;margin-bottom:14px;">基于客户类型「${ct.name}」的典型痛点分析</div>
+      <div style="background:#fff7ed;border-left:4px solid #f97316;padding:12px 16px;border-radius:10px;margin-bottom:14px;font-size:14px;">
+        <strong>开发关键：</strong>${ct.approach}
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr style="background:#eef6fb;"><th style="padding:10px 12px;text-align:left;border:1px solid #e5e7eb;color:#143955;">潜在痛点</th><th style="padding:10px 12px;border:1px solid #e5e7eb;color:#143955;">为什么重要</th><th style="padding:10px 12px;border:1px solid #e5e7eb;color:#143955;">应对话术方向</th></tr></thead>
+        <tbody>
+          ${ct.painPoints.map((p,i)=>`<tr style="background:${i%2?'#fbfdff':'white'};"><td style="padding:10px 12px;border:1px solid #e5e7eb;font-weight:600;">${p.pt}</td><td style="padding:10px 12px;border:1px solid #e5e7eb;color:#6b7280;">${p.why}</td><td style="padding:10px 12px;border:1px solid #e5e7eb;color:#374151;">${p.how}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SECTION 5: 开发策略 -->
+    <div style="background:white;border:1px solid #e5e7eb;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+      <div style="font-size:18px;font-weight:800;color:#0f3d5e;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+        <span style="background:#eff6ff;color:#1d4ed8;padding:4px 12px;border-radius:8px;font-size:13px;">五</span>
+        推荐开发策略
+      </div>
+      <div style="background:#f0f9ff;border-left:5px solid #0b6fa4;padding:16px 20px;border-radius:12px;margin-bottom:16px;">
+        <strong>核心策略：</strong>${ct.strategy}
+      </div>
+      <div style="font-size:14px;font-weight:700;color:#374151;margin-bottom:10px;">📧 推荐邮件主题</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;">
+        ${ct.emailSubjects.map((s,i)=>`<div style="background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;font-size:13px;">📌 ${s}</div>`).join('')}
+      </div>
+      <div style="font-size:14px;font-weight:700;color:#374151;margin-bottom:10px;">✉️ 开发信参考框架</div>
+      <div style="background:#0b1220;color:#e5e7eb;border-radius:12px;padding:16px 18px;font-family:Consolas,monospace;font-size:13px;line-height:1.7;">
+Hi ${contact||'[Name]'} / ${company} Team,
+
+This is [Your Name] from [Your Company], a [your product] manufacturer in China.
+
+I visited your website and noticed that ${company} is actively involved in [${product||'your business area'}] in ${countryName}.
+
+We believe we may be a good ${typeKey==='oem'?'OEM manufacturing':'supply'} partner for your business, especially for:
+- [Main product 1 matching your business]
+- [Main product 2 matching your business]
+- OEM/Private Label / Spare parts / Technical support
+
+May I send you our latest product catalog and company introduction?
+
+Best regards,
+[Your Name] | [Your Company]
+Email: [Your Email] | WhatsApp: [Your WhatsApp]</div>
+    </div>
+
+    <!-- SECTION 6: 联系方式 -->
+    <div style="background:white;border:1px solid #e5e7eb;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+      <div style="font-size:18px;font-weight:800;color:#0f3d5e;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+        <span style="background:#eff6ff;color:#1d4ed8;padding:4px 12px;border-radius:8px;font-size:13px;">六</span>
+        联系渠道与信息
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+        ${contact?`<div style="background:#f8fafc;border-radius:10px;padding:12px 14px;border:1px solid #e5e7eb;"><div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;">联系人</div><div style="font-size:14px;font-weight:700;margin-top:3px;">${contact}</div></div>`:''}
+        ${email?`<div style="background:#f8fafc;border-radius:10px;padding:12px 14px;border:1px solid #e5e7eb;"><div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;">邮箱</div><div style="font-size:14px;font-weight:700;margin-top:3px;"><a href="mailto:${email}" style="color:#2563eb;">${email}</a></div></div>`:''}
+        ${phone?`<div style="background:#f8fafc;border-radius:10px;padding:12px 14px;border:1px solid #e5e7eb;"><div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;">电话</div><div style="font-size:14px;font-weight:700;margin-top:3px;">${phone}</div></div>`:''}
+        ${website?`<div style="background:#f8fafc;border-radius:10px;padding:12px 14px;border:1px solid #e5e7eb;"><div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;">网址</div><div style="font-size:14px;font-weight:700;margin-top:3px;"><a href="${website}" target="_blank" style="color:#2563eb;">${website}</a></div></div>`:''}
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:8px;">🔍 一键搜索数据库</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+        ${searchLinks.map(l=>`<a href="${l.url}" target="_blank" style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;text-decoration:none;" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='#f8fafc'">
+          <span style="font-size:14px;">${l.icon}</span>
+          <div><div style="font-size:11px;font-weight:700;color:#1e293b;">${l.name}</div><div style="font-size:10px;color:#94a3b8;">${l.desc}</div></div>
+        </a>`).join('')}
+      </div>
+    </div>
+
+    <!-- SECTION 7: 跟进节奏 -->
+    <div style="background:white;border:1px solid #e5e7eb;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+      <div style="font-size:18px;font-weight:800;color:#0f3d5e;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+        <span style="background:#eff6ff;color:#1d4ed8;padding:4px 12px;border-radius:8px;font-size:13px;">七</span>
+        建议跟进节奏
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr style="background:#eef6fb;"><th style="padding:10px 12px;text-align:left;border:1px solid #e5e7eb;color:#143955;">时间</th><th style="padding:10px 12px;border:1px solid #e5e7eb;color:#143955;">动作</th><th style="padding:10px 12px;border:1px solid #e5e7eb;color:#143955;">目的</th></tr></thead>
+        <tbody>
+          ${ct.followUp.map((f,i)=>`<tr style="background:${i%2?'#fbfdff':'white'};"><td style="padding:10px 12px;border:1px solid #e5e7eb;font-weight:700;white-space:nowrap;">${f.day}</td><td style="padding:10px 12px;border:1px solid #e5e7eb;">${f.action}</td><td style="padding:10px 12px;border:1px solid #e5e7eb;color:#6b7280;">${f.goal}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SECTION 8: CRM录入建议 -->
+    <div style="background:white;border:1px solid #e5e7eb;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+      <div style="font-size:18px;font-weight:800;color:#0f3d5e;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+        <span style="background:#eff6ff;color:#1d4ed8;padding:4px 12px;border-radius:8px;font-size:13px;">八</span>
+        CRM 录入建议
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <tbody>
+          <tr><th style="padding:10px 12px;text-align:left;border:1px solid #e5e7eb;background:#eef6fb;width:25%;color:#143955;">客户名称</th><td style="padding:10px 12px;border:1px solid #e5e7eb;">${company}</td></tr>
+          <tr style="background:#fbfdff;"><th style="padding:10px 12px;text-align:left;border:1px solid #e5e7eb;background:#eef6fb;color:#143955;">国家</th><td style="padding:10px 12px;border:1px solid #e5e7eb;">${countryName}</td></tr>
+          <tr><th style="padding:10px 12px;text-align:left;border:1px solid #e5e7eb;background:#eef6fb;color:#143955;">客户类型</th><td style="padding:10px 12px;border:1px solid #e5e7eb;">${ct.icon} ${ct.name}</td></tr>
+          <tr style="background:#fbfdff;"><th style="padding:10px 12px;text-align:left;border:1px solid #e5e7eb;background:#eef6fb;color:#143955;">客户等级</th><td style="padding:10px 12px;border:1px solid #e5e7eb;"><span style="background:${gradeBg};color:${gradeColor};padding:2px 10px;border-radius:20px;font-weight:700;">${grade} 级 — ${gradeLabel}</span></td></tr>
+          <tr><th style="padding:10px 12px;text-align:left;border:1px solid #e5e7eb;background:#eef6fb;color:#143955;">主推产品</th><td style="padding:10px 12px;border:1px solid #e5e7eb;">${product||'待确认'}</td></tr>
+          <tr style="background:#fbfdff;"><th style="padding:10px 12px;text-align:left;border:1px solid #e5e7eb;background:#eef6fb;color:#143955;">开发重点</th><td style="padding:10px 12px;border:1px solid #e5e7eb;">${ct.businessFocus.join(' + ')}</td></tr>
+          <tr><th style="padding:10px 12px;text-align:left;border:1px solid #e5e7eb;background:#eef6fb;color:#143955;">首封邮件主题</th><td style="padding:10px 12px;border:1px solid #e5e7eb;">${ct.emailSubjects[0]}</td></tr>
+          <tr style="background:#fbfdff;"><th style="padding:10px 12px;text-align:left;border:1px solid #e5e7eb;background:#eef6fb;color:#143955;">下一步动作</th><td style="padding:10px 12px;border:1px solid #e5e7eb;">${ct.followUp[0].action}</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:14px;text-align:center;">
+        <button onclick="bgSaveToCRM()" style="background:#16a34a;color:white;border:none;padding:12px 32px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(22,163,74,0.3);">
+          <i class="fas fa-address-book" style="margin-right:8px;"></i>保存到客户 CRM
+        </button>
+      </div>
+    </div>
+
+    <div style="text-align:center;color:#9ca3af;font-size:12px;padding:12px 0 4px;">
+      报告由百事达外贸工具箱自动生成 · beseda.com.cn · ${today} · 仅供参考，不构成法律建议
+    </div>
+  </div>`;
+
+  // Show report
+  document.getElementById('bgEmptyState').style.display = 'none';
+  document.getElementById('bgReport').style.display = 'block';
+  document.getElementById('bgReport').innerHTML = reportHTML;
+  document.getElementById('bgPrintBtn').style.display = 'block';
+  document.getElementById('bgCRMBtn').style.display = 'block';
+  document.getElementById('bgReport').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function bgSaveToCRM() {
+  if (!bgReportData) { showToast('请先生成背调报告'); return; }
+  const d = bgReportData;
+  const ct = customerTypes[d.typeKey] || customerTypes.unknown;
+  const notes = `[${d.grade}级客户] 类型：${ct.name} | 开发评分：${d.score}/10 | 国家风险：${d.countryName}${countryRisk[d.countryCode]?' ('+countryRisk[d.countryCode].label+')':''} | 建议策略：${ct.strategy.substring(0,60)}... | 生成于：${d.today}`;
+  const newCustomer = {
+    id: Date.now().toString(),
+    company: d.company,
+    country: d.countryName,
+    contact: d.contact || '',
+    phone: d.phone || '',
+    email: d.email || '',
+    website: d.website || '',
+    status: '潜在',
+    product: d.product || '',
+    notes: notes,
+    lastContact: new Date().toISOString().split('T')[0],
+    createdAt: Date.now(),
+  };
+  // Check if already exists
+  const exists = customers.find(c => c.company.toLowerCase() === d.company.toLowerCase());
+  if (exists) {
+    if (!confirm(`CRM 中已存在"${d.company}"，是否更新？`)) return;
+    const idx = customers.indexOf(exists);
+    customers[idx] = {...exists, ...newCustomer, id: exists.id};
+  } else {
+    customers.unshift(newCustomer);
+  }
+  saveCustomers();
+  updateHomeStats();
+  showToast('✅ 已保存到客户 CRM！可在「客户 CRM」中查看');
+  document.getElementById('bgCRMBtn').textContent = '✅ 已保存到 CRM';
+  document.getElementById('bgCRMBtn').style.background = '#15803d';
+}
+
+function printBGReport() {
+  if (!bgReportData) { showToast('请先生成背调报告'); return; }
+  window.print();
 }
 
 // ===== AD / CONTACT MODALS =====
