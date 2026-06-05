@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>外贸工具箱</title>
+<title>百事达外贸工具箱 | beseda.com.cn</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
@@ -72,11 +72,23 @@
 
 <!-- Sidebar -->
 <div class="sidebar flex flex-col p-4" id="sidebar">
-  <div class="flex items-center gap-2 mb-8 mt-2 px-2">
-    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-      <i class="fas fa-globe text-white text-sm"></i>
+  <div class="flex items-center gap-2 mb-8 mt-2 px-2 cursor-pointer" onclick="showSection('home')">
+    <!-- BSD Logo SVG -->
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="36" height="36" rx="8" fill="#2563eb"/>
+      <!-- Globe lines -->
+      <circle cx="18" cy="18" r="11" stroke="white" stroke-width="1.5" fill="none" opacity="0.3"/>
+      <ellipse cx="18" cy="18" rx="5.5" ry="11" stroke="white" stroke-width="1.5" fill="none" opacity="0.5"/>
+      <line x1="7" y1="18" x2="29" y2="18" stroke="white" stroke-width="1.5" opacity="0.5"/>
+      <line x1="9" y1="13" x2="27" y2="13" stroke="white" stroke-width="1" opacity="0.3"/>
+      <line x1="9" y1="23" x2="27" y2="23" stroke="white" stroke-width="1" opacity="0.3"/>
+      <!-- B letter -->
+      <text x="13" y="22" font-family="Arial" font-weight="bold" font-size="12" fill="white">B</text>
+    </svg>
+    <div>
+      <div class="text-white font-bold text-base leading-tight">百事达</div>
+      <div class="text-blue-300 text-xs leading-tight">外贸工具箱</div>
     </div>
-    <span class="text-white font-bold text-lg">外贸工具箱</span>
   </div>
   <nav class="flex flex-col gap-1">
     <div class="nav-link active" onclick="showSection('home')">
@@ -103,91 +115,228 @@
       <i class="fas fa-address-book w-4 text-center"></i> 客户 CRM
     </div>
   </nav>
-  <div class="mt-auto pt-4 border-t border-slate-700">
-    <div class="text-slate-500 text-xs px-2">外贸工具箱 v1.0</div>
+  </nav>
+  <div class="mt-auto pt-4 border-t border-slate-700 space-y-2">
+    <div class="nav-link text-xs" onclick="openAdModal()" style="color:#f59e0b;">
+      <i class="fas fa-bullhorn w-4 text-center"></i> 广告招商
+    </div>
+    <div class="nav-link text-xs" onclick="openContactModal()">
+      <i class="fas fa-headset w-4 text-center"></i> 定制开发
+    </div>
+    <div class="text-slate-600 text-xs px-3 pb-2">© beseda.com.cn</div>
   </div>
 </div>
 
 <!-- Main Content -->
-<div class="main-content p-6" id="mainContent">
+<div class="main-content" id="mainContent" style="padding:24px;" id="mainContent">
 
   <!-- Mobile Header -->
   <div class="md:hidden flex items-center gap-3 mb-4 no-print">
     <button onclick="document.getElementById('sidebar').classList.toggle('open')" class="btn btn-secondary">
       <i class="fas fa-bars"></i>
     </button>
-    <span class="font-semibold text-gray-700">外贸工具箱</span>
+    <span class="font-semibold text-gray-700">百事达外贸工具箱</span>
   </div>
 
   <!-- ========== HOME ========== -->
-  <div class="section active" id="sec-home">
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold text-gray-800">外贸工具箱</h1>
-      <p class="text-gray-500 mt-1">你的专属外贸效率工具集</p>
-    </div>
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      <div class="tool-card" onclick="showSection('currency')">
-        <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mb-3">
-          <i class="fas fa-coins text-blue-600"></i>
+  <div class="section active" id="sec-home" style="padding:0;margin:-24px;">
+
+    <!-- HERO -->
+    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,#1d4ed8 100%);padding:60px 48px 48px;position:relative;overflow:hidden;">
+      <!-- background decoration -->
+      <div style="position:absolute;right:-60px;top:-60px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,0.04);"></div>
+      <div style="position:absolute;right:60px;bottom:-80px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.04);"></div>
+      <div class="no-print" style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
+        <!-- Big logo -->
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="56" height="56" rx="14" fill="#2563eb"/>
+          <circle cx="28" cy="28" r="17" stroke="white" stroke-width="2" fill="none" opacity="0.25"/>
+          <ellipse cx="28" cy="28" rx="8" ry="17" stroke="white" stroke-width="2" fill="none" opacity="0.4"/>
+          <line x1="11" y1="28" x2="45" y2="28" stroke="white" stroke-width="2" opacity="0.4"/>
+          <line x1="13" y1="21" x2="43" y2="21" stroke="white" stroke-width="1.2" opacity="0.25"/>
+          <line x1="13" y1="35" x2="43" y2="35" stroke="white" stroke-width="1.2" opacity="0.25"/>
+          <text x="20" y="34" font-family="Arial Black,Arial" font-weight="900" font-size="18" fill="white">B</text>
+        </svg>
+        <div>
+          <div style="color:white;font-size:26px;font-weight:800;letter-spacing:1px;">百事达外贸工具箱</div>
+          <div style="color:#93c5fd;font-size:14px;margin-top:2px;">beseda.com.cn &nbsp;·&nbsp; 专为外贸人打造的效率平台</div>
         </div>
-        <div class="font-semibold text-gray-800">汇率换算</div>
-        <div class="text-gray-500 text-sm mt-1">实时多币种换算</div>
       </div>
-      <div class="tool-card" onclick="showSection('hscode')">
-        <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mb-3">
-          <i class="fas fa-barcode text-green-600"></i>
-        </div>
-        <div class="font-semibold text-gray-800">HS Code 查询</div>
-        <div class="text-gray-500 text-sm mt-1">海关商品编码</div>
+      <div style="color:#e2e8f0;font-size:16px;max-width:560px;line-height:1.8;margin-bottom:32px;">
+        汇率换算、HS Code查询、运费计算、PI发票生成、客户CRM……<br>
+        <strong style="color:white;">把每一次外贸操作，都变得更快、更准、更专业。</strong>
       </div>
-      <div class="tool-card" onclick="showSection('shipping')">
-        <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center mb-3">
-          <i class="fas fa-truck text-orange-600"></i>
-        </div>
-        <div class="font-semibold text-gray-800">运费计算器</div>
-        <div class="text-gray-500 text-sm mt-1">体积重/运费估算</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button onclick="showSection('currency')" style="background:#2563eb;color:white;border:none;padding:12px 24px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-bolt"></i> 立即使用工具
+        </button>
+        <button onclick="openAdModal()" style="background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.25);padding:12px 24px;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-bullhorn" style="color:#fbbf24;"></i> 广告招商合作
+        </button>
+        <button onclick="openContactModal()" style="background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.25);padding:12px 24px;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-code" style="color:#34d399;"></i> 定制系统
+        </button>
       </div>
-      <div class="tool-card" onclick="showSection('profit')">
-        <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center mb-3">
-          <i class="fas fa-calculator text-purple-600"></i>
-        </div>
-        <div class="font-semibold text-gray-800">报价/利润计算</div>
-        <div class="text-gray-500 text-sm mt-1">报价单生成&利润核算</div>
-      </div>
-      <div class="tool-card" onclick="showSection('pi')">
-        <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center mb-3">
-          <i class="fas fa-file-invoice text-indigo-600"></i>
-        </div>
-        <div class="font-semibold text-gray-800">PI 形式发票</div>
-        <div class="text-gray-500 text-sm mt-1">专业 PI 在线生成</div>
-      </div>
-      <div class="tool-card" onclick="showSection('crm')">
-        <div class="w-10 h-10 bg-pink-100 rounded-xl flex items-center justify-center mb-3">
-          <i class="fas fa-address-book text-pink-600"></i>
-        </div>
-        <div class="font-semibold text-gray-800">客户 CRM</div>
-        <div class="text-gray-500 text-sm mt-1">客户信息管理</div>
+      <!-- Live rates bar -->
+      <div style="margin-top:32px;background:rgba(255,255,255,0.08);border-radius:10px;padding:12px 20px;display:flex;gap:32px;flex-wrap:wrap;">
+        <div style="color:#93c5fd;font-size:13px;">实时汇率</div>
+        <div style="color:white;font-size:13px;">USD/CNY &nbsp;<strong id="statRate">--</strong></div>
+        <div style="color:white;font-size:13px;">EUR/CNY &nbsp;<strong id="statRateEur">--</strong></div>
+        <div style="color:#64748b;font-size:12px;margin-left:auto;" id="statUpdate">加载中...</div>
       </div>
     </div>
-    <!-- Quick stats -->
-    <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4" id="homeStats">
-      <div class="card p-4">
-        <div class="text-sm text-gray-500">客户总数</div>
-        <div class="text-2xl font-bold text-gray-800 mt-1" id="statCustomers">0</div>
+
+    <!-- TOOLS GRID -->
+    <div style="padding:40px 48px;">
+      <div style="text-align:center;margin-bottom:32px;">
+        <div style="font-size:22px;font-weight:800;color:#0f172a;">6 大核心工具，免费使用</div>
+        <div style="color:#64748b;margin-top:8px;font-size:15px;">覆盖外贸从询价到收款的全流程场景</div>
       </div>
-      <div class="card p-4">
-        <div class="text-sm text-gray-500">今日汇率 USD/CNY</div>
-        <div class="text-2xl font-bold text-blue-600 mt-1" id="statRate">--</div>
-      </div>
-      <div class="card p-4">
-        <div class="text-sm text-gray-500">今日汇率 EUR/CNY</div>
-        <div class="text-2xl font-bold text-blue-600 mt-1" id="statRateEur">--</div>
-      </div>
-      <div class="card p-4">
-        <div class="text-sm text-gray-500">数据更新</div>
-        <div class="text-sm font-semibold text-gray-700 mt-2" id="statUpdate">加载中...</div>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="tool-card" onclick="showSection('currency')" style="border:1px solid #e2e8f0;">
+          <div style="width:44px;height:44px;background:#eff6ff;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+            <i class="fas fa-coins" style="color:#2563eb;font-size:18px;"></i>
+          </div>
+          <div style="font-weight:700;font-size:15px;color:#0f172a;">汇率换算</div>
+          <div style="color:#64748b;font-size:13px;margin-top:6px;">15 种货币实时汇率，一键换算不出错</div>
+        </div>
+        <div class="tool-card" onclick="showSection('hscode')" style="border:1px solid #e2e8f0;">
+          <div style="width:44px;height:44px;background:#f0fdf4;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+            <i class="fas fa-barcode" style="color:#16a34a;font-size:18px;"></i>
+          </div>
+          <div style="font-weight:700;font-size:15px;color:#0f172a;">HS Code 查询</div>
+          <div style="color:#64748b;font-size:13px;margin-top:6px;">内置 70+ 常用编码，直链海关官方查询</div>
+        </div>
+        <div class="tool-card" onclick="showSection('shipping')" style="border:1px solid #e2e8f0;">
+          <div style="width:44px;height:44px;background:#fff7ed;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+            <i class="fas fa-truck" style="color:#ea580c;font-size:18px;"></i>
+          </div>
+          <div style="font-weight:700;font-size:15px;color:#0f172a;">运费计算器</div>
+          <div style="color:#64748b;font-size:13px;margin-top:6px;">快递/空运/海运体积重，自动判断抛重</div>
+        </div>
+        <div class="tool-card" onclick="showSection('profit')" style="border:1px solid #e2e8f0;">
+          <div style="width:44px;height:44px;background:#faf5ff;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+            <i class="fas fa-calculator" style="color:#9333ea;font-size:18px;"></i>
+          </div>
+          <div style="font-weight:700;font-size:15px;color:#0f172a;">报价/利润计算</div>
+          <div style="color:#64748b;font-size:13px;margin-top:6px;">含退税核算、一键生成可打印报价单</div>
+        </div>
+        <div class="tool-card" onclick="showSection('pi')" style="border:1px solid #e2e8f0;">
+          <div style="width:44px;height:44px;background:#eef2ff;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+            <i class="fas fa-file-invoice" style="color:#4f46e5;font-size:18px;"></i>
+          </div>
+          <div style="font-weight:700;font-size:15px;color:#0f172a;">PI 形式发票</div>
+          <div style="color:#64748b;font-size:13px;margin-top:6px;">专业 PI 模板，实时预览，PDF 导出</div>
+        </div>
+        <div class="tool-card" onclick="showSection('crm')" style="border:1px solid #e2e8f0;">
+          <div style="width:44px;height:44px;background:#fff1f2;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+            <i class="fas fa-address-book" style="color:#e11d48;font-size:18px;"></i>
+          </div>
+          <div style="font-weight:700;font-size:15px;color:#0f172a;">客户 CRM</div>
+          <div style="color:#64748b;font-size:13px;margin-top:6px;">客户信息、跟进状态、本地永久保存</div>
+        </div>
       </div>
     </div>
+
+    <!-- WHY US -->
+    <div style="background:#f8fafc;padding:40px 48px;border-top:1px solid #e2e8f0;">
+      <div style="text-align:center;margin-bottom:32px;">
+        <div style="font-size:20px;font-weight:800;color:#0f172a;">为什么选择百事达？</div>
+      </div>
+      <div class="grid md:grid-cols-4 gap-6">
+        <div style="text-align:center;">
+          <div style="font-size:32px;margin-bottom:8px;">🆓</div>
+          <div style="font-weight:700;color:#0f172a;">完全免费</div>
+          <div style="color:#64748b;font-size:13px;margin-top:4px;">所有工具永久免费，无需注册登录</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:32px;margin-bottom:8px;">⚡</div>
+          <div style="font-weight:700;color:#0f172a;">即开即用</div>
+          <div style="color:#64748b;font-size:13px;margin-top:4px;">纯网页工具，打开即用，无需安装</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:32px;margin-bottom:8px;">🔒</div>
+          <div style="font-weight:700;color:#0f172a;">数据安全</div>
+          <div style="color:#64748b;font-size:13px;margin-top:4px;">所有数据保存在你的浏览器本地</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:32px;margin-bottom:8px;">🌐</div>
+          <div style="font-weight:700;color:#0f172a;">专为外贸</div>
+          <div style="color:#64748b;font-size:13px;margin-top:4px;">按真实外贸业务场景设计开发</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AD RECRUITMENT -->
+    <div style="padding:40px 48px;background:linear-gradient(135deg,#fffbeb,#fef3c7);">
+      <div style="background:white;border-radius:16px;padding:32px;box-shadow:0 4px 20px rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <span style="background:#f59e0b;color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:1px;">黄金广告位招商中</span>
+          </div>
+          <div style="font-size:22px;font-weight:800;color:#0f172a;margin-bottom:8px;">在这里曝光，精准触达外贸人群</div>
+          <div style="color:#64748b;font-size:14px;line-height:1.8;">
+            适合 <strong>货代、收款工具、ERP、CRM、图片处理、选品数据</strong> 等服务商<br>
+            首页首屏曝光位 · 工具页内嵌位 · 按月/季计费，量大优惠
+          </div>
+          <div style="margin-top:16px;display:flex;gap:24px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#475569;">
+              <i class="fas fa-check-circle" style="color:#22c55e;"></i> 精准外贸用户群体
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#475569;">
+              <i class="fas fa-check-circle" style="color:#22c55e;"></i> 高频使用场景曝光
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#475569;">
+              <i class="fas fa-check-circle" style="color:#22c55e;"></i> 灵活定制广告形式
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;min-width:160px;">
+          <button onclick="openAdModal()" style="background:#f59e0b;color:white;border:none;padding:14px 28px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap;">
+            <i class="fas fa-bullhorn mr-2"></i>咨询广告合作
+          </button>
+          <div style="text-align:center;color:#94a3b8;font-size:12px;">微信/邮件快速响应</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTOM DEV -->
+    <div style="padding:40px 48px;background:#0f172a;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;">
+        <div>
+          <div style="color:#93c5fd;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">公司专属系统</div>
+          <div style="font-size:24px;font-weight:800;color:white;margin-bottom:12px;">把工具做成你的公司内部系统</div>
+          <div style="color:#94a3b8;font-size:14px;line-height:1.9;max-width:520px;">
+            客户跟进、订单统计、员工后台、商品资料库、报价流程、电商运营自动化<br>
+            都可以按你的真实业务继续往下做。
+          </div>
+          <div style="margin-top:16px;font-weight:600;color:#e2e8f0;font-size:14px;">
+            把生意做大，靠的不是更忙，而是让每一次忙都有记录、有结果、有下一步。
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;min-width:160px;">
+          <button onclick="openContactModal()" style="background:#2563eb;color:white;border:none;padding:14px 28px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap;">
+            <i class="fas fa-headset mr-2"></i>联系我定制
+          </button>
+          <div style="text-align:center;color:#475569;font-size:12px;">免费需求沟通</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div style="background:#020617;padding:24px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div style="color:#475569;font-size:13px;">© 2024 百事达外贸工具箱 · beseda.com.cn · 保留所有权利</div>
+      <div style="display:flex;gap:20px;">
+        <span style="color:#475569;font-size:13px;cursor:pointer;" onclick="openAdModal()">广告合作</span>
+        <span style="color:#475569;font-size:13px;cursor:pointer;" onclick="openContactModal()">联系我们</span>
+      </div>
+    </div>
+
+    <!-- hidden stat elements still needed by JS -->
+    <div style="display:none;">
+      <div id="statCustomers">0</div>
+    </div>
+
   </div>
 
   <!-- ========== CURRENCY ========== -->
@@ -749,6 +898,93 @@
 
 </div><!-- end main -->
 
+<!-- ========== AD MODAL ========== -->
+<div class="modal" id="adModal">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4">
+    <div class="flex items-center justify-between p-5 border-b">
+      <div class="flex items-center gap-2">
+        <span class="bg-yellow-400 text-white text-xs font-bold px-2 py-1 rounded-full">广告招商</span>
+        <h3 class="font-bold text-gray-800 text-lg">咨询广告合作</h3>
+      </div>
+      <button onclick="closeModal('adModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+    </div>
+    <div class="p-6 space-y-4">
+      <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+        <div class="font-semibold text-yellow-800 mb-2">📢 当前可用广告位</div>
+        <div class="text-sm text-yellow-700 space-y-1">
+          <div>• 首页首屏横幅位（最高曝光）</div>
+          <div>• 工具页侧边/底部内嵌位</div>
+          <div>• 汇率/HS Code 工具页专属位</div>
+        </div>
+      </div>
+      <div class="text-sm text-gray-600 space-y-2">
+        <div class="flex gap-2"><i class="fas fa-users text-blue-500 mt-0.5"></i><span>受众：外贸业务员、采购、贸易公司运营</span></div>
+        <div class="flex gap-2"><i class="fas fa-calendar text-blue-500 mt-0.5"></i><span>计费：月付 / 季付，量大优惠</span></div>
+        <div class="flex gap-2"><i class="fas fa-paint-brush text-blue-500 mt-0.5"></i><span>形式：Banner图、文字链、功能内嵌</span></div>
+      </div>
+      <div class="bg-gray-50 rounded-xl p-4">
+        <div class="font-semibold text-gray-700 mb-3">联系方式</div>
+        <div class="space-y-2 text-sm">
+          <div class="flex items-center gap-2 text-gray-600">
+            <i class="fab fa-weixin text-green-500 text-lg"></i>
+            <span>微信：<strong>beseda_ads</strong>（备注：广告合作）</span>
+          </div>
+          <div class="flex items-center gap-2 text-gray-600">
+            <i class="fas fa-envelope text-blue-500"></i>
+            <span>邮件：<strong>ads@beseda.com.cn</strong></span>
+          </div>
+        </div>
+      </div>
+      <button onclick="closeModal('adModal')" class="btn btn-primary w-full">我知道了，稍后联系</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== CONTACT MODAL ========== -->
+<div class="modal" id="contactModal">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4">
+    <div class="flex items-center justify-between p-5 border-b">
+      <h3 class="font-bold text-gray-800 text-lg">定制系统 · 联系我们</h3>
+      <button onclick="closeModal('contactModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+    </div>
+    <div class="p-6 space-y-4">
+      <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
+        <div class="font-semibold text-blue-800 mb-2">🛠 可定制的系统方向</div>
+        <div class="grid grid-cols-2 gap-2 text-sm text-blue-700">
+          <div>✓ 客户跟进 CRM</div>
+          <div>✓ 订单管理系统</div>
+          <div>✓ 商品资料库</div>
+          <div>✓ 报价流程自动化</div>
+          <div>✓ 员工内部工具</div>
+          <div>✓ 电商运营后台</div>
+        </div>
+      </div>
+      <div class="text-sm text-gray-600">
+        按你的真实业务流程开发，部署在你的服务器或域名下，数据完全归你。
+      </div>
+      <div class="bg-gray-50 rounded-xl p-4">
+        <div class="font-semibold text-gray-700 mb-3">联系方式</div>
+        <div class="space-y-2 text-sm">
+          <div class="flex items-center gap-2 text-gray-600">
+            <i class="fab fa-weixin text-green-500 text-lg"></i>
+            <span>微信：<strong>beseda_dev</strong>（备注：定制系统）</span>
+          </div>
+          <div class="flex items-center gap-2 text-gray-600">
+            <i class="fas fa-envelope text-blue-500"></i>
+            <span>邮件：<strong>dev@beseda.com.cn</strong></span>
+          </div>
+          <div class="flex items-center gap-2 text-gray-600">
+            <i class="fas fa-clock text-orange-400"></i>
+            <span>响应时间：工作日 24 小时内回复</span>
+          </div>
+        </div>
+      </div>
+      <div class="text-xs text-gray-400 text-center">免费需求沟通，出方案后再谈费用</div>
+      <button onclick="closeModal('contactModal')" class="btn btn-primary w-full">好的，我会联系你</button>
+    </div>
+  </div>
+</div>
+
 <!-- ========== QUOTE MODAL ========== -->
 <div class="modal" id="quoteModal">
   <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl mx-4 max-h-screen overflow-y-auto">
@@ -844,6 +1080,8 @@ function showSection(id) {
   document.querySelectorAll('.nav-link').forEach(n => {
     if (n.textContent.trim().includes(navLabels[id])) n.classList.add('active');
   });
+  // restore padding for non-home sections
+  document.getElementById('mainContent').style.padding = (id === 'home') ? '0' : '24px';
   if (id === 'home') updateHomeStats();
   if (id === 'currency') convert();
   if (id === 'shipping') calcShipping();
@@ -1621,6 +1859,10 @@ function initPI() {
   // Load seller template if saved
   piLoadTemplate();
 }
+
+// ===== AD / CONTACT MODALS =====
+function openAdModal() { document.getElementById('adModal').classList.add('show'); }
+function openContactModal() { document.getElementById('contactModal').classList.add('show'); }
 
 // ===== INIT =====
 fetchRates();
