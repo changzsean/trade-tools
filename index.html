@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>外贸工具箱</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+  .sidebar { width: 220px; background: #0f172a; min-height: 100vh; position: fixed; top:0; left:0; z-index:100; transition: transform 0.3s; }
+  .main-content { margin-left: 220px; min-height: 100vh; }
+  .nav-link { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px; color:#94a3b8; cursor:pointer; transition:all 0.2s; font-size:14px; }
+  .nav-link:hover { background:#1e293b; color:#fff; }
+  .nav-link.active { background:#2563eb; color:#fff; }
+  .section { display:none; }
+  .section.active { display:block; }
+  .card { background:#fff; border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,0.08); }
+  .tool-card { background:#fff; border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,0.08); padding:20px; cursor:pointer; transition:all 0.2s; }
+  .tool-card:hover { box-shadow:0 8px 24px rgba(37,99,235,0.12); transform:translateY(-2px); }
+  .inp { border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px; width:100%; outline:none; font-size:14px; }
+  .inp:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,0.1); }
+  .btn { padding:9px 20px; border-radius:8px; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s; border:none; }
+  .btn-primary { background:#2563eb; color:#fff; }
+  .btn-primary:hover { background:#1d4ed8; }
+  .btn-secondary { background:#f1f5f9; color:#334155; }
+  .btn-secondary:hover { background:#e2e8f0; }
+  .btn-danger { background:#fee2e2; color:#dc2626; }
+  .btn-danger:hover { background:#fecaca; }
+  .tag { display:inline-block; padding:2px 8px; border-radius:20px; font-size:12px; }
+  .table-row { border-bottom:1px solid #f1f5f9; }
+  .table-row:last-child { border-bottom:none; }
+  select.inp { background-color:#fff; }
+  .rate-item { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f1f5f9; }
+  .rate-item:last-child { border-bottom:none; }
+  .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center; }
+  .modal.show { display:flex; }
+  @media print {
+    .sidebar, .no-print { display:none !important; }
+    .main-content { margin-left:0 !important; }
+    .print-area { width:100% !important; }
+  }
+  @media (max-width:768px) {
+    .sidebar { transform:translateX(-100%); }
+    .sidebar.open { transform:translateX(0); }
+    .main-content { margin-left:0; }
+  }
+  .hs-result { background:#f8fafc; border-radius:8px; padding:12px; border-left:4px solid #2563eb; }
+  .profit-positive { color:#16a34a; font-weight:600; }
+  .profit-negative { color:#dc2626; font-weight:600; }
+  input[type=number] { -moz-appearance:textfield; }
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+  /* PI Preview */
+  .pi-preview { background:#fff; font-family:'Times New Roman',serif; font-size:13px; line-height:1.5; }
+  .pi-preview table { border-collapse:collapse; width:100%; }
+  .pi-preview td, .pi-preview th { border:1px solid #aaa; padding:5px 8px; }
+  .pi-preview th { background:#f3f4f6; font-weight:bold; text-align:center; }
+  .pi-preview .pi-title { font-size:22px; font-weight:bold; text-align:center; letter-spacing:3px; }
+  .pi-preview .pi-no { font-size:13px; text-align:center; color:#555; margin-top:2px; }
+  .pi-preview .section-label { font-weight:bold; font-size:11px; text-transform:uppercase; color:#555; margin-bottom:3px; }
+  .pi-preview .amount-cell { text-align:right; font-weight:600; }
+  @media print {
+    #piFormPanel { display:none !important; }
+    #piPreviewPanel { width:100% !important; box-shadow:none !important; padding:0 !important; }
+    .pi-print-btn { display:none !important; }
+    body { background:#fff; }
+  }
+</style>
+</head>
+<body class="bg-gray-50">
+
+<!-- Sidebar -->
+<div class="sidebar flex flex-col p-4" id="sidebar">
+  <div class="flex items-center gap-2 mb-8 mt-2 px-2">
+    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+      <i class="fas fa-globe text-white text-sm"></i>
+    </div>
+    <span class="text-white font-bold text-lg">外贸工具箱</span>
+  </div>
+  <nav class="flex flex-col gap-1">
+    <div class="nav-link active" onclick="showSection('home')">
+      <i class="fas fa-house w-4 text-center"></i> 首页
+    </div>
+    <div class="text-xs text-slate-500 px-3 pt-4 pb-1 uppercase tracking-wider">贸易工具</div>
+    <div class="nav-link" onclick="showSection('currency')">
+      <i class="fas fa-coins w-4 text-center"></i> 汇率换算
+    </div>
+    <div class="nav-link" onclick="showSection('hscode')">
+      <i class="fas fa-barcode w-4 text-center"></i> HS Code 查询
+    </div>
+    <div class="nav-link" onclick="showSection('shipping')">
+      <i class="fas fa-truck w-4 text-center"></i> 运费计算器
+    </div>
+    <div class="nav-link" onclick="showSection('profit')">
+      <i class="fas fa-calculator w-4 text-center"></i> 报价/利润计算
+    </div>
+    <div class="nav-link" onclick="showSection('pi')">
+      <i class="fas fa-file-invoice w-4 text-center"></i> PI 形式发票
+    </div>
+    <div class="text-xs text-slate-500 px-3 pt-4 pb-1 uppercase tracking-wider">客户管理</div>
+    <div class="nav-link" onclick="showSection('crm')">
+      <i class="fas fa-address-book w-4 text-center"></i> 客户 CRM
+    </div>
+  </nav>
+  <div class="mt-auto pt-4 border-t border-slate-700">
+    <div class="text-slate-500 text-xs px-2">外贸工具箱 v1.0</div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content p-6" id="mainContent">
+
+  <!-- Mobile Header -->
+  <div class="md:hidden flex items-center gap-3 mb-4 no-print">
+    <button onclick="document.getElementById('sidebar').classList.toggle('open')" class="btn btn-secondary">
+      <i class="fas fa-bars"></i>
+    </button>
+    <span class="font-semibold text-gray-700">外贸工具箱</span>
+  </div>
+
+  <!-- ========== HOME ========== -->
+  <div class="section active" id="sec-home">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">外贸工具箱</h1>
+      <p class="text-gray-500 mt-1">你的专属外贸效率工具集</p>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div class="tool-card" onclick="showSection('currency')">
+        <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mb-3">
+          <i class="fas fa-coins text-blue-600"></i>
+        </div>
+        <div class="font-semibold text-gray-800">汇率换算</div>
+        <div class="text-gray-500 text-sm mt-1">实时多币种换算</div>
+      </div>
+      <div class="tool-card" onclick="showSection('hscode')">
+        <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mb-3">
+          <i class="fas fa-barcode text-green-600"></i>
+        </div>
+        <div class="font-semibold text-gray-800">HS Code 查询</div>
+        <div class="text-gray-500 text-sm mt-1">海关商品编码</div>
+      </div>
+      <div class="tool-card" onclick="showSection('shipping')">
+        <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center mb-3">
+          <i class="fas fa-truck text-orange-600"></i>
+        </div>
+        <div class="font-semibold text-gray-800">运费计算器</div>
+        <div class="text-gray-500 text-sm mt-1">体积重/运费估算</div>
+      </div>
+      <div class="tool-card" onclick="showSection('profit')">
+        <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center mb-3">
+          <i class="fas fa-calculator text-purple-600"></i>
+        </div>
+        <div class="font-semibold text-gray-800">报价/利润计算</div>
+        <div class="text-gray-500 text-sm mt-1">报价单生成&利润核算</div>
+      </div>
+      <div class="tool-card" onclick="showSection('pi')">
+        <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center mb-3">
+          <i class="fas fa-file-invoice text-indigo-600"></i>
+        </div>
+        <div class="font-semibold text-gray-800">PI 形式发票</div>
+        <div class="text-gray-500 text-sm mt-1">专业 PI 在线生成</div>
+      </div>
+      <div class="tool-card" onclick="showSection('crm')">
+        <div class="w-10 h-10 bg-pink-100 rounded-xl flex items-center justify-center mb-3">
+          <i class="fas fa-address-book text-pink-600"></i>
+        </div>
+        <div class="font-semibold text-gray-800">客户 CRM</div>
+        <div class="text-gray-500 text-sm mt-1">客户信息管理</div>
+      </div>
+    </div>
+    <!-- Quick stats -->
+    <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4" id="homeStats">
+      <div class="card p-4">
+        <div class="text-sm text-gray-500">客户总数</div>
+        <div class="text-2xl font-bold text-gray-800 mt-1" id="statCustomers">0</div>
+      </div>
+      <div class="card p-4">
+        <div class="text-sm text-gray-500">今日汇率 USD/CNY</div>
+        <div class="text-2xl font-bold text-blue-600 mt-1" id="statRate">--</div>
+      </div>
+      <div class="card p-4">
+        <div class="text-sm text-gray-500">今日汇率 EUR/CNY</div>
+        <div class="text-2xl font-bold text-blue-600 mt-1" id="statRateEur">--</div>
+      </div>
+      <div class="card p-4">
+        <div class="text-sm text-gray-500">数据更新</div>
+        <div class="text-sm font-semibold text-gray-700 mt-2" id="statUpdate">加载中...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== CURRENCY ========== -->
+  <div class="section" id="sec-currency">
+    <div class="mb-6 flex items-center justify-between">
+      <div>
+        <h2 class="text-xl font-bold text-gray-800">汇率换算</h2>
+        <p class="text-gray-500 text-sm mt-1" id="rateUpdateTime">汇率数据加载中...</p>
+      </div>
+      <button class="btn btn-secondary" onclick="fetchRates()"><i class="fas fa-refresh mr-1"></i>刷新</button>
+    </div>
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- Converter -->
+      <div class="card p-5">
+        <h3 class="font-semibold text-gray-700 mb-4">快速换算</h3>
+        <div class="flex gap-3 items-center mb-4">
+          <div class="flex-1">
+            <label class="text-xs text-gray-500 mb-1 block">金额</label>
+            <input type="number" class="inp" id="convAmount" value="1000" oninput="convert()">
+          </div>
+          <div class="flex-1">
+            <label class="text-xs text-gray-500 mb-1 block">从</label>
+            <select class="inp" id="convFrom" onchange="convert()">
+              <option value="USD">USD - 美元</option>
+              <option value="EUR">EUR - 欧元</option>
+              <option value="GBP">GBP - 英镑</option>
+              <option value="JPY">JPY - 日元</option>
+              <option value="CNY" selected>CNY - 人民币</option>
+              <option value="HKD">HKD - 港币</option>
+              <option value="CAD">CAD - 加拿大元</option>
+              <option value="AUD">AUD - 澳元</option>
+              <option value="SGD">SGD - 新加坡元</option>
+              <option value="KRW">KRW - 韩元</option>
+              <option value="INR">INR - 印度卢比</option>
+              <option value="MXN">MXN - 墨西哥比索</option>
+              <option value="BRL">BRL - 巴西雷亚尔</option>
+              <option value="AED">AED - 阿联酋迪拉姆</option>
+              <option value="SAR">SAR - 沙特里亚尔</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-center mb-4">
+          <button onclick="swapCurrency()" class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 hover:bg-blue-100 transition">
+            <i class="fas fa-exchange-alt"></i>
+          </button>
+        </div>
+        <div class="flex-1 mb-4">
+          <label class="text-xs text-gray-500 mb-1 block">到</label>
+          <select class="inp" id="convTo" onchange="convert()">
+            <option value="USD" selected>USD - 美元</option>
+            <option value="EUR">EUR - 欧元</option>
+            <option value="GBP">GBP - 英镑</option>
+            <option value="JPY">JPY - 日元</option>
+            <option value="CNY">CNY - 人民币</option>
+            <option value="HKD">HKD - 港币</option>
+            <option value="CAD">CAD - 加拿大元</option>
+            <option value="AUD">AUD - 澳元</option>
+            <option value="SGD">SGD - 新加坡元</option>
+            <option value="KRW">KRW - 韩元</option>
+            <option value="INR">INR - 印度卢比</option>
+            <option value="MXN">MXN - 墨西哥比索</option>
+            <option value="BRL">BRL - 巴西雷亚尔</option>
+            <option value="AED">AED - 阿联酋迪拉姆</option>
+            <option value="SAR">SAR - 沙特里亚尔</option>
+          </select>
+        </div>
+        <div class="bg-blue-50 rounded-xl p-4 text-center">
+          <div class="text-3xl font-bold text-blue-700" id="convResult">--</div>
+          <div class="text-sm text-gray-500 mt-1" id="convRate">--</div>
+        </div>
+      </div>
+      <!-- Rate table -->
+      <div class="card p-5">
+        <h3 class="font-semibold text-gray-700 mb-4">主要货币 vs CNY（人民币）</h3>
+        <div id="rateTable">
+          <div class="text-center text-gray-400 py-8"><i class="fas fa-spinner fa-spin mr-2"></i>加载中...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== HS CODE ========== -->
+  <div class="section" id="sec-hscode">
+    <div class="mb-6">
+      <h2 class="text-xl font-bold text-gray-800">HS Code 海关编码查询</h2>
+      <p class="text-gray-500 text-sm mt-1">搜索商品分类，或直接查询编码</p>
+    </div>
+    <div class="card p-5 mb-4">
+      <div class="flex gap-3">
+        <input type="text" class="inp flex-1" id="hsInput" placeholder="输入商品名称（中/英文）或 HS Code，如：电视机、textiles、8471" oninput="searchHS()">
+        <button class="btn btn-primary" onclick="searchHS()"><i class="fas fa-search mr-1"></i>搜索</button>
+      </div>
+    </div>
+    <div id="hsResults" class="space-y-3"></div>
+    <div class="card p-5 mt-4">
+      <h3 class="font-semibold text-gray-700 mb-3">🔗 官方资源</h3>
+      <div class="grid md:grid-cols-3 gap-3">
+        <a href="https://www.customs.gov.cn/customs/302249/302274/302277/index.html" target="_blank"
+           class="flex items-center gap-2 p-3 bg-blue-50 rounded-xl hover:bg-blue-100 transition text-sm text-blue-700">
+          <i class="fas fa-external-link-alt"></i> 中国海关总署税则查询
+        </a>
+        <a href="https://www.hscode.com.cn/" target="_blank"
+           class="flex items-center gap-2 p-3 bg-green-50 rounded-xl hover:bg-green-100 transition text-sm text-green-700">
+          <i class="fas fa-external-link-alt"></i> HS Code 网
+        </a>
+        <a href="https://hts.usitc.gov/" target="_blank"
+           class="flex items-center gap-2 p-3 bg-orange-50 rounded-xl hover:bg-orange-100 transition text-sm text-orange-700">
+          <i class="fas fa-external-link-alt"></i> 美国 HTS 查询
+        </a>
+      </div>
+    </div>
+    <div class="card p-5 mt-4">
+      <h3 class="font-semibold text-gray-700 mb-3">常用大类</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2" id="hsCategories"></div>
+    </div>
+  </div>
+
+  <!-- ========== SHIPPING ========== -->
+  <div class="section" id="sec-shipping">
+    <div class="mb-6">
+      <h2 class="text-xl font-bold text-gray-800">运费计算器</h2>
+      <p class="text-gray-500 text-sm mt-1">计算体积重、抛重及运费参考</p>
+    </div>
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="card p-5">
+        <h3 class="font-semibold text-gray-700 mb-4">尺寸 & 重量</h3>
+        <div class="grid grid-cols-3 gap-3 mb-3">
+          <div>
+            <label class="text-xs text-gray-500 mb-1 block">长 (cm)</label>
+            <input type="number" class="inp" id="shipL" value="40" oninput="calcShipping()">
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 mb-1 block">宽 (cm)</label>
+            <input type="number" class="inp" id="shipW" value="30" oninput="calcShipping()">
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 mb-1 block">高 (cm)</label>
+            <input type="number" class="inp" id="shipH" value="20" oninput="calcShipping()">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div>
+            <label class="text-xs text-gray-500 mb-1 block">实际重量 (kg)</label>
+            <input type="number" class="inp" id="shipKg" value="5" oninput="calcShipping()">
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 mb-1 block">件数</label>
+            <input type="number" class="inp" id="shipQty" value="1" oninput="calcShipping()">
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="text-xs text-gray-500 mb-1 block">运输方式</label>
+          <select class="inp" id="shipMode" onchange="calcShipping()">
+            <option value="express">快递 (DHL/FedEx/UPS) — 体积系数 5000</option>
+            <option value="air">航空货运 — 体积系数 6000</option>
+            <option value="sea">海运 — 计算CBM</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="text-xs text-gray-500 mb-1 block">运费单价</label>
+          <div class="flex gap-2">
+            <input type="number" class="inp flex-1" id="shipRate" value="35" oninput="calcShipping()">
+            <div class="inp w-32 bg-gray-50 text-gray-500 text-sm flex items-center" id="shipRateUnit">元/kg</div>
+          </div>
+        </div>
+        <button class="btn btn-primary w-full" onclick="calcShipping()">
+          <i class="fas fa-calculator mr-2"></i>计算
+        </button>
+      </div>
+      <div class="card p-5">
+        <h3 class="font-semibold text-gray-700 mb-4">计算结果</h3>
+        <div id="shippingResult">
+          <div class="space-y-3">
+            <div class="flex justify-between py-2 border-b border-gray-100">
+              <span class="text-gray-500">单件体积</span>
+              <span class="font-semibold" id="resVol">--</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-100">
+              <span class="text-gray-500">体积重 (单件)</span>
+              <span class="font-semibold" id="resVolW">--</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-100">
+              <span class="text-gray-500">实际重量 (总)</span>
+              <span class="font-semibold" id="resActW">--</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-100">
+              <span class="text-gray-500">计费重量 (总)</span>
+              <span class="font-bold text-blue-600 text-lg" id="resBillW">--</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-100">
+              <span class="text-gray-500">海运 CBM</span>
+              <span class="font-semibold" id="resCBM">--</span>
+            </div>
+            <div class="bg-blue-50 rounded-xl p-4 mt-3">
+              <div class="text-sm text-gray-500 mb-1">预估运费</div>
+              <div class="text-3xl font-bold text-blue-700" id="resCost">--</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Incoterms Reference -->
+    <div class="card p-5 mt-6">
+      <h3 class="font-semibold text-gray-700 mb-3">贸易术语快速参考</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-gray-50 rounded-xl p-3">
+          <div class="font-bold text-blue-600">EXW</div>
+          <div class="text-xs text-gray-500 mt-1">工厂交货，买方承担全部运费和风险</div>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-3">
+          <div class="font-bold text-green-600">FOB</div>
+          <div class="text-xs text-gray-500 mt-1">装运港船上交货，卖方负责出口报关</div>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-3">
+          <div class="font-bold text-orange-600">CIF</div>
+          <div class="text-xs text-gray-500 mt-1">成本+保险+运费，卖方付主要运费</div>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-3">
+          <div class="font-bold text-purple-600">DDP</div>
+          <div class="text-xs text-gray-500 mt-1">完税后交货，卖方承担全部责任</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PROFIT / QUOTE ========== -->
+  <div class="section" id="sec-profit">
+    <div class="mb-6">
+      <h2 class="text-xl font-bold text-gray-800">报价 / 利润计算器</h2>
+      <p class="text-gray-500 text-sm mt-1">核算成本利润，一键生成报价单</p>
+    </div>
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- Input -->
+      <div class="card p-5">
+        <h3 class="font-semibold text-gray-700 mb-4">成本构成</h3>
+        <div class="space-y-3">
+          <div>
+            <label class="text-xs text-gray-500 mb-1 block">产品名称</label>
+            <input type="text" class="inp" id="pProductName" placeholder="e.g. LED Bulb 10W">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-gray-500 mb-1 block">出厂成本 (¥)</label>
+              <input type="number" class="inp" id="pCost" value="50" oninput="calcProfit()">
+            </div>
+            <div>
+              <label class="text-xs text-gray-500 mb-1 block">数量 (pcs)</label>
+              <input type="number" class="inp" id="pQty" value="1000" oninput="calcProfit()">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-gray-500 mb-1 block">国内运费 (¥/单)</label>
+              <input type="number" class="inp" id="pDomFreight" value="2" oninput="calcProfit()">
+            </div>
+            <div>
+              <label class="text-xs text-gray-500 mb-1 block">出口退税率 (%)</label>
+              <input type="number" class="inp" id="pTaxRefund" value="13" oninput="calcProfit()">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-gray-500 mb-1 block">国际运费 (¥/单)</label>
+              <input type="number" class="inp" id="pIntFreight" value="5" oninput="calcProfit()">
+            </div>
+            <div>
+              <label class="text-xs text-gray-500 mb-1 block">其他费用 (¥/单)</label>
+              <input type="number" class="inp" id="pOther" value="1" oninput="calcProfit()">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-gray-500 mb-1 block">汇率 (1外币=?人民币)</label>
+              <input type="number" class="inp" id="pExRate" value="7.25" oninput="calcProfit()">
+            </div>
+            <div>
+              <label class="text-xs text-gray-500 mb-1 block">外币单位</label>
+              <select class="inp" id="pCurrency" onchange="calcProfit()">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+                <option value="JPY">JPY</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-gray-500 mb-1 block">目标利润率 (%)</label>
+              <input type="number" class="inp" id="pTargetMargin" value="20" oninput="calcProfit()">
+            </div>
+            <div>
+              <label class="text-xs text-gray-500 mb-1 block">贸易术语</label>
+              <select class="inp" id="pIncoterm">
+                <option>FOB</option><option>CIF</option><option>EXW</option><option>DDP</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary w-full mt-4" onclick="calcProfit()">
+          <i class="fas fa-calculator mr-2"></i>计算利润
+        </button>
+      </div>
+      <!-- Result -->
+      <div class="card p-5">
+        <h3 class="font-semibold text-gray-700 mb-4">利润分析</h3>
+        <div id="profitResult" class="space-y-2">
+          <div class="flex justify-between py-2 border-b border-gray-100">
+            <span class="text-gray-500">总成本 (¥/单)</span>
+            <span class="font-semibold" id="prTotalCost">--</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-gray-100">
+            <span class="text-gray-500">退税金额 (¥/单)</span>
+            <span class="font-semibold text-green-600" id="prTaxReturn">--</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-gray-100">
+            <span class="text-gray-500">净成本 (¥/单)</span>
+            <span class="font-bold" id="prNetCost">--</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-gray-100">
+            <span class="text-gray-500">建议报价 (<span id="prCurrUnit">USD</span>)</span>
+            <span class="font-bold text-blue-600 text-lg" id="prQuote">--</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-gray-100">
+            <span class="text-gray-500">实际利润 (¥/单)</span>
+            <span class="font-bold" id="prProfit">--</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-gray-100">
+            <span class="text-gray-500">实际利润率</span>
+            <span class="font-bold" id="prMargin">--</span>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4 mt-2">
+            <div class="text-sm text-gray-500 mb-2">盈亏平衡价格</div>
+            <div class="text-2xl font-bold text-gray-800" id="prBreakeven">--</div>
+          </div>
+        </div>
+        <button class="btn btn-secondary w-full mt-4" onclick="openQuoteModal()">
+          <i class="fas fa-file-alt mr-2"></i>生成报价单
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PI ========== -->
+  <div class="section" id="sec-pi">
+    <div class="mb-4 flex items-center justify-between no-print">
+      <div>
+        <h2 class="text-xl font-bold text-gray-800">PI 形式发票生成器</h2>
+        <p class="text-gray-500 text-sm mt-1">填写信息，实时预览，一键打印/导出 PDF</p>
+      </div>
+      <div class="flex gap-2">
+        <button class="btn btn-secondary pi-print-btn" onclick="piSaveTemplate()"><i class="fas fa-bookmark mr-1"></i>保存模板</button>
+        <button class="btn btn-secondary pi-print-btn" onclick="piLoadTemplate()"><i class="fas fa-folder-open mr-1"></i>加载模板</button>
+        <button class="btn btn-primary pi-print-btn" onclick="printPI()"><i class="fas fa-print mr-2"></i>打印 / 导出 PDF</button>
+      </div>
+    </div>
+
+    <div class="flex gap-4" style="align-items:flex-start;">
+
+      <!-- FORM PANEL -->
+      <div id="piFormPanel" class="card p-4 no-print" style="width:380px;flex-shrink:0;max-height:85vh;overflow-y:auto;">
+        <!-- Seller -->
+        <div class="mb-4">
+          <div class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">卖方信息（Seller）</div>
+          <div class="space-y-2">
+            <input class="inp" id="pi_seller_name" placeholder="公司名称 Company Name" oninput="renderPI()">
+            <textarea class="inp" id="pi_seller_addr" placeholder="地址 Address" rows="2" oninput="renderPI()"></textarea>
+            <div class="grid grid-cols-2 gap-2">
+              <input class="inp" id="pi_seller_tel" placeholder="电话 Tel" oninput="renderPI()">
+              <input class="inp" id="pi_seller_fax" placeholder="传真 Fax" oninput="renderPI()">
+            </div>
+            <input class="inp" id="pi_seller_email" placeholder="Email" oninput="renderPI()">
+            <input class="inp" id="pi_seller_bank" placeholder="银行名称 Bank Name" oninput="renderPI()">
+            <input class="inp" id="pi_seller_account" placeholder="账号 Account No." oninput="renderPI()">
+            <div class="grid grid-cols-2 gap-2">
+              <input class="inp" id="pi_seller_swift" placeholder="SWIFT Code" oninput="renderPI()">
+              <input class="inp" id="pi_seller_iban" placeholder="IBAN (选填)" oninput="renderPI()">
+            </div>
+          </div>
+        </div>
+        <!-- Buyer -->
+        <div class="mb-4">
+          <div class="text-xs font-bold text-green-600 uppercase tracking-wider mb-2">买方信息（Buyer/To）</div>
+          <div class="space-y-2">
+            <input class="inp" id="pi_buyer_name" placeholder="公司名称 Company Name" oninput="renderPI()">
+            <textarea class="inp" id="pi_buyer_addr" placeholder="地址 Address" rows="2" oninput="renderPI()"></textarea>
+            <div class="grid grid-cols-2 gap-2">
+              <input class="inp" id="pi_buyer_tel" placeholder="电话 Tel" oninput="renderPI()">
+              <input class="inp" id="pi_buyer_contact" placeholder="联系人 Attn." oninput="renderPI()">
+            </div>
+            <input class="inp" id="pi_buyer_email" placeholder="Email" oninput="renderPI()">
+          </div>
+        </div>
+        <!-- PI Info -->
+        <div class="mb-4">
+          <div class="text-xs font-bold text-purple-600 uppercase tracking-wider mb-2">发票信息</div>
+          <div class="space-y-2">
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-xs text-gray-400 block mb-1">PI 编号</label>
+                <input class="inp" id="pi_no" placeholder="PI-2024-001" oninput="renderPI()">
+              </div>
+              <div>
+                <label class="text-xs text-gray-400 block mb-1">日期</label>
+                <input class="inp" type="date" id="pi_date" oninput="renderPI()">
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-xs text-gray-400 block mb-1">有效期至</label>
+                <input class="inp" type="date" id="pi_valid" oninput="renderPI()">
+              </div>
+              <div>
+                <label class="text-xs text-gray-400 block mb-1">币种</label>
+                <select class="inp" id="pi_currency" onchange="renderPI()">
+                  <option value="USD">USD 美元</option>
+                  <option value="EUR">EUR 欧元</option>
+                  <option value="GBP">GBP 英镑</option>
+                  <option value="JPY">JPY 日元</option>
+                  <option value="CNY">CNY 人民币</option>
+                  <option value="HKD">HKD 港币</option>
+                  <option value="AUD">AUD 澳元</option>
+                  <option value="CAD">CAD 加元</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Shipping -->
+        <div class="mb-4">
+          <div class="text-xs font-bold text-orange-600 uppercase tracking-wider mb-2">运输条款</div>
+          <div class="space-y-2">
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-xs text-gray-400 block mb-1">贸易术语</label>
+                <select class="inp" id="pi_incoterm" onchange="renderPI()">
+                  <option>FOB</option><option>CIF</option><option>CFR</option>
+                  <option>EXW</option><option>DDP</option><option>DAP</option><option>FCA</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs text-gray-400 block mb-1">付款方式</label>
+                <select class="inp" id="pi_payment" onchange="renderPI()">
+                  <option>T/T 30% Deposit, 70% Balance</option>
+                  <option>T/T 100% in Advance</option>
+                  <option>T/T 50% Deposit, 50% Balance</option>
+                  <option>L/C at Sight</option>
+                  <option>D/P at Sight</option>
+                  <option>Western Union</option>
+                  <option>PayPal</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <input class="inp" id="pi_pol" placeholder="装运港 Port of Loading" oninput="renderPI()">
+              <input class="inp" id="pi_pod" placeholder="目的港 Port of Destination" oninput="renderPI()">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <input class="inp" id="pi_shipdate" placeholder="预计发货期 Delivery Time" oninput="renderPI()">
+              <input class="inp" id="pi_packing" placeholder="包装 Packing" oninput="renderPI()">
+            </div>
+          </div>
+        </div>
+        <!-- Items -->
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-xs font-bold text-gray-600 uppercase tracking-wider">商品明细</div>
+            <button class="btn btn-secondary text-xs py-1 px-3" onclick="piAddRow()">+ 添加行</button>
+          </div>
+          <div id="piItemsForm" class="space-y-2"></div>
+        </div>
+        <!-- Freight & Insurance (for CIF) -->
+        <div class="mb-4">
+          <div class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">附加费用</div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-xs text-gray-400 block mb-1">运费 Freight</label>
+              <input class="inp" type="number" id="pi_freight" placeholder="0.00" value="0" oninput="renderPI()">
+            </div>
+            <div>
+              <label class="text-xs text-gray-400 block mb-1">保险 Insurance</label>
+              <input class="inp" type="number" id="pi_insurance" placeholder="0.00" value="0" oninput="renderPI()">
+            </div>
+          </div>
+        </div>
+        <!-- Remarks -->
+        <div class="mb-4">
+          <div class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">备注 Remarks</div>
+          <textarea class="inp" id="pi_remarks" rows="3" placeholder="特殊说明、认证要求等..." oninput="renderPI()"></textarea>
+        </div>
+        <!-- Signature -->
+        <div>
+          <div class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">签署人</div>
+          <div class="grid grid-cols-2 gap-2">
+            <input class="inp" id="pi_signer" placeholder="签署人姓名" oninput="renderPI()">
+            <input class="inp" id="pi_title" placeholder="职位 Title" oninput="renderPI()">
+          </div>
+        </div>
+      </div>
+
+      <!-- PREVIEW PANEL -->
+      <div id="piPreviewPanel" style="flex:1;min-width:0;">
+        <div class="card p-6 pi-preview" id="piPreview">
+          <!-- rendered by JS -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========== CRM ========== -->
+  <div class="section" id="sec-crm">
+    <div class="mb-6 flex items-center justify-between">
+      <div>
+        <h2 class="text-xl font-bold text-gray-800">客户 CRM</h2>
+        <p class="text-gray-500 text-sm mt-1">管理你的外贸客户信息</p>
+      </div>
+      <button class="btn btn-primary" onclick="openCrmModal()">
+        <i class="fas fa-plus mr-2"></i>添加客户
+      </button>
+    </div>
+    <!-- Search & Filter -->
+    <div class="card p-4 mb-4">
+      <div class="flex gap-3">
+        <input type="text" class="inp flex-1" id="crmSearch" placeholder="搜索客户名、国家、邮箱..." oninput="renderCRM()">
+        <select class="inp w-40" id="crmFilter" onchange="renderCRM()">
+          <option value="">全部状态</option>
+          <option value="潜在">潜在</option>
+          <option value="跟进中">跟进中</option>
+          <option value="成交">成交</option>
+          <option value="流失">流失</option>
+        </select>
+      </div>
+    </div>
+    <!-- Table -->
+    <div class="card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 text-gray-500">
+            <tr>
+              <th class="text-left px-4 py-3 font-medium">公司/客户</th>
+              <th class="text-left px-4 py-3 font-medium">国家</th>
+              <th class="text-left px-4 py-3 font-medium">联系人</th>
+              <th class="text-left px-4 py-3 font-medium">邮箱</th>
+              <th class="text-left px-4 py-3 font-medium">状态</th>
+              <th class="text-left px-4 py-3 font-medium">最后联系</th>
+              <th class="text-left px-4 py-3 font-medium">操作</th>
+            </tr>
+          </thead>
+          <tbody id="crmTableBody">
+          </tbody>
+        </table>
+        <div id="crmEmpty" class="text-center text-gray-400 py-12">
+          <i class="fas fa-address-book text-4xl mb-3 block"></i>
+          <div>暂无客户，点击「添加客户」开始</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end main -->
+
+<!-- ========== QUOTE MODAL ========== -->
+<div class="modal" id="quoteModal">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl mx-4 max-h-screen overflow-y-auto">
+    <div class="flex items-center justify-between p-5 border-b">
+      <h3 class="font-bold text-gray-800 text-lg">生成报价单</h3>
+      <button onclick="closeModal('quoteModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+    </div>
+    <div class="p-5" id="quoteContent">
+      <!-- filled by JS -->
+    </div>
+    <div class="flex gap-3 p-5 border-t no-print">
+      <button class="btn btn-primary flex-1" onclick="printQuote()"><i class="fas fa-print mr-2"></i>打印 / 保存PDF</button>
+      <button class="btn btn-secondary" onclick="closeModal('quoteModal')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== CRM MODAL ========== -->
+<div class="modal" id="crmModal">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 max-h-screen overflow-y-auto">
+    <div class="flex items-center justify-between p-5 border-b">
+      <h3 class="font-bold text-gray-800 text-lg" id="crmModalTitle">添加客户</h3>
+      <button onclick="closeModal('crmModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+    </div>
+    <div class="p-5 space-y-3">
+      <input type="hidden" id="crmEditId">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-gray-500 mb-1 block">公司名称 *</label>
+          <input type="text" class="inp" id="crmCompany" placeholder="ABC Trading Co.">
+        </div>
+        <div>
+          <label class="text-xs text-gray-500 mb-1 block">国家/地区</label>
+          <input type="text" class="inp" id="crmCountry" placeholder="USA">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-gray-500 mb-1 block">联系人</label>
+          <input type="text" class="inp" id="crmContact" placeholder="John Smith">
+        </div>
+        <div>
+          <label class="text-xs text-gray-500 mb-1 block">电话</label>
+          <input type="text" class="inp" id="crmPhone" placeholder="+1-xxx-xxxx">
+        </div>
+      </div>
+      <div>
+        <label class="text-xs text-gray-500 mb-1 block">邮箱</label>
+        <input type="email" class="inp" id="crmEmail" placeholder="john@example.com">
+      </div>
+      <div>
+        <label class="text-xs text-gray-500 mb-1 block">网址</label>
+        <input type="text" class="inp" id="crmWebsite" placeholder="https://example.com">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-gray-500 mb-1 block">客户状态</label>
+          <select class="inp" id="crmStatus">
+            <option>潜在</option><option>跟进中</option><option>成交</option><option>流失</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-gray-500 mb-1 block">最后联系日期</label>
+          <input type="date" class="inp" id="crmLastContact">
+        </div>
+      </div>
+      <div>
+        <label class="text-xs text-gray-500 mb-1 block">主要产品/需求</label>
+        <input type="text" class="inp" id="crmProduct" placeholder="LED灯具，每月10000pcs">
+      </div>
+      <div>
+        <label class="text-xs text-gray-500 mb-1 block">备注</label>
+        <textarea class="inp" id="crmNotes" rows="3" placeholder="跟进记录、特殊要求等..."></textarea>
+      </div>
+    </div>
+    <div class="flex gap-3 p-5 border-t">
+      <button class="btn btn-primary flex-1" onclick="saveCRM()"><i class="fas fa-save mr-2"></i>保存</button>
+      <button class="btn btn-secondary" onclick="closeModal('crmModal')">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== GLOBAL STATE =====
+let rates = {};
+let customers = JSON.parse(localStorage.getItem('tradetools_customers') || '[]');
+
+// ===== NAVIGATION =====
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(n => {
+    if (n.textContent.trim().includes(navLabels[id])) n.classList.add('active');
+  });
+  if (id === 'home') updateHomeStats();
+  if (id === 'currency') convert();
+  if (id === 'shipping') calcShipping();
+  if (id === 'profit') calcProfit();
+  if (id === 'pi') { renderPIForm(); renderPI(); }
+  if (id === 'crm') renderCRM();
+  // close mobile sidebar
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+const navLabels = {
+  home: '首页', currency: '汇率', hscode: 'HS Code',
+  shipping: '运费', profit: '报价', pi: 'PI', crm: '客户'
+};
+
+// ===== EXCHANGE RATES =====
+async function fetchRates() {
+  try {
+    document.getElementById('rateUpdateTime').textContent = '汇率数据加载中...';
+    const res = await fetch('https://open.er-api.com/v6/latest/CNY');
+    const data = await res.json();
+    if (data && data.rates) {
+      rates = data.rates;
+      renderRateTable();
+      convert();
+      document.getElementById('rateUpdateTime').textContent =
+        '最后更新：' + new Date(data.time_last_update_unix * 1000).toLocaleString('zh-CN');
+      updateHomeStats();
+    }
+  } catch(e) {
+    // Fallback rates
+    rates = {USD:0.138,EUR:0.127,GBP:0.109,JPY:20.1,HKD:1.078,CAD:0.189,AUD:0.212,SGD:0.186,KRW:187.5,INR:11.5,CNY:1,AED:0.507,SAR:0.518,MXN:2.38,BRL:0.7};
+    renderRateTable();
+    convert();
+    document.getElementById('rateUpdateTime').textContent = '使用参考汇率（离线模式）';
+    updateHomeStats();
+  }
+}
+
+function renderRateTable() {
+  const display = ['USD','EUR','GBP','JPY','HKD','CAD','AUD','SGD','KRW','AED'];
+  const names = {USD:'美元',EUR:'欧元',GBP:'英镑',JPY:'日元',HKD:'港币',CAD:'加拿大元',AUD:'澳元',SGD:'新加坡元',KRW:'韩元',AED:'阿联酋迪拉姆'};
+  let html = '';
+  display.forEach(cur => {
+    if (rates[cur]) {
+      const rate = (1 / rates[cur]).toFixed(cur === 'JPY' || cur === 'KRW' ? 4 : 4);
+      html += `<div class="rate-item">
+        <span class="font-medium text-gray-700">${cur} <span class="text-gray-400 text-xs">${names[cur]||''}</span></span>
+        <span class="font-semibold text-blue-700">¥ ${rate}</span>
+      </div>`;
+    }
+  });
+  document.getElementById('rateTable').innerHTML = html || '<div class="text-gray-400">暂无数据</div>';
+}
+
+function convert() {
+  const amount = parseFloat(document.getElementById('convAmount').value) || 0;
+  const from = document.getElementById('convFrom').value;
+  const to = document.getElementById('convTo').value;
+  if (!rates[from] || !rates[to]) {
+    document.getElementById('convResult').textContent = '--';
+    return;
+  }
+  const inCNY = from === 'CNY' ? amount : amount / rates[from];
+  const result = to === 'CNY' ? inCNY : inCNY * rates[to];
+  const rate = (from === 'CNY' ? rates[to] : (to === 'CNY' ? 1/rates[from] : rates[to]/rates[from]));
+  document.getElementById('convResult').textContent = formatNum(result, to) + ' ' + to;
+  document.getElementById('convRate').textContent = `1 ${from} = ${rate.toFixed(4)} ${to}`;
+}
+
+function formatNum(n, cur) {
+  if (cur === 'JPY' || cur === 'KRW') return Math.round(n).toLocaleString();
+  return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function swapCurrency() {
+  const f = document.getElementById('convFrom').value;
+  const t = document.getElementById('convTo').value;
+  document.getElementById('convFrom').value = t;
+  document.getElementById('convTo').value = f;
+  convert();
+}
+
+// ===== HS CODE =====
+const hsData = [
+  {code:'0101',zh:'活马、驴、骡',en:'Live horses, asses, mules'},
+  {code:'0201',zh:'鲜牛肉',en:'Beef, fresh or chilled'},
+  {code:'0301',zh:'活鱼',en:'Live fish'},
+  {code:'0601',zh:'球茎、鳞茎植物',en:'Bulbs, tubers, plants'},
+  {code:'0901',zh:'咖啡',en:'Coffee'},
+  {code:'1001',zh:'小麦',en:'Wheat and meslin'},
+  {code:'2101',zh:'速溶咖啡、茶提取物',en:'Extracts of coffee, tea'},
+  {code:'2201',zh:'饮用水',en:'Waters, mineral waters'},
+  {code:'3002',zh:'血液、疫苗、药品',en:'Blood, vaccines, medicines'},
+  {code:'3301',zh:'精油、香料',en:'Essential oils, perfumes'},
+  {code:'3401',zh:'肥皂、洗涤剂',en:'Soap, detergents'},
+  {code:'3506',zh:'胶粘剂',en:'Adhesives, glues'},
+  {code:'3701',zh:'感光板、胶片',en:'Photographic plates, film'},
+  {code:'3808',zh:'杀虫剂、农药',en:'Insecticides, pesticides'},
+  {code:'3901',zh:'聚乙烯（PE）',en:'Polyethylene (PE)'},
+  {code:'3920',zh:'塑料板、片、膜',en:'Plastic plates, sheets, film'},
+  {code:'4011',zh:'橡胶轮胎',en:'Rubber tyres, pneumatic'},
+  {code:'4202',zh:'旅行箱包、手提包',en:'Trunks, suitcases, handbags'},
+  {code:'4901',zh:'印刷书籍',en:'Printed books'},
+  {code:'5201',zh:'棉花（未梳）',en:'Cotton, not carded or combed'},
+  {code:'5208',zh:'棉织物',en:'Woven fabrics of cotton'},
+  {code:'5402',zh:'合成纤维长丝',en:'Synthetic filament yarn'},
+  {code:'5509',zh:'合成纤维纱线',en:'Yarn of synthetic staple fibres'},
+  {code:'5512',zh:'合成纤维机织物',en:'Woven fabrics of synthetic fibres'},
+  {code:'6101',zh:'男式针织大衣',en:"Men's overcoats, knitted"},
+  {code:'6109',zh:'T恤、背心',en:'T-shirts, singlets, tank tops'},
+  {code:'6110',zh:'针织毛衣、卫衣',en:'Jerseys, pullovers, sweatshirts'},
+  {code:'6203',zh:'男式西服套装',en:"Men's suits, ensembles"},
+  {code:'6204',zh:'女式套装',en:"Women's suits, ensembles"},
+  {code:'6301',zh:'毛毯',en:'Blankets and travelling rugs'},
+  {code:'6302',zh:'床单、床上用品',en:'Bed linen, table linen'},
+  {code:'6401',zh:'防水鞋靴',en:'Waterproof footwear'},
+  {code:'6403',zh:'皮鞋',en:'Footwear, leather uppers'},
+  {code:'6601',zh:'雨伞、遮阳伞',en:'Umbrellas, sun umbrellas'},
+  {code:'6911',zh:'陶瓷餐具',en:'Tableware of porcelain/china'},
+  {code:'7013',zh:'玻璃器皿',en:'Glassware for table, kitchen'},
+  {code:'7113',zh:'珠宝首饰',en:'Articles of jewellery'},
+  {code:'7214',zh:'铁棒、钢棒',en:'Bars of iron or non-alloy steel'},
+  {code:'7323',zh:'不锈钢厨具',en:'Table, kitchen articles of steel'},
+  {code:'7418',zh:'铜制厨房用品',en:'Table, kitchen articles of copper'},
+  {code:'7610',zh:'铝制门窗',en:'Aluminium structures, doors, windows'},
+  {code:'8414',zh:'空压机、风扇、泵',en:'Air pumps, fans, compressors'},
+  {code:'8418',zh:'冰箱、冷冻机',en:'Refrigerators, freezers'},
+  {code:'8443',zh:'打印机、复印机',en:'Printing machinery, printers'},
+  {code:'8450',zh:'洗衣机',en:'Washing machines'},
+  {code:'8452',zh:'缝纫机',en:'Sewing machines'},
+  {code:'8471',zh:'计算机、笔记本电脑',en:'Computers, laptops'},
+  {code:'8473',zh:'电脑零配件',en:'Computer parts and accessories'},
+  {code:'8481',zh:'阀门、旋塞',en:'Taps, cocks, valves'},
+  {code:'8501',zh:'电动机、发电机',en:'Electric motors, generators'},
+  {code:'8504',zh:'变压器、电源适配器',en:'Transformers, power adapters'},
+  {code:'8507',zh:'蓄电池',en:'Electric accumulators, batteries'},
+  {code:'8516',zh:'电热水壶、烤面包机',en:'Electric water heaters, toasters'},
+  {code:'8517',zh:'手机、电话机',en:'Telephone sets, smartphones'},
+  {code:'8518',zh:'麦克风、扬声器、耳机',en:'Microphones, speakers, headphones'},
+  {code:'8519',zh:'录音机、CD播放器',en:'Sound recording apparatus'},
+  {code:'8523',zh:'U盘、存储卡',en:'USB drives, memory cards'},
+  {code:'8528',zh:'电视机',en:'Television sets, monitors'},
+  {code:'8534',zh:'印刷电路板 PCB',en:'Printed circuits (PCBs)'},
+  {code:'8536',zh:'开关、插座',en:'Electrical switches, sockets'},
+  {code:'8539',zh:'电灯泡、LED灯',en:'Electric lamps, LED bulbs'},
+  {code:'8541',zh:'二极管、晶体管',en:'Diodes, transistors, LEDs'},
+  {code:'8542',zh:'集成电路 IC',en:'Integrated circuits (ICs)'},
+  {code:'8544',zh:'电线、电缆',en:'Insulated wire and cable'},
+  {code:'8703',zh:'乘用汽车',en:'Motor cars, passenger vehicles'},
+  {code:'8708',zh:'汽车零配件',en:'Parts and accessories of motor vehicles'},
+  {code:'8714',zh:'自行车零件',en:'Parts of motorcycles/bicycles'},
+  {code:'8802',zh:'飞机、直升机',en:'Aeroplanes, helicopters'},
+  {code:'9001',zh:'眼镜镜片',en:'Optical fibres, lenses'},
+  {code:'9006',zh:'照相机',en:'Photographic cameras'},
+  {code:'9101',zh:'手表（贵金属）',en:'Wrist-watches, precious metal'},
+  {code:'9102',zh:'腕表',en:'Wrist-watches, other'},
+  {code:'9201',zh:'钢琴',en:'Pianos'},
+  {code:'9503',zh:'玩具',en:'Toys, games, sports requisites'},
+  {code:'9506',zh:'运动器材',en:'Sports equipment, fitness'},
+  {code:'9601',zh:'象牙、骨制品',en:'Worked ivory, bone'},
+  {code:'9608',zh:'圆珠笔、记号笔',en:'Ball-point pens, markers'},
+  {code:'9619',zh:'卫生巾、纸尿裤',en:'Sanitary towels, nappies'},
+  {code:'9701',zh:'绘画、素描',en:'Paintings, drawings'},
+];
+
+const hsCategories = [
+  {code:'01-05',zh:'活动物及动物产品',color:'bg-green-100 text-green-700'},
+  {code:'06-15',zh:'植物产品',color:'bg-lime-100 text-lime-700'},
+  {code:'16-24',zh:'食品、饮料、烟草',color:'bg-yellow-100 text-yellow-700'},
+  {code:'25-27',zh:'矿产品',color:'bg-stone-100 text-stone-700'},
+  {code:'28-38',zh:'化工产品',color:'bg-blue-100 text-blue-700'},
+  {code:'39-40',zh:'塑料、橡胶',color:'bg-cyan-100 text-cyan-700'},
+  {code:'41-43',zh:'皮革、毛皮',color:'bg-orange-100 text-orange-700'},
+  {code:'44-46',zh:'木材、软木',color:'bg-amber-100 text-amber-700'},
+  {code:'47-49',zh:'纸张、印刷品',color:'bg-gray-100 text-gray-700'},
+  {code:'50-63',zh:'纺织品、服装',color:'bg-pink-100 text-pink-700'},
+  {code:'64-67',zh:'鞋帽、雨伞',color:'bg-rose-100 text-rose-700'},
+  {code:'68-70',zh:'石料、玻璃',color:'bg-slate-100 text-slate-700'},
+  {code:'71',zh:'珠宝首饰',color:'bg-purple-100 text-purple-700'},
+  {code:'72-83',zh:'金属及制品',color:'bg-zinc-100 text-zinc-700'},
+  {code:'84-85',zh:'机械、电气设备',color:'bg-blue-100 text-blue-700'},
+  {code:'86-89',zh:'交通运输设备',color:'bg-indigo-100 text-indigo-700'},
+  {code:'90-92',zh:'光学、医疗仪器',color:'bg-teal-100 text-teal-700'},
+  {code:'93',zh:'武器弹药',color:'bg-red-100 text-red-700'},
+  {code:'94-96',zh:'杂项制品',color:'bg-violet-100 text-violet-700'},
+  {code:'97',zh:'艺术品、古董',color:'bg-fuchsia-100 text-fuchsia-700'},
+];
+
+function initHSCategories() {
+  const el = document.getElementById('hsCategories');
+  el.innerHTML = hsCategories.map(c =>
+    `<div class="tag ${c.color} cursor-pointer hover:opacity-80 text-xs py-2 px-3 rounded-lg text-center"
+      onclick="document.getElementById('hsInput').value='${c.zh}';searchHS()">
+      <div class="font-bold">${c.code}</div>
+      <div class="mt-1">${c.zh}</div>
+    </div>`
+  ).join('');
+}
+
+function searchHS() {
+  const q = document.getElementById('hsInput').value.trim().toLowerCase();
+  const el = document.getElementById('hsResults');
+  if (!q) { el.innerHTML = ''; return; }
+  const results = hsData.filter(h =>
+    h.zh.includes(q) || h.en.toLowerCase().includes(q) || h.code.startsWith(q)
+  ).slice(0, 12);
+  if (!results.length) {
+    el.innerHTML = '<div class="card p-4 text-gray-400 text-center">未找到匹配结果，可尝试英文或查看官方资源</div>';
+    return;
+  }
+  el.innerHTML = results.map(h => `
+    <div class="hs-result">
+      <div class="flex items-center justify-between">
+        <span class="font-mono font-bold text-blue-700 text-lg">${h.code}</span>
+        <span class="text-xs text-gray-400">点击复制</span>
+      </div>
+      <div class="font-semibold text-gray-800 mt-1 cursor-pointer" onclick="copyText('${h.code}')">${h.zh}</div>
+      <div class="text-gray-500 text-sm">${h.en}</div>
+    </div>
+  `).join('');
+}
+
+function copyText(t) {
+  navigator.clipboard.writeText(t).then(() => {
+    showToast('已复制: ' + t);
+  });
+}
+
+// ===== SHIPPING CALC =====
+function calcShipping() {
+  const L = parseFloat(document.getElementById('shipL').value) || 0;
+  const W = parseFloat(document.getElementById('shipW').value) || 0;
+  const H = parseFloat(document.getElementById('shipH').value) || 0;
+  const kg = parseFloat(document.getElementById('shipKg').value) || 0;
+  const qty = parseFloat(document.getElementById('shipQty').value) || 1;
+  const mode = document.getElementById('shipMode').value;
+  const rate = parseFloat(document.getElementById('shipRate').value) || 0;
+
+  const vol = L * W * H / 1000000; // m³
+  let volWeight = 0;
+  let divisor = 6000;
+  let rateUnit = '元/kg';
+
+  if (mode === 'express') { divisor = 5000; rateUnit = '元/kg'; }
+  else if (mode === 'air') { divisor = 6000; rateUnit = '元/kg'; }
+  else if (mode === 'sea') { rateUnit = '元/CBM'; }
+
+  document.getElementById('shipRateUnit').textContent = rateUnit;
+  volWeight = (L * W * H) / divisor;
+  const totalActW = kg * qty;
+  const totalVolW = volWeight * qty;
+  const billW = mode === 'sea' ? vol * qty : Math.max(totalActW, totalVolW);
+  const cost = billW * rate;
+
+  document.getElementById('resVol').textContent = vol.toFixed(4) + ' m³';
+  document.getElementById('resVolW').textContent = volWeight.toFixed(3) + ' kg';
+  document.getElementById('resActW').textContent = totalActW.toFixed(2) + ' kg';
+  document.getElementById('resBillW').textContent = mode === 'sea'
+    ? (vol * qty).toFixed(4) + ' CBM'
+    : billW.toFixed(2) + ' kg (' + (totalVolW > totalActW ? '抛货' : '重货') + ')';
+  document.getElementById('resCBM').textContent = (vol * qty).toFixed(4) + ' CBM';
+  document.getElementById('resCost').textContent = '¥ ' + cost.toFixed(2);
+}
+
+// ===== PROFIT CALC =====
+function calcProfit() {
+  const cost = parseFloat(document.getElementById('pCost').value) || 0;
+  const qty = parseFloat(document.getElementById('pQty').value) || 1;
+  const domFreight = parseFloat(document.getElementById('pDomFreight').value) || 0;
+  const taxRefundRate = parseFloat(document.getElementById('pTaxRefund').value) || 0;
+  const intFreight = parseFloat(document.getElementById('pIntFreight').value) || 0;
+  const other = parseFloat(document.getElementById('pOther').value) || 0;
+  const exRate = parseFloat(document.getElementById('pExRate').value) || 7.25;
+  const targetMargin = parseFloat(document.getElementById('pTargetMargin').value) || 20;
+  const cur = document.getElementById('pCurrency').value;
+
+  const totalCost = cost + domFreight + intFreight + other;
+  const taxReturn = cost * (taxRefundRate / 100);
+  const netCost = totalCost - taxReturn;
+  const suggestPriceCNY = netCost / (1 - targetMargin / 100);
+  const suggestPriceFX = suggestPriceCNY / exRate;
+  const breakeven = netCost / exRate;
+  const profit = suggestPriceCNY - netCost;
+  const margin = (profit / suggestPriceCNY * 100);
+
+  document.getElementById('prTotalCost').textContent = '¥ ' + totalCost.toFixed(2);
+  document.getElementById('prTaxReturn').textContent = '+ ¥ ' + taxReturn.toFixed(2);
+  document.getElementById('prNetCost').textContent = '¥ ' + netCost.toFixed(2);
+  document.getElementById('prCurrUnit').textContent = cur;
+  document.getElementById('prQuote').textContent = cur + ' ' + suggestPriceFX.toFixed(2);
+  document.getElementById('prProfit').innerHTML = `<span class="${profit>=0?'profit-positive':'profit-negative'}">¥ ${profit.toFixed(2)}</span>`;
+  document.getElementById('prMargin').innerHTML = `<span class="${margin>=0?'profit-positive':'profit-negative'}">${margin.toFixed(1)}%</span>`;
+  document.getElementById('prBreakeven').textContent = cur + ' ' + breakeven.toFixed(2);
+}
+
+// ===== QUOTE MODAL =====
+function openQuoteModal() {
+  const productName = document.getElementById('pProductName').value || 'Product';
+  const qty = document.getElementById('pQty').value;
+  const cur = document.getElementById('pCurrency').value;
+  const incoterm = document.getElementById('pIncoterm').value;
+  const quote = document.getElementById('prQuote').textContent;
+  const today = new Date().toLocaleDateString('zh-CN');
+
+  document.getElementById('quoteContent').innerHTML = `
+    <div class="print-area" style="font-family:-apple-system,sans-serif;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #2563eb;">
+        <div>
+          <div style="font-size:22px;font-weight:bold;color:#1e293b;">QUOTATION</div>
+          <div style="font-size:14px;color:#64748b;margin-top:4px;">报价单</div>
+        </div>
+        <div style="text-align:right;font-size:13px;color:#64748b;">
+          <div>日期：${today}</div>
+          <div>有效期：30天</div>
+        </div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;">
+        <thead>
+          <tr style="background:#f1f5f9;">
+            <th style="padding:10px;text-align:left;border:1px solid #e2e8f0;">产品</th>
+            <th style="padding:10px;text-align:center;border:1px solid #e2e8f0;">数量</th>
+            <th style="padding:10px;text-align:center;border:1px solid #e2e8f0;">单价 (${cur})</th>
+            <th style="padding:10px;text-align:center;border:1px solid #e2e8f0;">小计 (${cur})</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:10px;border:1px solid #e2e8f0;">${productName}</td>
+            <td style="padding:10px;text-align:center;border:1px solid #e2e8f0;">${qty} pcs</td>
+            <td style="padding:10px;text-align:center;border:1px solid #e2e8f0;">${quote.replace(cur+' ','')}</td>
+            <td style="padding:10px;text-align:center;border:1px solid #e2e8f0;">${(parseFloat(quote.replace(cur+' ',''))*parseFloat(qty)).toFixed(2)}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="background:#f8fafc;border-radius:8px;padding:16px;margin-top:16px;">
+        <div style="font-size:13px;color:#475569;line-height:1.8;">
+          <strong>付款条件：</strong>T/T 30% Deposit, 70% Balance before shipment<br>
+          <strong>交货条款：</strong>${incoterm}<br>
+          <strong>交货期：</strong>30 days after deposit received<br>
+          <strong>包装：</strong>Standard export carton<br>
+          <strong>备注：</strong>Price is valid for 30 days. Subject to change without notice.
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('quoteModal').classList.add('show');
+}
+
+function printQuote() {
+  window.print();
+}
+
+// ===== CRM =====
+function saveCustomers() {
+  localStorage.setItem('tradetools_customers', JSON.stringify(customers));
+}
+
+function openCrmModal(id) {
+  document.getElementById('crmModalTitle').textContent = id ? '编辑客户' : '添加客户';
+  document.getElementById('crmEditId').value = id || '';
+  const fields = ['Company','Country','Contact','Phone','Email','Website','Status','LastContact','Product','Notes'];
+  if (id) {
+    const c = customers.find(x => x.id === id);
+    if (c) {
+      document.getElementById('crmCompany').value = c.company || '';
+      document.getElementById('crmCountry').value = c.country || '';
+      document.getElementById('crmContact').value = c.contact || '';
+      document.getElementById('crmPhone').value = c.phone || '';
+      document.getElementById('crmEmail').value = c.email || '';
+      document.getElementById('crmWebsite').value = c.website || '';
+      document.getElementById('crmStatus').value = c.status || '潜在';
+      document.getElementById('crmLastContact').value = c.lastContact || '';
+      document.getElementById('crmProduct').value = c.product || '';
+      document.getElementById('crmNotes').value = c.notes || '';
+    }
+  } else {
+    fields.forEach(f => {
+      const el = document.getElementById('crm'+f);
+      if (el) el.value = f === 'Status' ? '潜在' : '';
+    });
+    document.getElementById('crmLastContact').value = new Date().toISOString().split('T')[0];
+  }
+  document.getElementById('crmModal').classList.add('show');
+}
+
+function saveCRM() {
+  const company = document.getElementById('crmCompany').value.trim();
+  if (!company) { alert('请填写公司名称'); return; }
+  const editId = document.getElementById('crmEditId').value;
+  const data = {
+    id: editId || Date.now().toString(),
+    company, country: document.getElementById('crmCountry').value,
+    contact: document.getElementById('crmContact').value,
+    phone: document.getElementById('crmPhone').value,
+    email: document.getElementById('crmEmail').value,
+    website: document.getElementById('crmWebsite').value,
+    status: document.getElementById('crmStatus').value,
+    lastContact: document.getElementById('crmLastContact').value,
+    product: document.getElementById('crmProduct').value,
+    notes: document.getElementById('crmNotes').value,
+    createdAt: editId ? (customers.find(x=>x.id===editId)||{}).createdAt : Date.now()
+  };
+  if (editId) {
+    const idx = customers.findIndex(x => x.id === editId);
+    if (idx !== -1) customers[idx] = data;
+  } else {
+    customers.unshift(data);
+  }
+  saveCustomers();
+  closeModal('crmModal');
+  renderCRM();
+  updateHomeStats();
+}
+
+function deleteCRM(id) {
+  if (!confirm('确认删除该客户？')) return;
+  customers = customers.filter(x => x.id !== id);
+  saveCustomers();
+  renderCRM();
+  updateHomeStats();
+}
+
+function renderCRM() {
+  const q = document.getElementById('crmSearch').value.toLowerCase();
+  const f = document.getElementById('crmFilter').value;
+  const filtered = customers.filter(c => {
+    const match = !q || [c.company,c.country,c.email,c.contact].some(v => v && v.toLowerCase().includes(q));
+    const statusMatch = !f || c.status === f;
+    return match && statusMatch;
+  });
+  const statusColor = {潜在:'bg-gray-100 text-gray-600',跟进中:'bg-blue-100 text-blue-600',成交:'bg-green-100 text-green-600',流失:'bg-red-100 text-red-500'};
+  const tbody = document.getElementById('crmTableBody');
+  document.getElementById('crmEmpty').style.display = filtered.length ? 'none' : 'block';
+  tbody.innerHTML = filtered.map(c => `
+    <tr class="table-row hover:bg-gray-50">
+      <td class="px-4 py-3">
+        <div class="font-medium text-gray-800">${c.company}</div>
+        ${c.product ? `<div class="text-xs text-gray-400">${c.product}</div>` : ''}
+      </td>
+      <td class="px-4 py-3 text-gray-600">${c.country||'--'}</td>
+      <td class="px-4 py-3 text-gray-600">${c.contact||'--'}</td>
+      <td class="px-4 py-3 text-blue-600 text-sm">
+        ${c.email ? `<a href="mailto:${c.email}">${c.email}</a>` : '--'}
+      </td>
+      <td class="px-4 py-3">
+        <span class="tag ${statusColor[c.status]||'bg-gray-100'}">${c.status||'--'}</span>
+      </td>
+      <td class="px-4 py-3 text-gray-500 text-sm">${c.lastContact||'--'}</td>
+      <td class="px-4 py-3">
+        <button onclick="openCrmModal('${c.id}')" class="text-blue-500 hover:text-blue-700 mr-3 text-sm"><i class="fas fa-edit"></i></button>
+        <button onclick="deleteCRM('${c.id}')" class="text-red-400 hover:text-red-600 text-sm"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ===== UTILS =====
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+function updateHomeStats() {
+  document.getElementById('statCustomers').textContent = customers.length;
+  if (rates.USD) {
+    document.getElementById('statRate').textContent = (1/rates.USD).toFixed(4);
+    document.getElementById('statRateEur').textContent = (1/rates.EUR).toFixed(4);
+    document.getElementById('statUpdate').textContent = '今日 ' + new Date().toLocaleDateString('zh-CN');
+  }
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-5 py-2 rounded-full text-sm z-50 shadow-lg';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2000);
+}
+
+// ===== PI GENERATOR =====
+let piItems = [
+  {desc:'', spec:'', qty:'', unit:'PCS', price:'', amount:0},
+  {desc:'', spec:'', qty:'', unit:'PCS', price:'', amount:0},
+];
+
+const piUnits = ['PCS','SET','KG','G','M','M2','M3','CBM','L','BOX','CTN','ROLL','PAIR','LOT','PACK'];
+
+function piAddRow() {
+  piItems.push({desc:'', spec:'', qty:'', unit:'PCS', price:'', amount:0});
+  renderPIForm();
+  renderPI();
+}
+
+function piRemoveRow(i) {
+  if (piItems.length <= 1) return;
+  piItems.splice(i, 1);
+  renderPIForm();
+  renderPI();
+}
+
+function piRowChange(i, field, val) {
+  piItems[i][field] = val;
+  const q = parseFloat(piItems[i].qty) || 0;
+  const p = parseFloat(piItems[i].price) || 0;
+  piItems[i].amount = q * p;
+  renderPIItemAmounts();
+  renderPI();
+}
+
+function renderPIForm() {
+  const c = document.getElementById('piItemsForm');
+  c.innerHTML = piItems.map((item, i) => `
+    <div class="bg-gray-50 rounded-xl p-3 space-y-2" style="border:1px solid #e2e8f0;">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold text-gray-500">第 ${i+1} 行</span>
+        <button onclick="piRemoveRow(${i})" class="text-red-400 hover:text-red-600 text-xs"><i class="fas fa-times"></i></button>
+      </div>
+      <input class="inp text-sm" placeholder="品名 Description *" value="${item.desc}"
+        oninput="piRowChange(${i},'desc',this.value)">
+      <input class="inp text-sm" placeholder="规格/型号 Specification/Model" value="${item.spec}"
+        oninput="piRowChange(${i},'spec',this.value)">
+      <div class="grid grid-cols-4 gap-1">
+        <input class="inp text-sm col-span-1" type="number" placeholder="数量" value="${item.qty}"
+          oninput="piRowChange(${i},'qty',this.value)">
+        <select class="inp text-sm col-span-1" onchange="piRowChange(${i},'unit',this.value)">
+          ${piUnits.map(u => `<option ${u===item.unit?'selected':''}>${u}</option>`).join('')}
+        </select>
+        <input class="inp text-sm col-span-2" type="number" placeholder="单价 Unit Price" value="${item.price}"
+          oninput="piRowChange(${i},'price',this.value)">
+      </div>
+      <div class="text-right text-xs text-blue-600 font-semibold">
+        金额：<span id="piAmt_${i}">${item.amount ? item.amount.toFixed(2) : '--'}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderPIItemAmounts() {
+  piItems.forEach((item, i) => {
+    const el = document.getElementById('piAmt_' + i);
+    if (el) el.textContent = item.amount ? item.amount.toFixed(2) : '--';
+  });
+}
+
+function g(id) { return (document.getElementById(id)||{}).value || ''; }
+
+function renderPI() {
+  const cur = g('pi_currency') || 'USD';
+  const incoterm = g('pi_incoterm') || 'FOB';
+  const subtotal = piItems.reduce((s, r) => s + (r.amount || 0), 0);
+  const freight = parseFloat(g('pi_freight')) || 0;
+  const insurance = parseFloat(g('pi_insurance')) || 0;
+  const grandTotal = subtotal + freight + insurance;
+
+  // Number to words (simplified)
+  function amtToWords(n) {
+    if (!n) return '';
+    const parts = n.toFixed(2).split('.');
+    const ones = ['','ONE','TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE','TEN',
+      'ELEVEN','TWELVE','THIRTEEN','FOURTEEN','FIFTEEN','SIXTEEN','SEVENTEEN','EIGHTEEN','NINETEEN'];
+    const tens = ['','','TWENTY','THIRTY','FORTY','FIFTY','SIXTY','SEVENTY','EIGHTY','NINETY'];
+    function h(n) {
+      if (n === 0) return '';
+      if (n < 20) return ones[n] + ' ';
+      if (n < 100) return tens[Math.floor(n/10)] + (n%10 ? ' '+ones[n%10] : '') + ' ';
+      return ones[Math.floor(n/100)] + ' HUNDRED ' + h(n%100);
+    }
+    const intPart = parseInt(parts[0]);
+    const decPart = parseInt(parts[1]);
+    let words = '';
+    if (intPart >= 1000000) words += h(Math.floor(intPart/1000000)) + 'MILLION ';
+    if (intPart >= 1000) words += h(Math.floor((intPart%1000000)/1000)) + 'THOUSAND ';
+    words += h(intPart % 1000);
+    words = words.trim();
+    if (decPart > 0) words += ' AND CENTS ' + h(decPart).trim();
+    return words + ' ONLY';
+  }
+
+  const hasRows = piItems.some(r => r.desc);
+  const rowsHTML = piItems.filter(r => r.desc || r.qty || r.price).map((r, i) => `
+    <tr>
+      <td style="text-align:center;">${i+1}</td>
+      <td>${r.desc || ''}</td>
+      <td style="text-align:center;">${r.spec || ''}</td>
+      <td style="text-align:center;">${r.qty || ''}</td>
+      <td style="text-align:center;">${r.unit || ''}</td>
+      <td style="text-align:right;">${r.price ? parseFloat(r.price).toFixed(2) : ''}</td>
+      <td style="text-align:right;font-weight:600;">${r.amount ? r.amount.toFixed(2) : ''}</td>
+    </tr>
+  `).join('');
+
+  // Fill empty rows to minimum 5
+  const filledRows = piItems.filter(r => r.desc || r.qty || r.price).length;
+  const emptyPad = Math.max(0, 5 - filledRows);
+  const padHTML = Array(emptyPad).fill('<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>').join('');
+
+  const sellerAddr = (g('pi_seller_addr')||'').replace(/\n/g,'<br>');
+  const buyerAddr = (g('pi_buyer_addr')||'').replace(/\n/g,'<br>');
+
+  document.getElementById('piPreview').innerHTML = `
+    <div style="max-width:800px;margin:0 auto;padding:20px;font-family:'Times New Roman',serif;font-size:13px;color:#111;">
+
+      <!-- HEADER -->
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-size:24px;font-weight:bold;letter-spacing:4px;">PROFORMA INVOICE</div>
+        <div style="font-size:13px;color:#555;margin-top:2px;">形式发票</div>
+      </div>
+
+      <!-- PI NO & DATE -->
+      <table style="width:100%;margin-bottom:12px;border-collapse:collapse;">
+        <tr>
+          <td style="width:50%;vertical-align:top;">
+            <div style="font-size:11px;color:#777;font-weight:bold;text-transform:uppercase;margin-bottom:3px;">Seller / 卖方</div>
+            <div style="font-weight:bold;font-size:14px;">${g('pi_seller_name') || '&nbsp;'}</div>
+            <div style="color:#444;">${sellerAddr || '&nbsp;'}</div>
+            ${g('pi_seller_tel') ? `<div>Tel: ${g('pi_seller_tel')}${g('pi_seller_fax') ? ' / Fax: '+g('pi_seller_fax') : ''}</div>` : ''}
+            ${g('pi_seller_email') ? `<div>Email: ${g('pi_seller_email')}</div>` : ''}
+          </td>
+          <td style="width:50%;vertical-align:top;text-align:right;">
+            <table style="margin-left:auto;border-collapse:collapse;">
+              <tr><td style="color:#777;padding-right:12px;">PI No.:</td><td style="font-weight:bold;">${g('pi_no') || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'}</td></tr>
+              <tr><td style="color:#777;padding-right:12px;">Date:</td><td>${g('pi_date') || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'}</td></tr>
+              <tr><td style="color:#777;padding-right:12px;">Valid Until:</td><td>${g('pi_valid') || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'}</td></tr>
+              <tr><td style="color:#777;padding-right:12px;">Currency:</td><td>${cur}</td></tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+
+      <!-- BUYER -->
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px 14px;margin-bottom:14px;">
+        <div style="font-size:11px;color:#777;font-weight:bold;text-transform:uppercase;margin-bottom:4px;">To / 买方 (Consignee)</div>
+        <div style="font-weight:bold;font-size:14px;">${g('pi_buyer_name') || '&nbsp;'}</div>
+        <div style="color:#444;">${buyerAddr || '&nbsp;'}</div>
+        ${g('pi_buyer_contact') ? `<div>Attn: <b>${g('pi_buyer_contact')}</b>${g('pi_buyer_tel') ? ' &nbsp;Tel: '+g('pi_buyer_tel') : ''}</div>` : ''}
+        ${g('pi_buyer_email') ? `<div>Email: ${g('pi_buyer_email')}</div>` : ''}
+      </div>
+
+      <!-- TERMS ROW -->
+      <table style="width:100%;border-collapse:collapse;border:1px solid #aaa;margin-bottom:14px;">
+        <tr style="background:#f3f4f6;font-weight:bold;font-size:11px;color:#555;">
+          <td style="border:1px solid #aaa;padding:5px 8px;">Payment Terms</td>
+          <td style="border:1px solid #aaa;padding:5px 8px;">Incoterms</td>
+          <td style="border:1px solid #aaa;padding:5px 8px;">Port of Loading</td>
+          <td style="border:1px solid #aaa;padding:5px 8px;">Port of Destination</td>
+          <td style="border:1px solid #aaa;padding:5px 8px;">Delivery Time</td>
+        </tr>
+        <tr style="font-size:12px;">
+          <td style="border:1px solid #aaa;padding:6px 8px;">${g('pi_payment') || '&nbsp;'}</td>
+          <td style="border:1px solid #aaa;padding:6px 8px;font-weight:bold;">${incoterm}</td>
+          <td style="border:1px solid #aaa;padding:6px 8px;">${g('pi_pol') || '&nbsp;'}</td>
+          <td style="border:1px solid #aaa;padding:6px 8px;">${g('pi_pod') || '&nbsp;'}</td>
+          <td style="border:1px solid #aaa;padding:6px 8px;">${g('pi_shipdate') || '&nbsp;'}</td>
+        </tr>
+      </table>
+
+      <!-- ITEMS TABLE -->
+      <table style="width:100%;border-collapse:collapse;border:1px solid #aaa;margin-bottom:14px;">
+        <thead>
+          <tr style="background:#f3f4f6;">
+            <th style="border:1px solid #aaa;padding:7px 6px;text-align:center;width:30px;">No.</th>
+            <th style="border:1px solid #aaa;padding:7px 6px;text-align:left;">Description of Goods<br><span style="font-weight:normal;color:#777;font-size:11px;">品名</span></th>
+            <th style="border:1px solid #aaa;padding:7px 6px;text-align:center;width:120px;">Specification<br><span style="font-weight:normal;color:#777;font-size:11px;">规格/型号</span></th>
+            <th style="border:1px solid #aaa;padding:7px 6px;text-align:center;width:60px;">Qty<br><span style="font-weight:normal;color:#777;font-size:11px;">数量</span></th>
+            <th style="border:1px solid #aaa;padding:7px 6px;text-align:center;width:55px;">Unit<br><span style="font-weight:normal;color:#777;font-size:11px;">单位</span></th>
+            <th style="border:1px solid #aaa;padding:7px 6px;text-align:right;width:90px;">Unit Price<br><span style="font-weight:normal;color:#777;font-size:11px;">(${cur})</span></th>
+            <th style="border:1px solid #aaa;padding:7px 6px;text-align:right;width:100px;">Amount<br><span style="font-weight:normal;color:#777;font-size:11px;">(${cur})</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHTML || '<tr><td colspan="7" style="padding:12px;color:#aaa;text-align:center;">请在左侧填写商品明细</td></tr>'}
+          ${padHTML}
+        </tbody>
+        <tfoot>
+          ${freight > 0 || insurance > 0 ? `
+          <tr>
+            <td colspan="6" style="border:1px solid #aaa;padding:6px 8px;text-align:right;color:#555;">Subtotal 小计</td>
+            <td style="border:1px solid #aaa;padding:6px 8px;text-align:right;font-weight:600;">${subtotal.toFixed(2)}</td>
+          </tr>
+          ${freight > 0 ? `<tr><td colspan="6" style="border:1px solid #aaa;padding:6px 8px;text-align:right;color:#555;">Freight 运费</td><td style="border:1px solid #aaa;padding:6px 8px;text-align:right;">${freight.toFixed(2)}</td></tr>` : ''}
+          ${insurance > 0 ? `<tr><td colspan="6" style="border:1px solid #aaa;padding:6px 8px;text-align:right;color:#555;">Insurance 保险</td><td style="border:1px solid #aaa;padding:6px 8px;text-align:right;">${insurance.toFixed(2)}</td></tr>` : ''}
+          ` : ''}
+          <tr style="background:#f3f4f6;">
+            <td colspan="6" style="border:1px solid #aaa;padding:8px;text-align:right;font-weight:bold;font-size:14px;">TOTAL AMOUNT</td>
+            <td style="border:1px solid #aaa;padding:8px;text-align:right;font-weight:bold;font-size:16px;color:#1d4ed8;">${cur} ${grandTotal.toFixed(2)}</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <!-- AMOUNT IN WORDS -->
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:8px 14px;margin-bottom:14px;font-size:12px;">
+        <span style="color:#777;">SAY TOTAL: </span>
+        <span style="font-weight:bold;color:#1d4ed8;">${cur} ${amtToWords(grandTotal)}</span>
+      </div>
+
+      <!-- BANK INFO -->
+      ${g('pi_seller_bank') ? `
+      <div style="border:1px solid #e2e8f0;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:12px;">
+        <div style="font-weight:bold;font-size:11px;text-transform:uppercase;color:#777;margin-bottom:6px;">Bank Information / 汇款信息</div>
+        <div><span style="color:#777;width:110px;display:inline-block;">Beneficiary:</span>${g('pi_seller_name')}</div>
+        <div><span style="color:#777;width:110px;display:inline-block;">Bank Name:</span>${g('pi_seller_bank')}</div>
+        ${g('pi_seller_account') ? `<div><span style="color:#777;width:110px;display:inline-block;">Account No.:</span>${g('pi_seller_account')}</div>` : ''}
+        ${g('pi_seller_swift') ? `<div><span style="color:#777;width:110px;display:inline-block;">SWIFT Code:</span>${g('pi_seller_swift')}</div>` : ''}
+        ${g('pi_seller_iban') ? `<div><span style="color:#777;width:110px;display:inline-block;">IBAN:</span>${g('pi_seller_iban')}</div>` : ''}
+      </div>
+      ` : ''}
+
+      <!-- PACKING -->
+      ${g('pi_packing') ? `<div style="margin-bottom:10px;font-size:12px;"><span style="color:#777;">Packing / 包装: </span>${g('pi_packing')}</div>` : ''}
+
+      <!-- REMARKS -->
+      ${g('pi_remarks') ? `
+      <div style="margin-bottom:16px;font-size:12px;">
+        <div style="font-weight:bold;font-size:11px;text-transform:uppercase;color:#777;margin-bottom:4px;">Remarks / 备注</div>
+        <div style="white-space:pre-line;">${g('pi_remarks')}</div>
+      </div>
+      ` : ''}
+
+      <!-- SIGNATURE -->
+      <div style="display:flex;justify-content:space-between;margin-top:30px;">
+        <div style="width:45%;">
+          <div style="border-top:1px solid #aaa;padding-top:6px;font-size:11px;color:#777;">
+            Buyer's Signature / 买方签字
+          </div>
+        </div>
+        <div style="width:45%;text-align:right;">
+          <div style="font-weight:bold;margin-bottom:24px;">${g('pi_seller_name') || ''}</div>
+          <div style="border-top:1px solid #aaa;padding-top:6px;font-size:12px;">
+            ${g('pi_signer') || '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'}
+            ${g('pi_title') ? `<span style="color:#777;font-size:11px;">&nbsp;/ ${g('pi_title')}</span>` : ''}
+          </div>
+          <div style="font-size:11px;color:#777;">Authorized Signature</div>
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
+function printPI() {
+  window.print();
+}
+
+function piSaveTemplate() {
+  const data = {};
+  const ids = ['pi_seller_name','pi_seller_addr','pi_seller_tel','pi_seller_fax','pi_seller_email',
+    'pi_seller_bank','pi_seller_account','pi_seller_swift','pi_seller_iban'];
+  ids.forEach(id => { data[id] = g(id); });
+  localStorage.setItem('pi_template', JSON.stringify(data));
+  showToast('卖方模板已保存');
+}
+
+function piLoadTemplate() {
+  const saved = localStorage.getItem('pi_template');
+  if (!saved) { showToast('暂无保存的模板'); return; }
+  const data = JSON.parse(saved);
+  Object.keys(data).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = data[id];
+  });
+  renderPI();
+  showToast('模板已加载');
+}
+
+function initPI() {
+  const today = new Date().toISOString().split('T')[0];
+  const valid = new Date(Date.now() + 30*24*3600000).toISOString().split('T')[0];
+  document.getElementById('pi_date').value = today;
+  document.getElementById('pi_valid').value = valid;
+  // Auto-generate PI number
+  const num = 'PI-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*900)+100);
+  document.getElementById('pi_no').value = num;
+  renderPIForm();
+  renderPI();
+  // Load seller template if saved
+  piLoadTemplate();
+}
+
+// ===== INIT =====
+fetchRates();
+initHSCategories();
+calcShipping();
+calcProfit();
+initPI();
+renderCRM();
+updateHomeStats();
+</script>
+</body>
+</html>
