@@ -6,6 +6,7 @@
 <title>百事达外贸工具箱 | beseda.com.cn</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; margin:0; padding-left:220px; min-height:100vh; background:#f8fafc; box-sizing:border-box; }
   .sidebar { position:fixed; left:0; top:0; width:220px; height:100vh; background:#0f172a; overflow-y:auto; z-index:100; transition:transform 0.3s; }
@@ -40,6 +41,44 @@
     .sidebar, .no-print { display:none !important; }
     .print-area { width:100% !important; }
   }
+  .auth-tab { flex:1; border:none; background:#f1f5f9; color:#64748b; padding:9px 10px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; }
+  .auth-tab.active { background:#2563eb; color:#fff; box-shadow:0 6px 14px rgba(37,99,235,0.18); }
+  .auth-pane { display:none; }
+  .auth-pane.active { display:block; }
+  .home-shell { max-width:1180px; margin:0 auto; }
+  .home-kpi { background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18); border-radius:10px; padding:12px 14px; color:white; }
+  .home-flow { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+  .home-flow-item { background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:16px; }
+  .bg-form-grid { display:grid; grid-template-columns:2fr 1.4fr 1.2fr; gap:12px; margin-bottom:10px; }
+  .bg-form-grid.second { grid-template-columns:1fr 1.3fr 1fr; }
+  .bg-form-grid.third { grid-template-columns:1.4fr 1.4fr 1.1fr auto; align-items:end; }
+  .bg-report-card { background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:22px; margin-bottom:16px; box-shadow:0 4px 12px rgba(15,23,42,0.04); overflow:hidden; }
+  #bgReport { overflow-x:hidden; }
+  #bgReport table { width:100%; table-layout:fixed; word-break:break-word; }
+  #bgReport a { word-break:break-all; }
+  .clock-toolbar { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-bottom:16px; display:grid; grid-template-columns:1.3fr 1fr auto; gap:12px; align-items:end; }
+  .clock-chip { border:1px solid #e2e8f0; background:#fff; color:#334155; border-radius:999px; padding:6px 10px; font-size:12px; cursor:pointer; }
+  .clock-chip.active { background:#eff6ff; border-color:#93c5fd; color:#1d4ed8; font-weight:700; }
+  @media (max-width:1024px) {
+    .home-flow { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .bg-form-grid, .bg-form-grid.second, .bg-form-grid.third, .clock-toolbar { grid-template-columns:1fr; }
+  }
+  @media (max-width:768px) {
+    #sec-home { margin:0 !important; }
+    #sec-home [style*="padding:48px"] { padding:30px 20px 24px !important; }
+    #sec-home [style*="padding:40px 48px"] { padding:28px 20px !important; }
+    #sec-home [style*="width:55%"] { opacity:0.08 !important; width:100% !important; }
+    .tool-card { padding:16px; }
+    .home-flow { grid-template-columns:1fr; }
+    #bgReport [style*="grid-template-columns:repeat(4,1fr)"],
+    #bgReport [style*="grid-template-columns:repeat(4, 1fr)"],
+    #bgReport [style*="grid-template-columns:1fr 1fr"],
+    #bgReport [style*="grid-template-columns:200px 1fr"] { grid-template-columns:1fr !important; }
+    #bgReport [style*="padding:32px 36px"] { padding:22px !important; }
+    #bgReport [style*="border-radius:16px"] { border-radius:12px !important; }
+    #bgActionBtns { width:100%; margin-top:10px; }
+    #bgActionBtns button { flex:1; }
+  }
   @media (max-width:768px) {
     body { padding-left:0; }
     .sidebar { transform:translateX(-100%); }
@@ -72,6 +111,102 @@
 </style>
 </head>
 <body class="bg-gray-50">
+
+<!-- ========== LOGIN SCREEN ========== -->
+<div id="loginScreen" style="position:fixed;inset:0;background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,#1d4ed8 100%);z-index:2000;display:flex;align-items:center;justify-content:center;">
+  <!-- Decorative bg -->
+  <div style="position:absolute;right:-80px;top:-80px;width:320px;height:320px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;"></div>
+  <div style="position:absolute;left:-60px;bottom:-60px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;"></div>
+
+  <div style="background:white;border-radius:20px;padding:40px;width:100%;max-width:400px;margin:20px;box-shadow:0 24px 60px rgba(0,0,0,0.3);position:relative;z-index:1;">
+    <!-- Logo -->
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;background:#2563eb;border-radius:14px;margin-bottom:12px;">
+        <svg width="32" height="32" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#2563eb"/><circle cx="18" cy="18" r="11" stroke="white" stroke-width="1.5" fill="none" opacity="0.3"/><ellipse cx="18" cy="18" rx="5.5" ry="11" stroke="white" stroke-width="1.5" fill="none" opacity="0.5"/><line x1="7" y1="18" x2="29" y2="18" stroke="white" stroke-width="1.5" opacity="0.5"/><text x="13" y="22" font-family="Arial" font-weight="bold" font-size="12" fill="white">B</text></svg>
+      </div>
+      <div style="font-size:22px;font-weight:800;color:#0f172a;">百事达外贸工具箱</div>
+      <div style="color:#64748b;font-size:13px;margin-top:3px;">beseda.com.cn</div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:18px;">
+      <button class="auth-tab active" id="tabPhone" onclick="toggleAuthForm('phone')"><i class="fas fa-mobile-screen-button mr-1"></i>手机</button>
+      <button class="auth-tab" id="tabWechat" onclick="toggleAuthForm('wechat')"><i class="fab fa-weixin mr-1"></i>微信</button>
+      <button class="auth-tab" id="tabLogin" onclick="toggleAuthForm('login')"><i class="fas fa-key mr-1"></i>账号</button>
+    </div>
+
+    <!-- Phone Login Form -->
+    <div id="phoneLoginForm" class="auth-pane active">
+      <div style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:20px;text-align:center;">手机验证码登录</div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;">手机号</div>
+        <input id="phoneNumber" type="tel" placeholder="+86 138 0000 0000" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:14px;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#e2e8f0'">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:20px;">
+        <input id="phoneCode" type="text" inputmode="numeric" maxlength="6" placeholder="6 位验证码" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:14px;outline:none;box-sizing:border-box;" onkeydown="if(event.key==='Enter')verifyPhoneCode()">
+        <button id="sendCodeBtn" onclick="sendPhoneCode()" style="background:#f1f5f9;color:#334155;border:none;padding:0 14px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">获取验证码</button>
+      </div>
+      <button onclick="verifyPhoneCode()" style="width:100%;background:#2563eb;color:white;border:none;padding:12px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:12px;">登录 / 注册</button>
+      <div id="phoneError" style="display:none;background:#fee2e2;color:#dc2626;padding:8px 12px;border-radius:8px;font-size:13px;margin-top:12px;text-align:center;"></div>
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;color:#64748b;font-size:12px;line-height:1.6;">需要部署 `/api/auth` Vercel Function，并在环境变量中配置 Supabase。短信通道可接阿里云、腾讯云或其他 SMS Webhook。</div>
+    </div>
+
+    <!-- WeChat Login Form -->
+    <div id="wechatLoginForm" class="auth-pane">
+      <div style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:16px;text-align:center;">微信 OAuth 登录</div>
+      <button onclick="loginWithWechat()" style="width:100%;background:#16a34a;color:white;border:none;padding:12px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:12px;">
+        <i class="fab fa-weixin mr-2"></i>使用微信登录
+      </button>
+      <div id="wechatError" style="display:none;background:#fee2e2;color:#dc2626;padding:8px 12px;border-radius:8px;font-size:13px;margin-top:12px;text-align:center;"></div>
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 12px;color:#166534;font-size:12px;line-height:1.6;">微信开放平台审核通过后，填写 `WECHAT_CLIENT_ID`、`WECHAT_CLIENT_SECRET`、`WECHAT_REDIRECT_URI` 即可跳转授权。</div>
+    </div>
+
+    <!-- Login Form -->
+    <div id="loginForm" class="auth-pane">
+      <div style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:20px;text-align:center;">登录账号</div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;">用户名</div>
+        <input id="loginUsername" type="text" placeholder="输入用户名" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:14px;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#e2e8f0'" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;">密码</div>
+        <input id="loginPassword" type="password" placeholder="输入密码" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:14px;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#e2e8f0'" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button onclick="doLogin()" style="width:100%;background:#2563eb;color:white;border:none;padding:12px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:14px;">登录</button>
+      <div style="text-align:center;font-size:13px;color:#64748b;">还没有账号？<span onclick="toggleAuthForm('register')" style="color:#2563eb;cursor:pointer;font-weight:600;">注册新账号</span></div>
+      <div id="loginError" style="display:none;background:#fee2e2;color:#dc2626;padding:8px 12px;border-radius:8px;font-size:13px;margin-top:12px;text-align:center;"></div>
+    </div>
+
+    <!-- Register Form -->
+    <div id="registerForm" class="auth-pane">
+      <div style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:20px;text-align:center;">注册新账号</div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;">用户名（唯一，不可修改）</div>
+        <input id="regUsername" type="text" placeholder="英文或数字，如：zhangsan" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:14px;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#e2e8f0'">
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;">显示名称</div>
+        <input id="regDisplayName" type="text" placeholder="如：张三 / Sales Team" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:14px;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#e2e8f0'">
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;">密码</div>
+        <input id="regPassword" type="password" placeholder="至少6位" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:14px;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#e2e8f0'">
+      </div>
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;">确认密码</div>
+        <input id="regConfirm" type="password" placeholder="再次输入密码" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:14px;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#e2e8f0'" onkeydown="if(event.key==='Enter')doRegister()">
+      </div>
+      <button onclick="doRegister()" style="width:100%;background:#16a34a;color:white;border:none;padding:12px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:14px;">创建账号</button>
+      <div style="text-align:center;font-size:13px;color:#64748b;">已有账号？<span onclick="toggleAuthForm('login')" style="color:#2563eb;cursor:pointer;font-weight:600;">返回登录</span></div>
+      <div id="regError" style="display:none;background:#fee2e2;color:#dc2626;padding:8px 12px;border-radius:8px;font-size:13px;margin-top:12px;text-align:center;"></div>
+    </div>
+
+    <!-- Notice -->
+    <div style="margin-top:20px;padding:10px 14px;background:#f0fdf4;border-radius:8px;border:1px solid #bbf7d0;font-size:11px;color:#166534;line-height:1.6;">
+      🔒 各账号数据完全独立，CRM 客户信息仅自己可见<br>
+      📱 已预留 Supabase + Vercel Function 登录接口，配置后即可上线
+    </div>
+  </div>
+</div>
 
 <!-- Sidebar -->
 <div class="sidebar flex flex-col p-4" id="sidebar">
@@ -120,8 +255,29 @@
     <div class="nav-link" onclick="showSection('bgcheck')" style="color:#f87171;">
       <i class="fas fa-shield-halved w-4 text-center"></i> 客户背调
     </div>
+    <div class="text-xs text-slate-500 px-3 pt-4 pb-1 uppercase tracking-wider">效率工具</div>
+    <div class="nav-link" onclick="showSection('clock')">
+      <i class="fas fa-clock w-4 text-center"></i> 世界时钟
+    </div>
+    <div class="nav-link" onclick="showSection('container')">
+      <i class="fas fa-box-open w-4 text-center"></i> 装柜计算器
+    </div>
+    <div class="nav-link" onclick="showSection('emailtpl')">
+      <i class="fas fa-envelope-open-text w-4 text-center"></i> 邮件模板库
+    </div>
   </nav>
-  <div class="mt-auto pt-4 border-t border-slate-700 space-y-2">
+  <div class="mt-auto pt-4 border-t border-slate-700 space-y-1">
+    <!-- User info -->
+    <div id="sidebarUser" style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;background:rgba(255,255,255,0.06);margin-bottom:4px;">
+      <div style="width:28px;height:28px;background:#2563eb;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:white;font-weight:700;" id="sidebarAvatar">?</div>
+      <div style="flex:1;min-width:0;">
+        <div style="color:white;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="sidebarName">未登录</div>
+        <div style="color:#64748b;font-size:10px;">个人工作台</div>
+      </div>
+      <button onclick="doLogout()" title="退出" style="background:none;border:none;color:#64748b;cursor:pointer;padding:2px 4px;border-radius:4px;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#64748b'">
+        <i class="fas fa-right-from-bracket"></i>
+      </button>
+    </div>
     <div class="nav-link text-xs" onclick="openAdModal()" style="color:#f59e0b;">
       <i class="fas fa-bullhorn w-4 text-center"></i> 广告招商
     </div>
@@ -258,8 +414,9 @@
         </div>
       </div>
       <div style="color:#e2e8f0;font-size:16px;max-width:520px;line-height:1.8;margin-bottom:32px;position:relative;z-index:1;">
-        汇率换算、HS Code查询、运费计算、PI发票生成、<br>客户CRM、<strong style="color:#fbbf24;">外贸客户背调</strong>……<br>
-        <strong style="color:white;">把每一次外贸操作，都变得更快、更准、更专业。</strong>
+        从客户背调、报价核算、PI 发票到 CRM 跟进，<br>
+        把外贸业务里最常重复、最容易出错的动作集中到一个工作台。<br>
+        <strong style="color:white;">查得快、算得准、跟进不断档。</strong>
       </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;position:relative;z-index:1;">
         <button onclick="showSection('currency')" style="background:#2563eb;color:white;border:none;padding:12px 24px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(37,99,235,0.4);">
@@ -271,6 +428,12 @@
         <button onclick="openAdModal()" style="background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2);padding:12px 24px;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px;">
           <i class="fas fa-bullhorn" style="color:#fbbf24;"></i> 广告招商
         </button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:26px;max-width:680px;position:relative;z-index:1;">
+        <div class="home-kpi"><div style="font-size:11px;color:#bfdbfe;">开发前</div><div style="font-weight:800;">先背调风险</div></div>
+        <div class="home-kpi"><div style="font-size:11px;color:#bfdbfe;">报价中</div><div style="font-weight:800;">利润自动算</div></div>
+        <div class="home-kpi"><div style="font-size:11px;color:#bfdbfe;">成交后</div><div style="font-weight:800;">PI 一键生成</div></div>
+        <div class="home-kpi"><div style="font-size:11px;color:#bfdbfe;">跟进时</div><div style="font-weight:800;">CRM 留记录</div></div>
       </div>
       <!-- Live rates bar -->
       <div style="margin-top:28px;background:rgba(255,255,255,0.07);border-radius:10px;padding:12px 20px;display:flex;gap:32px;flex-wrap:wrap;position:relative;z-index:1;backdrop-filter:blur(4px);">
@@ -284,8 +447,14 @@
     <!-- TOOLS GRID -->
     <div style="padding:40px 48px;">
       <div style="text-align:center;margin-bottom:32px;">
-        <div style="font-size:22px;font-weight:800;color:#0f172a;">7 大核心工具，完全免费</div>
-        <div style="color:#64748b;margin-top:8px;font-size:15px;">覆盖外贸从询价、背调、报价到收款的全流程</div>
+        <div style="font-size:22px;font-weight:800;color:#0f172a;">外贸日常工作流，一屏直达</div>
+        <div style="color:#64748b;margin-top:8px;font-size:15px;">先判断客户值不值得跟，再把报价、单据和后续跟进做扎实</div>
+      </div>
+      <div class="home-flow" style="margin-bottom:24px;">
+        <div class="home-flow-item"><div style="color:#2563eb;font-size:12px;font-weight:800;margin-bottom:6px;">01 · 客户判断</div><div style="font-weight:800;color:#0f172a;">背调客户与国家风险</div><div style="color:#64748b;font-size:13px;margin-top:5px;">客户类型、风险评分、开发邮件框架</div></div>
+        <div class="home-flow-item"><div style="color:#16a34a;font-size:12px;font-weight:800;margin-bottom:6px;">02 · 成本核算</div><div style="font-weight:800;color:#0f172a;">汇率、运费、利润联动</div><div style="color:#64748b;font-size:13px;margin-top:5px;">减少手算错误，快速评估报价空间</div></div>
+        <div class="home-flow-item"><div style="color:#d97706;font-size:12px;font-weight:800;margin-bottom:6px;">03 · 文件输出</div><div style="font-weight:800;color:#0f172a;">生成 PI 形式发票</div><div style="color:#64748b;font-size:13px;margin-top:5px;">标准字段、实时预览、适合直接发客户</div></div>
+        <div class="home-flow-item"><div style="color:#9333ea;font-size:12px;font-weight:800;margin-bottom:6px;">04 · 长期跟进</div><div style="font-weight:800;color:#0f172a;">客户 CRM 沉淀记录</div><div style="color:#64748b;font-size:13px;margin-top:5px;">跟进状态、需求备注、背调结果入库</div></div>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div class="tool-card" onclick="showSection('currency')" style="border:1px solid #e2e8f0;">
@@ -350,7 +519,7 @@
         <div style="text-align:center;">
           <div style="font-size:32px;margin-bottom:8px;">🆓</div>
           <div style="font-weight:700;color:#0f172a;">完全免费</div>
-          <div style="color:#64748b;font-size:13px;margin-top:4px;">所有工具永久免费，无需注册登录</div>
+          <div style="color:#64748b;font-size:13px;margin-top:4px;">核心工具永久免费，登录后保存个人数据</div>
         </div>
         <div style="text-align:center;">
           <div style="font-size:32px;margin-bottom:8px;">⚡</div>
@@ -1027,7 +1196,7 @@
     </div>
 
     <!-- Row 1: 公司名 + 国家 -->
-    <div style="display:flex;gap:12px;margin-bottom:10px;">
+    <div class="bg-form-grid">
       <div style="flex:2;">
         <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px;">公司名称（英文）<span style="color:#dc2626;">*</span></div>
         <input class="inp" id="bg_company" placeholder="如：ABC Trading Co., Ltd." style="font-size:13px;">
@@ -1059,7 +1228,7 @@
     </div>
 
     <!-- Row 2: 联系人 + 邮箱 + 电话 -->
-    <div style="display:flex;gap:12px;margin-bottom:10px;">
+    <div class="bg-form-grid second">
       <div style="flex:1;">
         <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px;">联系人姓名</div>
         <input class="inp" id="bg_contact" placeholder="John Smith" style="font-size:13px;">
@@ -1075,7 +1244,7 @@
     </div>
 
     <!-- Row 3: 网址 + 产品 + 付款 + 按钮 -->
-    <div style="display:flex;gap:12px;align-items:flex-end;">
+    <div class="bg-form-grid third">
       <div style="flex:1.5;">
         <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px;">公司网址</div>
         <input class="inp" id="bg_website" placeholder="https://example.com" style="font-size:13px;">
@@ -1116,6 +1285,119 @@
   </div>
 
   <div id="bgPrintReport" style="display:none;"></div>
+</div>
+
+<!-- ========== WORLD CLOCK ========== -->
+<div class="section" id="sec-clock">
+  <div class="mb-6">
+    <h2 class="text-xl font-bold text-gray-800">🌐 世界时钟</h2>
+    <p class="text-gray-500 text-sm mt-1">外贸主要贸易伙伴国实时时间，安排视频会议不再算时差</p>
+  </div>
+  <div class="clock-toolbar no-print">
+    <div>
+      <label class="text-xs text-gray-500 mb-1 block">选择地区/国家</label>
+      <select class="inp" id="clockZoneSelect"></select>
+    </div>
+    <div>
+      <label class="text-xs text-gray-500 mb-1 block">快速筛选</label>
+      <div id="clockRegionChips" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+    </div>
+    <button class="btn btn-primary" onclick="addClockZone()"><i class="fas fa-plus mr-1"></i>添加时钟</button>
+  </div>
+  <div id="clockGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px;"></div>
+  <div class="card p-5">
+    <h3 class="font-semibold text-gray-700 mb-3">📅 工作时间重叠参考</h3>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:600px;">
+        <thead><tr style="background:#f1f5f9;"><th style="padding:8px 12px;text-align:left;border:1px solid #e2e8f0;">北京时间</th><th style="padding:8px 12px;border:1px solid #e2e8f0;">纽约</th><th style="padding:8px 12px;border:1px solid #e2e8f0;">伦敦</th><th style="padding:8px 12px;border:1px solid #e2e8f0;">法兰克福</th><th style="padding:8px 12px;border:1px solid #e2e8f0;">迪拜</th><th style="padding:8px 12px;border:1px solid #e2e8f0;">新加坡</th><th style="padding:8px 12px;border:1px solid #e2e8f0;">东京</th></tr></thead>
+        <tbody>
+          <tr style="background:#dcfce7;"><td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;">09:00–12:00</td><td style="padding:8px 12px;border:1px solid #e2e8f0;color:#94a3b8;">20:00–23:00 (夜)</td><td style="padding:8px 12px;border:1px solid #e2e8f0;color:#94a3b8;">01:00–04:00 (夜)</td><td style="padding:8px 12px;border:1px solid #e2e8f0;color:#94a3b8;">02:00–05:00 (夜)</td><td style="padding:8px 12px;border:1px solid #e2e8f0;">05:00–08:00</td><td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#16a34a;">09:00–12:00 ✅</td><td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#16a34a;">10:00–13:00 ✅</td></tr>
+          <tr><td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;">14:00–18:00</td><td style="padding:8px 12px;border:1px solid #e2e8f0;color:#94a3b8;">01:00–05:00 (夜)</td><td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#16a34a;">06:00–10:00 ✅</td><td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#16a34a;">07:00–11:00 ✅</td><td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#16a34a;">10:00–14:00 ✅</td><td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#16a34a;">14:00–18:00 ✅</td><td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#16a34a;">15:00–19:00 ✅</td></tr>
+          <tr style="background:#fef9c3;"><td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;">20:00–22:00 🌟最佳</td><td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#16a34a;">07:00–09:00 ✅</td><td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#16a34a;">12:00–14:00 ✅</td><td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#16a34a;">13:00–15:00 ✅</td><td style="padding:8px 12px;border:1px solid #e2e8f0;font-weight:600;color:#16a34a;">16:00–18:00 ✅</td><td style="padding:8px 12px;border:1px solid #e2e8f0;color:#94a3b8;">20:00–22:00</td><td style="padding:8px 12px;border:1px solid #e2e8f0;color:#94a3b8;">21:00–23:00</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-xs text-gray-400 mt-3">* 基于标准时区，夏令时期间欧美偏差约1小时</p>
+  </div>
+</div>
+
+<!-- ========== CONTAINER CALC ========== -->
+<div class="section" id="sec-container">
+  <div class="mb-6">
+    <h2 class="text-xl font-bold text-gray-800">📦 集装箱装柜计算器</h2>
+    <p class="text-gray-500 text-sm mt-1">计算货物能装多少箱、占多少 CBM、选哪种箱型最合适</p>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+    <!-- Input -->
+    <div class="card p-5">
+      <h3 class="font-semibold text-gray-700 mb-4">货物信息</h3>
+      <div class="space-y-3">
+        <div>
+          <label class="text-sm font-semibold text-gray-700 block mb-1">每箱尺寸（外箱）</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div><div class="text-xs text-gray-500 mb-1">长 (cm)</div><input type="number" class="inp" id="ctL" value="60" oninput="calcContainer()"></div>
+            <div><div class="text-xs text-gray-500 mb-1">宽 (cm)</div><input type="number" class="inp" id="ctW" value="40" oninput="calcContainer()"></div>
+            <div><div class="text-xs text-gray-500 mb-1">高 (cm)</div><input type="number" class="inp" id="ctH" value="30" oninput="calcContainer()"></div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-sm font-semibold text-gray-700 block mb-1">每箱毛重 (kg)</label>
+            <input type="number" class="inp" id="ctKg" value="15" oninput="calcContainer()">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700 block mb-1">总箱数</label>
+            <input type="number" class="inp" id="ctQty" value="100" oninput="calcContainer()">
+          </div>
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-gray-700 block mb-1">装载率（通常85-90%）</label>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input type="range" id="ctRate" min="60" max="100" value="85" oninput="document.getElementById('ctRateVal').textContent=this.value+'%';calcContainer()" style="flex:1;">
+            <span id="ctRateVal" style="font-weight:700;color:#2563eb;min-width:40px;">85%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Results -->
+    <div class="card p-5">
+      <h3 class="font-semibold text-gray-700 mb-4">装柜方案对比</h3>
+      <div id="containerResult" class="space-y-3"></div>
+    </div>
+  </div>
+  <!-- Container specs reference -->
+  <div class="card p-5 mt-5">
+    <h3 class="font-semibold text-gray-700 mb-3">集装箱规格参考</h3>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr style="background:#f1f5f9;"><th style="padding:10px 12px;text-align:left;border:1px solid #e2e8f0;">箱型</th><th style="padding:10px 12px;border:1px solid #e2e8f0;">内长(m)</th><th style="padding:10px 12px;border:1px solid #e2e8f0;">内宽(m)</th><th style="padding:10px 12px;border:1px solid #e2e8f0;">内高(m)</th><th style="padding:10px 12px;border:1px solid #e2e8f0;">容积(CBM)</th><th style="padding:10px 12px;border:1px solid #e2e8f0;">最大载重(kg)</th><th style="padding:10px 12px;border:1px solid #e2e8f0;">适合场景</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:10px 12px;border:1px solid #e2e8f0;font-weight:600;">20ft GP</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">5.90</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">2.35</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">2.39</td><td style="padding:10px 12px;border:1px solid #e2e8f0;font-weight:600;">33.2</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">21,700</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">重货、小批量</td></tr>
+          <tr style="background:#fbfdff;"><td style="padding:10px 12px;border:1px solid #e2e8f0;font-weight:600;">40ft GP</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">12.03</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">2.35</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">2.39</td><td style="padding:10px 12px;border:1px solid #e2e8f0;font-weight:600;">67.7</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">26,500</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">常规货物首选</td></tr>
+          <tr><td style="padding:10px 12px;border:1px solid #e2e8f0;font-weight:600;">40ft HQ</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">12.03</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">2.35</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">2.70</td><td style="padding:10px 12px;border:1px solid #e2e8f0;font-weight:600;color:#16a34a;">76.3</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">26,300</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">轻抛货、家具、灯具</td></tr>
+          <tr style="background:#fbfdff;"><td style="padding:10px 12px;border:1px solid #e2e8f0;font-weight:600;">45ft HQ</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">13.56</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">2.35</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">2.70</td><td style="padding:10px 12px;border:1px solid #e2e8f0;font-weight:600;color:#2563eb;">86.1</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">27,500</td><td style="padding:10px 12px;border:1px solid #e2e8f0;">超大体积货物</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ========== EMAIL TEMPLATES ========== -->
+<div class="section" id="sec-emailtpl">
+  <div class="mb-6">
+    <h2 class="text-xl font-bold text-gray-800">✉️ 外贸邮件模板库</h2>
+    <p class="text-gray-500 text-sm mt-1">常用英文外贸邮件模板，点击复制，修改关键词即可发送</p>
+  </div>
+  <div style="display:grid;grid-template-columns:200px 1fr;gap:16px;">
+    <!-- Category list -->
+    <div class="card p-3">
+      <div id="tplCategoryList" class="space-y-1"></div>
+    </div>
+    <!-- Template content -->
+    <div class="card p-5">
+      <div id="tplContent"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ========== AD MODAL ========== -->
@@ -1288,9 +1570,189 @@
 </div>
 
 <script>
+// ===== AUTH SYSTEM =====
+const AUTH_SESSION_KEY = 'bsd_session';
+const AUTH_USERS_KEY   = 'bsd_users';
+const AUTH_API_BASE = '/api/auth';
+const SUPABASE_URL = window.BSD_SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = window.BSD_SUPABASE_ANON_KEY || '';
+const supabaseClient = (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+let currentUser = null;
+
+function initAuth() {
+  handleOAuthCallback();
+  const saved = sessionStorage.getItem(AUTH_SESSION_KEY);
+  if (saved) {
+    try {
+      currentUser = JSON.parse(saved);
+      showApp();
+      return;
+    } catch(e) {}
+  }
+  showLoginScreen();
+}
+
+function showLoginScreen() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('mainContent').style.display = 'none';
+  document.querySelector('.sidebar').style.display = 'none';
+}
+
+function showApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainContent').style.display = '';
+  document.querySelector('.sidebar').style.display = '';
+  // Update sidebar user info
+  const av = document.getElementById('sidebarAvatar');
+  const nm = document.getElementById('sidebarName');
+  if (av && currentUser) { av.textContent = (currentUser.displayName||currentUser.username)[0].toUpperCase(); }
+  if (nm && currentUser) { nm.textContent = currentUser.displayName || currentUser.username; }
+  // Load user-specific CRM
+  customers = JSON.parse(localStorage.getItem('bsd_crm_' + currentUser.username) || '[]');
+  appInit();
+}
+
+function toggleAuthForm(mode) {
+  const panes = { phone:'phoneLoginForm', wechat:'wechatLoginForm', login:'loginForm', register:'registerForm' };
+  Object.values(panes).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('active');
+  });
+  const target = document.getElementById(panes[mode] || 'phoneLoginForm');
+  if (target) target.classList.add('active');
+  ['tabPhone','tabWechat','tabLogin'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('active');
+  });
+  const tabMap = {phone:'tabPhone', wechat:'tabWechat', login:'tabLogin', register:'tabLogin'};
+  const tab = document.getElementById(tabMap[mode] || 'tabPhone');
+  if (tab) tab.classList.add('active');
+  ['loginError','regError','phoneError','wechatError'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+}
+
+function setAuthError(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+async function authFetch(path, payload) {
+  const res = await fetch(AUTH_API_BASE + path, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload || {})
+  });
+  const data = await res.json().catch(()=>({}));
+  if (!res.ok) throw new Error(data.error || '后端接口暂不可用');
+  return data;
+}
+
+async function sendPhoneCode() {
+  const phone = document.getElementById('phoneNumber').value.trim();
+  if (!phone) { setAuthError('phoneError','请先填写手机号'); return; }
+  const btn = document.getElementById('sendCodeBtn');
+  try {
+    btn.disabled = true;
+    btn.textContent = '发送中...';
+    await authFetch('/send-sms', { phone });
+    showToast('验证码已发送，请查收短信');
+    let left = 60;
+    const timer = setInterval(() => {
+      left -= 1;
+      btn.textContent = left > 0 ? `${left}s 后重发` : '获取验证码';
+      if (left <= 0) { clearInterval(timer); btn.disabled = false; }
+    }, 1000);
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = '获取验证码';
+    setAuthError('phoneError', e.message || '验证码发送失败，请检查 Vercel Function 配置');
+  }
+}
+
+async function verifyPhoneCode() {
+  const phone = document.getElementById('phoneNumber').value.trim();
+  const code = document.getElementById('phoneCode').value.trim();
+  if (!phone || !code) { setAuthError('phoneError','请填写手机号和验证码'); return; }
+  try {
+    const data = await authFetch('/verify-sms', { phone, code });
+    currentUser = {
+      username: data.user?.phone || phone,
+      displayName: data.user?.user_metadata?.display_name || phone
+    };
+    sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(currentUser));
+    showApp();
+  } catch (e) {
+    setAuthError('phoneError', e.message || '验证码校验失败');
+  }
+}
+
+function loginWithWechat() {
+  window.location.href = AUTH_API_BASE + '/wechat';
+}
+
+async function handleOAuthCallback() {
+  const params = new URLSearchParams(window.location.search);
+  const authToken = params.get('bsd_auth');
+  const authError = params.get('bsd_auth_error');
+  if (authError) setTimeout(()=>setAuthError('wechatError', decodeURIComponent(authError)), 0);
+  if (!authToken) return;
+  currentUser = { username:'wechat_' + authToken.slice(0, 8), displayName:'微信用户' };
+  sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(currentUser));
+  history.replaceState({}, document.title, location.pathname);
+}
+
+function doLogin() {
+  const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+  const password = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  if (!username || !password) { errEl.textContent='请填写用户名和密码'; errEl.style.display='block'; return; }
+  const users = JSON.parse(localStorage.getItem(AUTH_USERS_KEY) || '{}');
+  const user = users[username];
+  if (!user || user.hash !== btoa(unescape(encodeURIComponent(password)))) {
+    errEl.textContent = '用户名或密码错误'; errEl.style.display = 'block'; return;
+  }
+  currentUser = { username, displayName: user.displayName };
+  sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(currentUser));
+  showApp();
+}
+
+function doRegister() {
+  const username    = document.getElementById('regUsername').value.trim().toLowerCase();
+  const displayName = document.getElementById('regDisplayName').value.trim();
+  const password    = document.getElementById('regPassword').value;
+  const confirm     = document.getElementById('regConfirm').value;
+  const errEl       = document.getElementById('regError');
+  if (!username || !displayName || !password) { errEl.textContent='请填写所有字段'; errEl.style.display='block'; return; }
+  if (!/^[a-z0-9_]+$/.test(username)) { errEl.textContent='用户名只能包含英文字母、数字和下划线'; errEl.style.display='block'; return; }
+  if (password.length < 6) { errEl.textContent='密码至少6位'; errEl.style.display='block'; return; }
+  if (password !== confirm) { errEl.textContent='两次密码不一致'; errEl.style.display='block'; return; }
+  const users = JSON.parse(localStorage.getItem(AUTH_USERS_KEY) || '{}');
+  if (users[username]) { errEl.textContent='用户名已存在，请换一个'; errEl.style.display='block'; return; }
+  users[username] = { displayName, hash: btoa(unescape(encodeURIComponent(password))), createdAt: Date.now() };
+  localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(users));
+  currentUser = { username, displayName };
+  sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(currentUser));
+  showApp();
+  showToast('🎉 账号创建成功，欢迎 ' + displayName + '！');
+}
+
+function doLogout() {
+  if (!confirm('确认退出登录？')) return;
+  sessionStorage.removeItem(AUTH_SESSION_KEY);
+  currentUser = null;
+  customers = [];
+  showLoginScreen();
+}
+
 // ===== GLOBAL STATE =====
 let rates = {};
-let customers = JSON.parse(localStorage.getItem('tradetools_customers') || '[]');
+let customers = [];
 
 // ===== NAVIGATION =====
 function showSection(id) {
@@ -1308,13 +1770,18 @@ function showSection(id) {
   if (id === 'pi') { renderPIForm(); renderPI(); }
   if (id === 'crm') renderCRM();
   if (id === 'bgcheck') { /* ready */ }
+  if (id === 'clock') startClock(); else stopClock();
+  if (id === 'container') calcContainer();
+  if (id === 'emailtpl') renderEmailTemplates();
   // close mobile sidebar
   document.getElementById('sidebar').classList.remove('open');
 }
 
 const navLabels = {
-  home: '首页', currency: '汇率', hscode: 'HS Code',
-  shipping: '运费', profit: '报价', pi: 'PI', crm: '客户', bgcheck: '背调'
+  home:'首页', currency:'汇率', hscode:'HS Code',
+  shipping:'运费', profit:'报价', pi:'PI',
+  crm:'客户', bgcheck:'背调',
+  clock:'时钟', container:'装柜', emailtpl:'模板'
 };
 
 // ===== EXCHANGE RATES =====
@@ -1657,7 +2124,9 @@ function printQuote() {
 
 // ===== CRM =====
 function saveCustomers() {
-  localStorage.setItem('tradetools_customers', JSON.stringify(customers));
+  if (currentUser) {
+    localStorage.setItem('bsd_crm_' + currentUser.username, JSON.stringify(customers));
+  }
 }
 
 function openCrmModal(id) {
@@ -2657,6 +3126,9 @@ function bgSaveToCRM() {
 
 function printBGReport() {
   if (!bgReportData) { showToast('请先生成背调报告'); return; }
+  const printNode = document.getElementById('bgPrintReport');
+  const reportNode = document.getElementById('bgReport');
+  if (printNode && reportNode) printNode.innerHTML = reportNode.innerHTML;
   window.print();
 }
 
@@ -2664,14 +3136,452 @@ function printBGReport() {
 function openAdModal() { document.getElementById('adModal').classList.add('show'); }
 function openContactModal() { document.getElementById('contactModal').classList.add('show'); }
 
+// ===== WORLD CLOCK =====
+const allClockZones = [
+  {city:'北京/上海',country:'🇨🇳 中国',region:'亚洲',tz:'Asia/Shanghai',color:'#dc2626'},
+  {city:'香港',country:'🇭🇰 中国香港',region:'亚洲',tz:'Asia/Hong_Kong',color:'#be123c'},
+  {city:'台北',country:'🇹🇼 中国台湾',region:'亚洲',tz:'Asia/Taipei',color:'#e11d48'},
+  {city:'东京',country:'🇯🇵 日本',region:'亚洲',tz:'Asia/Tokyo',color:'#be185d'},
+  {city:'首尔',country:'🇰🇷 韩国',region:'亚洲',tz:'Asia/Seoul',color:'#7c3aed'},
+  {city:'新加坡',country:'🇸🇬 新加坡',region:'亚洲',tz:'Asia/Singapore',color:'#c2410c'},
+  {city:'曼谷',country:'🇹🇭 泰国',region:'亚洲',tz:'Asia/Bangkok',color:'#ea580c'},
+  {city:'胡志明市',country:'🇻🇳 越南',region:'亚洲',tz:'Asia/Ho_Chi_Minh',color:'#16a34a'},
+  {city:'雅加达',country:'🇮🇩 印尼',region:'亚洲',tz:'Asia/Jakarta',color:'#059669'},
+  {city:'吉隆坡',country:'🇲🇾 马来西亚',region:'亚洲',tz:'Asia/Kuala_Lumpur',color:'#0891b2'},
+  {city:'马尼拉',country:'🇵🇭 菲律宾',region:'亚洲',tz:'Asia/Manila',color:'#2563eb'},
+  {city:'孟买',country:'🇮🇳 印度',region:'亚洲',tz:'Asia/Kolkata',color:'#dc2626'},
+  {city:'达卡',country:'🇧🇩 孟加拉',region:'亚洲',tz:'Asia/Dhaka',color:'#047857'},
+  {city:'卡拉奇',country:'🇵🇰 巴基斯坦',region:'亚洲',tz:'Asia/Karachi',color:'#065f46'},
+  {city:'迪拜',country:'🇦🇪 阿联酋',region:'中东/非洲',tz:'Asia/Dubai',color:'#d97706'},
+  {city:'利雅得',country:'🇸🇦 沙特',region:'中东/非洲',tz:'Asia/Riyadh',color:'#b45309'},
+  {city:'伊斯坦布尔',country:'🇹🇷 土耳其',region:'欧洲',tz:'Europe/Istanbul',color:'#f97316'},
+  {city:'伦敦',country:'🇬🇧 英国',region:'欧洲',tz:'Europe/London',color:'#0891b2'},
+  {city:'鹿特丹/阿姆斯特丹',country:'🇳🇱 荷兰',region:'欧洲',tz:'Europe/Amsterdam',color:'#0f766e'},
+  {city:'法兰克福',country:'🇩🇪 德国',region:'欧洲',tz:'Europe/Berlin',color:'#059669'},
+  {city:'巴黎',country:'🇫🇷 法国',region:'欧洲',tz:'Europe/Paris',color:'#2563eb'},
+  {city:'米兰',country:'🇮🇹 意大利',region:'欧洲',tz:'Europe/Rome',color:'#16a34a'},
+  {city:'马德里',country:'🇪🇸 西班牙',region:'欧洲',tz:'Europe/Madrid',color:'#dc2626'},
+  {city:'华沙',country:'🇵🇱 波兰',region:'欧洲',tz:'Europe/Warsaw',color:'#be123c'},
+  {city:'纽约',country:'🇺🇸 美国东部',region:'美洲',tz:'America/New_York',color:'#2563eb'},
+  {city:'芝加哥',country:'🇺🇸 美国中部',region:'美洲',tz:'America/Chicago',color:'#1d4ed8'},
+  {city:'洛杉矶',country:'🇺🇸 美国西部',region:'美洲',tz:'America/Los_Angeles',color:'#7c3aed'},
+  {city:'多伦多',country:'🇨🇦 加拿大',region:'美洲',tz:'America/Toronto',color:'#dc2626'},
+  {city:'温哥华',country:'🇨🇦 加拿大西部',region:'美洲',tz:'America/Vancouver',color:'#0891b2'},
+  {city:'墨西哥城',country:'🇲🇽 墨西哥',region:'美洲',tz:'America/Mexico_City',color:'#16a34a'},
+  {city:'圣保罗',country:'🇧🇷 巴西',region:'美洲',tz:'America/Sao_Paulo',color:'#059669'},
+  {city:'布宜诺斯艾利斯',country:'🇦🇷 阿根廷',region:'美洲',tz:'America/Argentina/Buenos_Aires',color:'#0ea5e9'},
+  {city:'悉尼',country:'🇦🇺 澳大利亚',region:'大洋洲',tz:'Australia/Sydney',color:'#0f766e'},
+  {city:'墨尔本',country:'🇦🇺 澳大利亚',region:'大洋洲',tz:'Australia/Melbourne',color:'#14b8a6'},
+  {city:'奥克兰',country:'🇳🇿 新西兰',region:'大洋洲',tz:'Pacific/Auckland',color:'#0284c7'},
+  {city:'开罗',country:'🇪🇬 埃及',region:'中东/非洲',tz:'Africa/Cairo',color:'#ca8a04'},
+  {city:'约翰内斯堡',country:'🇿🇦 南非',region:'中东/非洲',tz:'Africa/Johannesburg',color:'#65a30d'},
+  {city:'内罗毕',country:'🇰🇪 肯尼亚',region:'中东/非洲',tz:'Africa/Nairobi',color:'#22c55e'},
+  {city:'拉各斯',country:'🇳🇬 尼日利亚',region:'中东/非洲',tz:'Africa/Lagos',color:'#15803d'}
+];
+let clockZones = JSON.parse(localStorage.getItem('bsd_clock_zones') || 'null') || [
+  'America/New_York','Europe/London','Europe/Berlin','Asia/Dubai','Asia/Singapore','Asia/Tokyo','Australia/Sydney'
+];
+let clockRegionFilter = '全部';
+
+function initClockPicker() {
+  const select = document.getElementById('clockZoneSelect');
+  const chips = document.getElementById('clockRegionChips');
+  if (!select || !chips) return;
+  const regions = ['全部', ...Array.from(new Set(allClockZones.map(z=>z.region)))];
+  chips.innerHTML = regions.map(r=>`<button class="clock-chip ${r===clockRegionFilter?'active':''}" onclick="setClockRegion('${r}')">${r}</button>`).join('');
+  const zones = clockRegionFilter === '全部' ? allClockZones : allClockZones.filter(z=>z.region===clockRegionFilter);
+  select.innerHTML = zones.map(z=>`<option value="${z.tz}">${z.country} · ${z.city}</option>`).join('');
+}
+
+function setClockRegion(region) {
+  clockRegionFilter = region;
+  initClockPicker();
+}
+
+function addClockZone() {
+  const tz = document.getElementById('clockZoneSelect')?.value;
+  if (!tz) return;
+  if (!clockZones.includes(tz)) clockZones.push(tz);
+  localStorage.setItem('bsd_clock_zones', JSON.stringify(clockZones));
+  renderClock();
+}
+
+function removeClockZone(tz) {
+  clockZones = clockZones.filter(x => x !== tz);
+  localStorage.setItem('bsd_clock_zones', JSON.stringify(clockZones));
+  renderClock();
+}
+
+function renderClock() {
+  const grid = document.getElementById('clockGrid');
+  if (!grid) return;
+  const now = new Date();
+  initClockPicker();
+  grid.innerHTML = clockZones.map(tz => {
+    const z = allClockZones.find(item => item.tz === tz) || {city:tz.split('/').pop().replace('_',' '),country:'🌐',region:'自定义',tz,color:'#2563eb'};
+    const time = now.toLocaleTimeString('zh-CN', {timeZone:z.tz, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+    const date = now.toLocaleDateString('zh-CN', {timeZone:z.tz, month:'short', day:'numeric', weekday:'short'});
+    const hour = parseInt(now.toLocaleTimeString('en-US', {timeZone:z.tz, hour:'2-digit', hour12:false}));
+    const isWork = hour >= 9 && hour < 18;
+    const isSleep = hour >= 0 && hour < 7;
+    const statusIcon = isSleep ? '😴' : isWork ? '✅' : '🌙';
+    const statusText = isSleep ? '休息中' : isWork ? '工作时间' : '下班后';
+    return `<div style="background:white;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px;border-top:3px solid ${z.color};">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+        <span style="font-size:18px;">${z.country.split(' ')[0]}</span>
+        <div>
+          <div style="font-weight:700;font-size:13px;color:#0f172a;">${z.city}</div>
+          <div style="font-size:10px;color:#94a3b8;">${z.country.replace(/^\S+\s?/, '') || z.region}</div>
+        </div>
+        <button onclick="removeClockZone('${z.tz}')" title="移除" style="margin-left:4px;background:none;border:none;color:#cbd5e1;cursor:pointer;padding:3px;"><i class="fas fa-times"></i></button>
+        <span style="margin-left:auto;font-size:11px;background:${isWork?'#dcfce7':isSleep?'#f1f5f9':'#fef9c3'};color:${isWork?'#166534':isSleep?'#64748b':'#854d0e'};padding:2px 6px;border-radius:10px;">${statusIcon} ${statusText}</span>
+      </div>
+      <div style="font-size:26px;font-weight:800;color:${z.color};font-family:monospace;letter-spacing:1px;">${time}</div>
+      <div style="font-size:12px;color:#64748b;margin-top:3px;">${date}</div>
+    </div>`;
+  }).join('');
+}
+
+let clockInterval = null;
+function startClock() { renderClock(); if (!clockInterval) clockInterval = setInterval(renderClock, 1000); }
+function stopClock() { if (clockInterval) { clearInterval(clockInterval); clockInterval = null; } }
+
+// ===== CONTAINER CALCULATOR =====
+const containers = [
+  {name:'20ft GP', l:590, w:235, h:239, maxW:21700, cbm:33.2, color:'#2563eb'},
+  {name:'40ft GP', l:1203, w:235, h:239, maxW:26500, cbm:67.7, color:'#16a34a'},
+  {name:'40ft HQ', l:1203, w:235, h:270, maxW:26300, cbm:76.3, color:'#9333ea'},
+  {name:'45ft HQ', l:1356, w:235, h:270, maxW:27500, cbm:86.1, color:'#ea580c'},
+];
+
+function calcContainer() {
+  const L = parseFloat(document.getElementById('ctL').value) || 0;
+  const W = parseFloat(document.getElementById('ctW').value) || 0;
+  const H = parseFloat(document.getElementById('ctH').value) || 0;
+  const kg = parseFloat(document.getElementById('ctKg').value) || 0;
+  const qty = parseFloat(document.getElementById('ctQty').value) || 0;
+  const rate = parseFloat(document.getElementById('ctRate').value) / 100;
+  if (!L || !W || !H) return;
+
+  const cartonCBM = (L * W * H) / 1000000;
+  const totalCBM = cartonCBM * qty;
+  const totalKg = kg * qty;
+
+  const res = document.getElementById('containerResult');
+  if (!res) return;
+
+  res.innerHTML = `<div style="background:#f8fafc;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:13px;">
+    <div style="font-weight:700;color:#0f172a;margin-bottom:4px;">货物汇总</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;color:#475569;">
+      <div>单箱体积：<strong>${cartonCBM.toFixed(4)} CBM</strong></div>
+      <div>总体积：<strong>${totalCBM.toFixed(2)} CBM</strong></div>
+      <div>单箱重量：<strong>${kg} kg</strong></div>
+      <div>总重量：<strong>${totalKg.toFixed(0)} kg</strong></div>
+    </div>
+  </div>` + containers.map(c => {
+    const usableCBM = c.cbm * rate;
+    const fitByCBM = Math.floor(usableCBM / cartonCBM);
+    const fitByW   = Math.floor(c.maxW / (kg || 1));
+    const maxFit   = Math.min(fitByCBM, fitByW);
+    const need     = qty > 0 ? Math.ceil(qty / maxFit) : '-';
+    const pct      = Math.min(100, ((qty * cartonCBM) / (c.cbm * need || 1) * 100)).toFixed(0);
+    const ok       = qty <= maxFit;
+    return `<div style="border:1px solid ${c.color}20;border-radius:10px;padding:12px 14px;border-left:4px solid ${c.color};">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <span style="font-weight:700;font-size:14px;color:${c.color};">${c.name}</span>
+        <span style="font-size:11px;background:${ok?'#dcfce7':'#fee2e2'};color:${ok?'#166534':'#dc2626'};padding:2px 8px;border-radius:10px;font-weight:600;">${ok?'✅ 可装1柜':'需 '+need+' 柜'}</span>
+      </div>
+      <div style="font-size:12px;color:#475569;display:grid;grid-template-columns:1fr 1fr;gap:2px;">
+        <div>可装箱数：<strong>${maxFit} 箱</strong></div>
+        <div>需装柜数：<strong>${need} 柜</strong></div>
+        <div>可用CBM：<strong>${usableCBM.toFixed(1)} / ${c.cbm}</strong></div>
+        <div>剩余空间：<strong>${Math.max(0,usableCBM - qty*cartonCBM).toFixed(2)} CBM</strong></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== EMAIL TEMPLATES =====
+const emailCategories = [
+  {
+    id:'inquiry', name:'📩 询盘回复', templates:[
+      {title:'标准询盘回复',subject:'Re: Inquiry for [Product Name]',body:`Dear [Name],
+
+Thank you for your inquiry about our [Product Name].
+
+We are pleased to share the following information:
+
+Product: [Product Name]
+Specifications: [Key specs]
+MOQ: [Minimum Order Quantity]
+Unit Price: USD [Price] / [Unit] (FOB [Port])
+Lead Time: [X] days after deposit received
+Payment Terms: T/T 30% deposit, 70% balance before shipment
+Packing: [Carton size and weight]
+
+We can also offer:
+✓ OEM / Private Label customization
+✓ Sample order available
+✓ Full after-sales technical support
+
+Please find our catalog attached. May I know your target quantity and destination port so I can provide a more precise quotation?
+
+Looking forward to hearing from you.
+
+Best regards,
+[Your Name]
+[Your Company] | [Your Email] | [WhatsApp]`},
+      {title:'价格确认邮件',subject:'Price Confirmation - [Product Name]',body:`Dear [Name],
+
+Further to our recent communication, I would like to confirm the pricing for [Product Name]:
+
+Quantity: [X] pcs
+Unit Price: USD [Price] (FOB [Port])
+Total Amount: USD [Total]
+Payment Terms: [Terms]
+Lead Time: [X] working days
+
+Validity: This quotation is valid for 30 days.
+
+Please reply to confirm if you would like to proceed with a formal Pro Forma Invoice (PI).
+
+Best regards,
+[Your Name]`},
+    ]
+  },
+  {
+    id:'followup', name:'🔄 跟进邮件', templates:[
+      {title:'首次跟进（发出询盘后）',subject:'Following Up - [Product Name] Inquiry',body:`Dear [Name],
+
+I hope this email finds you well.
+
+I wanted to follow up on my previous email regarding [Product Name]. I understand you may be busy reviewing options, and I would like to make sure my quotation reached you correctly.
+
+Key highlights of our offer:
+• Competitive pricing: USD [Price]/pc (FOB [Port])
+• MOQ: [Quantity]
+• Lead time: [X] days
+• OEM/private label available
+
+If you have any questions or need additional information, please do not hesitate to contact me. I would also be happy to arrange a quick video call at your convenience.
+
+Best regards,
+[Your Name]`},
+      {title:'样品跟进',subject:'Following Up on Your Sample Order',body:`Dear [Name],
+
+I hope you have received our sample in good condition.
+
+Could you please share your feedback on the sample quality? We would appreciate knowing:
+1. Does the product meet your quality requirements?
+2. Any adjustments needed in specifications, packaging, or labeling?
+3. What is your estimated order quantity for the first batch?
+
+We are ready to start production once the sample is approved. Please feel free to let me know if you need any modifications.
+
+Best regards,
+[Your Name]`},
+    ]
+  },
+  {
+    id:'payment', name:'💰 付款提醒', templates:[
+      {title:'温和付款提醒',subject:'Payment Reminder - Order #[OrderNo]',body:`Dear [Name],
+
+I hope you are doing well.
+
+This is a gentle reminder that the payment for Order #[OrderNo] is due on [Date].
+
+Order Details:
+Order No.: [OrderNo]
+Amount Due: USD [Amount]
+Due Date: [Date]
+Payment Details: [Bank info or T/T instructions]
+
+If you have already made the payment, please kindly share the bank transfer receipt so we can update our records and proceed with production/shipment.
+
+If you have any questions, please do not hesitate to contact me.
+
+Best regards,
+[Your Name]`},
+      {title:'催款（逾期后）',subject:'Overdue Payment Notice - Order #[OrderNo]',body:`Dear [Name],
+
+I hope this email finds you well.
+
+Our records show that the payment for Order #[OrderNo] (USD [Amount]) was due on [Date] and remains outstanding.
+
+We understand that delays can sometimes occur, and we would appreciate it if you could:
+1. Confirm when the payment will be processed, or
+2. Let us know if there are any issues we can help resolve.
+
+Please note that this payment is required before we can proceed with [production / shipment].
+
+Looking forward to your prompt response.
+
+Best regards,
+[Your Name]`},
+    ]
+  },
+  {
+    id:'shipping', name:'🚢 发货通知', templates:[
+      {title:'发货通知邮件',subject:'Shipment Notification - Order #[OrderNo]',body:`Dear [Name],
+
+We are pleased to inform you that your order #[OrderNo] has been shipped.
+
+Shipment Details:
+Vessel / Flight: [Carrier Name + No.]
+Bill of Lading / AWB No.: [BL/AWB Number]
+Port of Loading: [Port]
+Port of Destination: [Port]
+ETD: [Estimated Departure Date]
+ETA: [Estimated Arrival Date]
+Packages: [X] cartons, [Weight] kg, [CBM] CBM
+
+Documents being sent:
+✓ Commercial Invoice
+✓ Packing List
+✓ Bill of Lading / Airway Bill
+✓ [Certificate of Origin / Other docs]
+
+Please arrange customs clearance upon arrival. Do not hesitate to contact me if you need any additional documentation.
+
+Best regards,
+[Your Name]`},
+    ]
+  },
+  {
+    id:'sample', name:'📦 样品申请', templates:[
+      {title:'回复样品申请',subject:'Re: Sample Request - [Product Name]',body:`Dear [Name],
+
+Thank you for your interest in our [Product Name]. We would be happy to arrange a sample for your evaluation.
+
+Sample Details:
+Product: [Product Name]
+Specification: [Specs]
+Sample Cost: USD [X] (refundable upon first order of [MOQ]+)
+Shipping Cost: At your account (please provide your DHL/FedEx/UPS account, or we can arrange and charge accordingly)
+Sample Lead Time: [X] working days
+
+To proceed, please confirm:
+1. Your shipping address
+2. Your courier account number (or preferred shipping method)
+3. Any specific requirements for the sample
+
+Once we receive confirmation, we will prepare the sample immediately.
+
+Best regards,
+[Your Name]`},
+    ]
+  },
+  {
+    id:'aftersales', name:'🔧 售后处理', templates:[
+      {title:'质量投诉回复',subject:'Re: Quality Issue - Order #[OrderNo]',body:`Dear [Name],
+
+Thank you for bringing this matter to our attention. We sincerely apologize for the inconvenience caused.
+
+We take quality issues very seriously. To investigate this matter thoroughly, could you please provide:
+1. Photos or videos showing the defective products
+2. The quantity of defective items
+3. A brief description of the issue
+
+Once we receive the information, we will review it promptly and propose a solution, which may include:
+• Replacement of defective items in your next order
+• Credit note for the affected quantity
+• Full replacement shipment (for significant quantities)
+
+We value our business relationship and are committed to resolving this to your satisfaction.
+
+Best regards,
+[Your Name]`},
+    ]
+  },
+  {
+    id:'oem', name:'🏷️ OEM 合作', templates:[
+      {title:'OEM合作开发邮件',subject:'OEM Manufacturing Partnership - [Product Category]',body:`Dear [Name],
+
+I am reaching out from [Your Company], a professional manufacturer of [Product Category] with [X] years of export experience.
+
+We specialize in OEM/private-label production and believe we may be a good manufacturing partner for your business.
+
+What we offer:
+✓ Custom branding: Logo, color, packaging, manual
+✓ Product customization: Specs, functions, certifications
+✓ Flexible MOQ starting from [X] pcs
+✓ Lead time: [X] days after approval
+✓ Certifications: [CE/FCC/UL/RoHS, etc.]
+✓ Spare parts supply & remote technical support
+
+We have worked with distributors and brand owners in [Countries/Regions] and would be happy to share our OEM case studies (upon NDA if required).
+
+May I send you our OEM capability brochure and some models that may suit your product line?
+
+Best regards,
+[Your Name]
+[Your Company]
+Website: [URL] | WhatsApp: [No.]`},
+    ]
+  },
+];
+
+let activeTplCategory = 0;
+let activeTplIndex    = 0;
+
+function renderEmailTemplates() {
+  const catList = document.getElementById('tplCategoryList');
+  const content = document.getElementById('tplContent');
+  if (!catList || !content) return;
+
+  catList.innerHTML = emailCategories.map((c, i) => `
+    <div onclick="selectTplCategory(${i})" style="padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:${i===activeTplCategory?'700':'500'};background:${i===activeTplCategory?'#eff6ff':'transparent'};color:${i===activeTplCategory?'#1d4ed8':'#374151'};">
+      ${c.name}
+    </div>
+  `).join('');
+
+  const cat = emailCategories[activeTplCategory];
+  content.innerHTML = `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+      ${cat.templates.map((t,i) => `<button onclick="selectTpl(${i})" style="padding:6px 14px;border-radius:8px;border:1.5px solid ${i===activeTplIndex?'#2563eb':'#e2e8f0'};background:${i===activeTplIndex?'#eff6ff':'white'};color:${i===activeTplIndex?'#1d4ed8':'#374151'};cursor:pointer;font-size:13px;font-weight:${i===activeTplIndex?'700':'400'};">${t.title}</button>`).join('')}
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:4px;">邮件主题</div>
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:600;color:#0f172a;display:flex;align-items:center;justify-content:space-between;">
+        <span>${cat.templates[activeTplIndex].subject}</span>
+        <button onclick="copyTplSubject()" style="background:#2563eb;color:white;border:none;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;">复制</button>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:4px;">邮件正文</div>
+      <div style="position:relative;">
+        <pre id="tplBody" style="background:#0b1220;color:#e5e7eb;border-radius:12px;padding:18px;font-size:13px;line-height:1.7;white-space:pre-wrap;font-family:Consolas,Monaco,monospace;margin:0;overflow-x:auto;">${cat.templates[activeTplIndex].body}</pre>
+        <button onclick="copyTplBody()" style="position:absolute;top:10px;right:10px;background:#2563eb;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;">📋 复制正文</button>
+      </div>
+    </div>
+    <div style="margin-top:12px;background:#fef9c3;border-radius:8px;padding:10px 14px;font-size:12px;color:#854d0e;">
+      💡 将 <strong>[方括号内的内容]</strong> 替换为实际信息后发送。颜色标注处为必填项。
+    </div>
+  `;
+}
+
+function selectTplCategory(i) { activeTplCategory = i; activeTplIndex = 0; renderEmailTemplates(); }
+function selectTpl(i) { activeTplIndex = i; renderEmailTemplates(); }
+function copyTplSubject() {
+  const s = emailCategories[activeTplCategory].templates[activeTplIndex].subject;
+  navigator.clipboard.writeText(s).then(() => showToast('主题已复制'));
+}
+function copyTplBody() {
+  const b = emailCategories[activeTplCategory].templates[activeTplIndex].body;
+  navigator.clipboard.writeText(b).then(() => showToast('正文已复制，记得替换 [ ] 内容'));
+}
+
 // ===== INIT =====
-fetchRates();
-initHSCategories();
-calcShipping();
-calcProfit();
-initPI();
-renderCRM();
-updateHomeStats();
+initAuth(); // Auth must run first; showApp() calls the rest
+function appInit() {
+  fetchRates();
+  initHSCategories();
+  calcShipping();
+  calcProfit();
+  initPI();
+  renderCRM();
+  updateHomeStats();
+}
 </script>
 </body>
 </html>
