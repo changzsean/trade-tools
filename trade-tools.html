@@ -99,6 +99,13 @@
   .pi-preview .pi-no { font-size:13px; text-align:center; color:#555; margin-top:2px; }
   .pi-preview .section-label { font-weight:bold; font-size:11px; text-transform:uppercase; color:#555; margin-bottom:3px; }
   .pi-preview .amount-cell { text-align:right; font-weight:600; }
+  .pi-img-uploader { display:flex; gap:10px; align-items:center; }
+  .pi-img-box { width:58px; height:58px; border:1px dashed #cbd5e1; border-radius:8px; background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden; color:#94a3b8; font-size:11px; text-align:center; }
+  .pi-img-box img { width:100%; height:100%; object-fit:cover; display:block; }
+  .pi-img-actions { flex:1; display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+  .pi-img-btn { border:1px solid #dbe4ef; background:#fff; color:#334155; border-radius:7px; padding:6px 9px; font-size:12px; font-weight:700; cursor:pointer; }
+  .pi-img-btn:hover { border-color:#93c5fd; color:#1d4ed8; }
+  .pi-product-img { width:54px; height:54px; object-fit:cover; border-radius:4px; border:1px solid #ddd; display:block; margin:auto; }
   @media print {
     #piFormPanel { display:none !important; }
     #piPreviewPanel { width:100% !important; box-shadow:none !important; padding:0 !important; }
@@ -1079,9 +1086,9 @@
           </div>
           <div id="piItemsForm" class="space-y-2"></div>
         </div>
-        <!-- Freight & Insurance (for CIF) -->
+        <!-- Freight, Insurance & Discount -->
         <div class="mb-4">
-          <div class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">附加费用</div>
+          <div class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">运费 / 折扣 / 保险</div>
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="text-xs text-gray-400 block mb-1">运费 Freight</label>
@@ -1090,6 +1097,19 @@
             <div>
               <label class="text-xs text-gray-400 block mb-1">保险 Insurance</label>
               <input class="inp" type="number" id="pi_insurance" placeholder="0.00" value="0" oninput="renderPI()">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <div>
+              <label class="text-xs text-gray-400 block mb-1">折扣类型 Discount Type</label>
+              <select class="inp" id="pi_discount_type" onchange="renderPI()">
+                <option value="amount">固定金额 Amount</option>
+                <option value="percent">百分比 Percent</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs text-gray-400 block mb-1">折扣 Discount</label>
+              <input class="inp" type="number" id="pi_discount" placeholder="0.00" value="0" oninput="renderPI()">
             </div>
           </div>
         </div>
@@ -2271,14 +2291,14 @@ function showToast(msg) {
 
 // ===== PI GENERATOR =====
 let piItems = [
-  {desc:'', spec:'', qty:'', unit:'PCS', price:'', amount:0},
-  {desc:'', spec:'', qty:'', unit:'PCS', price:'', amount:0},
+  {desc:'', spec:'', qty:'', unit:'PCS', price:'', amount:0, image:''},
+  {desc:'', spec:'', qty:'', unit:'PCS', price:'', amount:0, image:''},
 ];
 
 const piUnits = ['PCS','SET','KG','G','M','M2','M3','CBM','L','BOX','CTN','ROLL','PAIR','LOT','PACK'];
 
 function piAddRow() {
-  piItems.push({desc:'', spec:'', qty:'', unit:'PCS', price:'', amount:0});
+  piItems.push({desc:'', spec:'', qty:'', unit:'PCS', price:'', amount:0, image:''});
   renderPIForm();
   renderPI();
 }
@@ -2299,6 +2319,35 @@ function piRowChange(i, field, val) {
   renderPI();
 }
 
+function piSetImage(i, input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    showToast('请上传图片文件');
+    input.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    piItems[i].image = reader.result;
+    renderPIForm();
+    renderPI();
+  };
+  reader.readAsDataURL(file);
+}
+
+function piRemoveImage(i) {
+  piItems[i].image = '';
+  renderPIForm();
+  renderPI();
+}
+
+function escHtml(v) {
+  return String(v ?? '').replace(/[&<>"']/g, ch => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[ch]));
+}
+
 function renderPIForm() {
   const c = document.getElementById('piItemsForm');
   c.innerHTML = piItems.map((item, i) => `
@@ -2307,17 +2356,25 @@ function renderPIForm() {
         <span class="text-xs font-semibold text-gray-500">第 ${i+1} 行</span>
         <button onclick="piRemoveRow(${i})" class="text-red-400 hover:text-red-600 text-xs"><i class="fas fa-times"></i></button>
       </div>
-      <input class="inp text-sm" placeholder="品名 Description *" value="${item.desc}"
+      <div class="pi-img-uploader">
+        <div class="pi-img-box">${item.image ? `<img src="${item.image}" alt="Product image">` : '产品图'}</div>
+        <div class="pi-img-actions">
+          <input type="file" id="piImg_${i}" accept="image/*" style="display:none;" onchange="piSetImage(${i}, this)">
+          <button type="button" class="pi-img-btn" onclick="document.getElementById('piImg_${i}').click()"><i class="fas fa-image mr-1"></i>添加图片</button>
+          ${item.image ? `<button type="button" class="pi-img-btn" onclick="piRemoveImage(${i})"><i class="fas fa-trash mr-1"></i>删除</button>` : ''}
+        </div>
+      </div>
+      <input class="inp text-sm" placeholder="品名 Description *" value="${escHtml(item.desc)}"
         oninput="piRowChange(${i},'desc',this.value)">
-      <input class="inp text-sm" placeholder="规格/型号 Specification/Model" value="${item.spec}"
+      <input class="inp text-sm" placeholder="规格/型号 Specification/Model" value="${escHtml(item.spec)}"
         oninput="piRowChange(${i},'spec',this.value)">
       <div class="grid grid-cols-4 gap-1">
-        <input class="inp text-sm col-span-1" type="number" placeholder="数量" value="${item.qty}"
+        <input class="inp text-sm col-span-1" type="number" placeholder="数量" value="${escHtml(item.qty)}"
           oninput="piRowChange(${i},'qty',this.value)">
         <select class="inp text-sm col-span-1" onchange="piRowChange(${i},'unit',this.value)">
           ${piUnits.map(u => `<option ${u===item.unit?'selected':''}>${u}</option>`).join('')}
         </select>
-        <input class="inp text-sm col-span-2" type="number" placeholder="单价 Unit Price" value="${item.price}"
+        <input class="inp text-sm col-span-2" type="number" placeholder="单价 Unit Price" value="${escHtml(item.price)}"
           oninput="piRowChange(${i},'price',this.value)">
       </div>
       <div class="text-right text-xs text-blue-600 font-semibold">
@@ -2342,7 +2399,11 @@ function renderPI() {
   const subtotal = piItems.reduce((s, r) => s + (r.amount || 0), 0);
   const freight = parseFloat(g('pi_freight')) || 0;
   const insurance = parseFloat(g('pi_insurance')) || 0;
-  const grandTotal = subtotal + freight + insurance;
+  const discountInput = Math.max(0, parseFloat(g('pi_discount')) || 0);
+  const discountType = g('pi_discount_type') || 'amount';
+  const rawDiscount = discountType === 'percent' ? subtotal * discountInput / 100 : discountInput;
+  const discount = Math.min(rawDiscount, subtotal + freight + insurance);
+  const grandTotal = Math.max(0, subtotal + freight + insurance - discount);
 
   // Number to words (simplified)
   function amtToWords(n) {
@@ -2369,22 +2430,23 @@ function renderPI() {
   }
 
   const hasRows = piItems.some(r => r.desc);
-  const rowsHTML = piItems.filter(r => r.desc || r.qty || r.price).map((r, i) => `
+  const rowsHTML = piItems.filter(r => r.desc || r.qty || r.price || r.image).map((r, i) => `
     <tr>
       <td style="text-align:center;">${i+1}</td>
-      <td>${r.desc || ''}</td>
-      <td style="text-align:center;">${r.spec || ''}</td>
-      <td style="text-align:center;">${r.qty || ''}</td>
-      <td style="text-align:center;">${r.unit || ''}</td>
+      <td style="text-align:center;width:66px;">${r.image ? `<img class="pi-product-img" src="${r.image}" alt="Product image">` : ''}</td>
+      <td>${escHtml(r.desc || '')}</td>
+      <td style="text-align:center;">${escHtml(r.spec || '')}</td>
+      <td style="text-align:center;">${escHtml(r.qty || '')}</td>
+      <td style="text-align:center;">${escHtml(r.unit || '')}</td>
       <td style="text-align:right;">${r.price ? parseFloat(r.price).toFixed(2) : ''}</td>
       <td style="text-align:right;font-weight:600;">${r.amount ? r.amount.toFixed(2) : ''}</td>
     </tr>
   `).join('');
 
   // Fill empty rows to minimum 5
-  const filledRows = piItems.filter(r => r.desc || r.qty || r.price).length;
+  const filledRows = piItems.filter(r => r.desc || r.qty || r.price || r.image).length;
   const emptyPad = Math.max(0, 5 - filledRows);
-  const padHTML = Array(emptyPad).fill('<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>').join('');
+  const padHTML = Array(emptyPad).fill('<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>').join('');
 
   const sellerAddr = (g('pi_seller_addr')||'').replace(/\n/g,'<br>');
   const buyerAddr = (g('pi_buyer_addr')||'').replace(/\n/g,'<br>');
@@ -2451,6 +2513,7 @@ function renderPI() {
         <thead>
           <tr style="background:#f3f4f6;">
             <th style="border:1px solid #aaa;padding:7px 6px;text-align:center;width:30px;">No.</th>
+            <th style="border:1px solid #aaa;padding:7px 6px;text-align:center;width:68px;">Image<br><span style="font-weight:normal;color:#777;font-size:11px;">图片</span></th>
             <th style="border:1px solid #aaa;padding:7px 6px;text-align:left;">Description of Goods<br><span style="font-weight:normal;color:#777;font-size:11px;">品名</span></th>
             <th style="border:1px solid #aaa;padding:7px 6px;text-align:center;width:120px;">Specification<br><span style="font-weight:normal;color:#777;font-size:11px;">规格/型号</span></th>
             <th style="border:1px solid #aaa;padding:7px 6px;text-align:center;width:60px;">Qty<br><span style="font-weight:normal;color:#777;font-size:11px;">数量</span></th>
@@ -2460,20 +2523,21 @@ function renderPI() {
           </tr>
         </thead>
         <tbody>
-          ${rowsHTML || '<tr><td colspan="7" style="padding:12px;color:#aaa;text-align:center;">请在左侧填写商品明细</td></tr>'}
+          ${rowsHTML || '<tr><td colspan="8" style="padding:12px;color:#aaa;text-align:center;">请在左侧填写商品明细</td></tr>'}
           ${padHTML}
         </tbody>
         <tfoot>
-          ${freight > 0 || insurance > 0 ? `
+          ${freight > 0 || insurance > 0 || discount > 0 ? `
           <tr>
-            <td colspan="6" style="border:1px solid #aaa;padding:6px 8px;text-align:right;color:#555;">Subtotal 小计</td>
+            <td colspan="7" style="border:1px solid #aaa;padding:6px 8px;text-align:right;color:#555;">Subtotal 小计</td>
             <td style="border:1px solid #aaa;padding:6px 8px;text-align:right;font-weight:600;">${subtotal.toFixed(2)}</td>
           </tr>
-          ${freight > 0 ? `<tr><td colspan="6" style="border:1px solid #aaa;padding:6px 8px;text-align:right;color:#555;">Freight 运费</td><td style="border:1px solid #aaa;padding:6px 8px;text-align:right;">${freight.toFixed(2)}</td></tr>` : ''}
-          ${insurance > 0 ? `<tr><td colspan="6" style="border:1px solid #aaa;padding:6px 8px;text-align:right;color:#555;">Insurance 保险</td><td style="border:1px solid #aaa;padding:6px 8px;text-align:right;">${insurance.toFixed(2)}</td></tr>` : ''}
+          ${freight > 0 ? `<tr><td colspan="7" style="border:1px solid #aaa;padding:6px 8px;text-align:right;color:#555;">Freight 运费</td><td style="border:1px solid #aaa;padding:6px 8px;text-align:right;">${freight.toFixed(2)}</td></tr>` : ''}
+          ${insurance > 0 ? `<tr><td colspan="7" style="border:1px solid #aaa;padding:6px 8px;text-align:right;color:#555;">Insurance 保险</td><td style="border:1px solid #aaa;padding:6px 8px;text-align:right;">${insurance.toFixed(2)}</td></tr>` : ''}
+          ${discount > 0 ? `<tr><td colspan="7" style="border:1px solid #aaa;padding:6px 8px;text-align:right;color:#555;">Discount 折扣${discountType === 'percent' ? ` (${discountInput}%)` : ''}</td><td style="border:1px solid #aaa;padding:6px 8px;text-align:right;color:#dc2626;">-${discount.toFixed(2)}</td></tr>` : ''}
           ` : ''}
           <tr style="background:#f3f4f6;">
-            <td colspan="6" style="border:1px solid #aaa;padding:8px;text-align:right;font-weight:bold;font-size:14px;">TOTAL AMOUNT</td>
+            <td colspan="7" style="border:1px solid #aaa;padding:8px;text-align:right;font-weight:bold;font-size:14px;">TOTAL AMOUNT</td>
             <td style="border:1px solid #aaa;padding:8px;text-align:right;font-weight:bold;font-size:16px;color:#1d4ed8;">${cur} ${grandTotal.toFixed(2)}</td>
           </tr>
         </tfoot>
