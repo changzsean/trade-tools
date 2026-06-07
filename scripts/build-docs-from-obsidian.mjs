@@ -100,6 +100,8 @@ function readDocs() {
         description: meta.description || '',
         order: Number(meta.order || 999),
         author: meta.author || '常征 Sean',
+        type: meta.type || 'article',
+        file: meta.file || '',
         body,
       };
     })
@@ -117,12 +119,31 @@ const indexHtml = docs.map(doc =>
   `        <a class="doc-link" href="#${doc.id}"><strong>${escapeHtml(doc.title)}</strong><span>${escapeHtml(doc.description)}</span><em>在线阅读</em></a>`
 ).join('\n');
 
-const articlesHtml = docs.map(doc => `      <article id="${doc.id}" class="article">
+function renderArticle(doc) {
+  if (doc.type === 'pdf' && doc.file) {
+    const file = escapeHtml(doc.file);
+    return `      <article id="${doc.id}" class="article pdf-article">
+        <a class="modal-close" href="#docs">关闭</a>
+        <h3>${escapeHtml(doc.title)}</h3>
+        <div class="byline">作者：${escapeHtml(doc.author)}｜PDF 在线文档</div>
+        ${doc.body.trim() ? markdownToHtml(doc.body) : ''}
+        <div class="pdf-actions">
+          <a class="download" href="${file}" target="_blank" rel="noopener">打开原 PDF</a>
+          <a class="download secondary-download" href="${file}" download>下载 PDF</a>
+        </div>
+        <iframe class="pdf-frame" src="${file}" title="${escapeHtml(doc.title)}"></iframe>
+      </article>`;
+  }
+
+  return `      <article id="${doc.id}" class="article">
         <a class="modal-close" href="#docs">关闭</a>
         <h3>${escapeHtml(doc.title)}</h3>
         <div class="byline">作者：${escapeHtml(doc.author)}｜在线文档</div>
         ${markdownToHtml(doc.body)}
-      </article>`).join('\n\n');
+      </article>`;
+}
+
+const articlesHtml = docs.map(renderArticle).join('\n\n');
 
 html = html.replace(
   /      <div class="doc-index">[\s\S]*?\n\s+<\/section>/,
