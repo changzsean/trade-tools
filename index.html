@@ -528,6 +528,33 @@
       font-size: 12px;
       font-weight: 800;
     }
+    .pdf-article {
+      width: min(1180px, calc(100vw - 28px));
+      max-height: 90vh;
+    }
+    .pdf-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 16px;
+    }
+    .pdf-actions .download {
+      margin-top: 0;
+    }
+    .secondary-download {
+      color: var(--ink);
+      background: #eef4ff;
+      border: 1px solid #c9dcff;
+    }
+    .pdf-frame {
+      display: block;
+      width: 100%;
+      height: min(72vh, 860px);
+      min-height: 560px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+    }
     .mini-table {
       min-width: 0;
       margin: 12px 0;
@@ -670,7 +697,7 @@
   <div class="proof-strip" aria-label="核心亮点">
     <div class="proof-item"><strong>6</strong><span>外贸运营生命周期阶段</span></div>
     <div class="proof-item"><strong>12</strong><span>增强版跨 Agent Skills</span></div>
-    <div class="proof-item"><strong>13</strong><span>在线文档直接阅读</span></div>
+    <div class="proof-item"><strong>14</strong><span>在线文档直接阅读</span></div>
     <div class="proof-item"><strong>1</strong><span>从学习到执行的作战页面</span></div>
   </div>
 
@@ -1185,6 +1212,7 @@
         <a class="doc-link" href="#doc-prompts"><strong>Accio Work 指令汇总</strong><span>供应链、同行调研、标题、广告、客户开发、谈判与复购指令。</span><em>在线阅读</em></a>
         <a class="doc-link" href="#doc-scripts"><strong>高阶话术库 2.0 完整版</strong><span>店铺诊断、产品链接、直通车、关键词、页面、客户沟通模块。</span><em>在线阅读</em></a>
         <a class="doc-link" href="#doc-growth-camp"><strong>AI 外贸运营增长方法</strong><span>星等级、商机分、优爆品、结构化商详、定时任务。</span><em>在线阅读</em></a>
+        <a class="doc-link" href="#doc-ai-foreign-trade-plan"><strong>AI 外贸规划手册</strong><span>606 客户专属版，保留 PDF 原始排版，支持在线查看和下载。</span><em>在线阅读</em></a>
       </div>
 
       <article id="doc-traffic" class="article">
@@ -3551,6 +3579,18 @@
 <ul>
 <li>每周：复盘询盘质量、业务回复和客户再激活。</li>
 </ul>
+      </article>
+
+      <article id="doc-ai-foreign-trade-plan" class="article pdf-article">
+        <a class="modal-close" href="#docs">关闭</a>
+        <h3>AI 外贸规划手册</h3>
+        <div class="byline">作者：常征 Sean｜PDF 在线文档</div>
+        <p>这份手册以 PDF 原版形式呈现，适合用于外贸增长规划、团队学习和客户沟通前的系统梳理。</p>
+        <div class="pdf-actions">
+          <a class="download" href="./content/AI外贸规划手册-606客户专属.pdf" target="_blank" rel="noopener">打开原 PDF</a>
+          <a class="download secondary-download" href="./content/AI外贸规划手册-606客户专属.pdf" download>下载 PDF</a>
+        </div>
+        <iframe class="pdf-frame" src="./content/AI外贸规划手册-606客户专属.pdf" title="AI 外贸规划手册"></iframe>
       </article>
 
     </section>
