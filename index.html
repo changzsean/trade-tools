@@ -442,7 +442,7 @@
       right: auto;
       bottom: auto;
       transform: translateX(-50%);
-      z-index: 80;
+      z-index: 90;
       width: min(980px, calc(100vw - 28px));
       max-height: 88vh;
       overflow-y: auto;
@@ -458,11 +458,11 @@
     .article:target {
       display: block;
     }
-    .article:target::before {
+    body:has(.article:target)::before {
       content: "";
       position: fixed;
-      inset: -5vh -120vw;
-      z-index: -1;
+      inset: 0;
+      z-index: 70;
       background: rgba(15, 23, 42, .55);
       backdrop-filter: blur(4px);
     }
@@ -517,6 +517,16 @@
       border-left: 4px solid var(--blue);
       background: #f3f7ff;
       color: #26415f;
+    }
+    .page-marker {
+      display: inline-flex;
+      margin: 12px 0 6px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      color: #667085;
+      background: #f2f4f7;
+      font-size: 12px;
+      font-weight: 800;
     }
     .mini-table {
       min-width: 0;
@@ -1180,57 +1190,75 @@
 
       <article id="doc-traffic" class="article">
         <a class="modal-close" href="#docs">关闭</a>
-        <h3>为什么你的国际站平台有点击访客就是没什么询盘，可能存在的原因</h3>
+        <h3>点击访客无询盘原因</h3>
         <div class="byline">作者：常征 Sean｜在线文档</div>
         <h4>先说一个底层真相</h4>
-        <p>B2B 买家在国际站上的行为，和 B2C 完全不同。B2C 买家往往是冲动购买，看图好看、价格合适就可能下单；B2B 买家是理性采购，一个决策可能要经过 5-7 个人，周期从 2 周到 3 个月都有可能。</p>
-        <p>所以，“有访客没商机”的深层原因，很多时候不是产品本身不行，而是页面没有理解 B2B 买家的决策链条。</p>
-        <h4>深层原因：B2B 买家决策的 6 个隐藏障碍</h4>
-        <h4>障碍 1：来访者不是决策者</h4>
-        <p>来访的人可能只是采购专员，他需要回去向老板汇报。页面如果没有足够的汇报素材，即使他觉得产品不错，也很难马上发询盘。</p>
-        <ul>
-          <li>工厂规模：产线、年产能、工厂实拍。</li>
-          <li>大客户案例：哪些品牌或项目使用过。</li>
-          <li>认证列表：CE、UL、FCC 等证书截图。</li>
-          <li>交期保障：备货量、发货时效、生产周期。</li>
-        </ul>
-        <h4>障碍 2：信任还没建立到询盘门槛</h4>
-        <p>B2B 买家的路径通常是：搜索、浏览多家、收藏几家、反复对比，最后才发询盘。他可能已经来过页面 3-5 次，但仍在比较阶段。</p>
-        <ul>
-          <li>开通“立即聊”，降低第一次接触门槛。</li>
-          <li>设置样品页，让买家有低风险尝试入口。</li>
-          <li>主动参与 RFQ 报价，不完全等待买家询盘。</li>
-        </ul>
-        <h4>障碍 3：页面没有解决风险感</h4>
-        <p>B2B 采购最大的心理障碍不是价格，而是风险。买家会担心工厂是否靠谱、质量是否稳定、售后是否有人负责、交期能不能保证。</p>
-        <ul>
-          <li>响应时间尽量做到 2 小时内。</li>
-          <li>把认证放在主图第 2-3 张或详情页前部。</li>
-          <li>历史成交、评价、工厂视频和质检流程要显眼展示。</li>
-        </ul>
-        <h4>障碍 4：关键词和买家采购阶段不匹配</h4>
-        <p>买家采购分为探索期、比较期和决策期。探索期搜大词，例如 “GaN charger”；比较期会搜 “65W GaN charger manufacturer”；决策期会搜 “65W GaN charger CE certified OEM”。</p>
-        <p>如果访客大量来自探索期大词，他们还没有进入询盘阶段，转化自然偏低。运营上应重点布局 manufacturer、supplier、OEM、wholesale、bulk、certified 等阶段 2-3 的关键词，大词可以投，但预算要控制。</p>
-        <h4>障碍 5：竞品的视觉锚点更强</h4>
-        <p>买家通常同时打开多个供应商页面，前 47 秒会快速形成“专业”或“一般”的直觉判断。这个判断很大程度来自主图前 3 张。</p>
-        <ul>
-          <li>第 1 张：产品 + 核心卖点，文字尽量少。</li>
-          <li>第 2 张：认证 + 工厂实拍。</li>
-          <li>第 3 张：场景图、对比图或客户案例。</li>
-        </ul>
-        <h4>障碍 6：没有明确的下一步行动</h4>
-        <p>“欢迎询价”太弱。详情页结尾要给买家明确动作，例如样品申请、批量报价、定制需求、目标国家和数量信息。</p>
-        <div class="quote-box">示例：样品申请请备注 “Sample Request”；批量报价请提供数量和目标国家，24 小时内回复含运费的完整报价；定制需求请说明 Logo、包装或规格要求。</div>
-        <h4>完整闭环模型</h4>
-        <p>买家搜索 → 关键词阶段匹配 → 主图 47 秒建立信任 → 详情页解决风险感 → 提供采购汇报素材 → 响应速度小于 2 小时 → 明确下一步行动 → 询盘或订单。</p>
-        <div class="callout">任何一个环节断掉，链路就断了。</div>
+<p>B2B 买家在国际站上的行为，和 B2C 完全不同。B2C 买家往往是冲动购买，看图好看、价格合适就可能下单；B2B 买家是理性采购，一个决策可能要经过 5-7 个人，周期从 2 周到 3 个月都有可能。</p>
+<p>所以，“有访客没商机”的深层原因，很多时候不是产品本身不行，而是页面没有理解 B2B 买家的决策链条。</p>
+<h4>深层原因：B2B 买家决策的 6 个隐藏障碍</h4>
+<h4>障碍 1：来访者不是决策者</h4>
+<p>来访的人可能只是采购专员，他需要回去向老板汇报。页面如果没有足够的汇报素材，即使他觉得产品不错，也很难马上发询盘。</p>
+<ul>
+<li>工厂规模：产线、年产能、工厂实拍。</li>
+</ul>
+<ul>
+<li>大客户案例：哪些品牌或项目使用过。</li>
+</ul>
+<ul>
+<li>认证列表：CE、UL、FCC 等证书截图。</li>
+</ul>
+<ul>
+<li>交期保障：备货量、发货时效、生产周期。</li>
+</ul>
+<h4>障碍 2：信任还没建立到询盘门槛</h4>
+<p>B2B 买家的路径通常是：搜索、浏览多家、收藏几家、反复对比，最后才发询盘。他可能已经来过页面 3-5 次，但仍在比较阶段。</p>
+<ul>
+<li>开通“立即聊”，降低第一次接触门槛。</li>
+</ul>
+<ul>
+<li>设置样品页，让买家有低风险尝试入口。</li>
+</ul>
+<ul>
+<li>主动参与 RFQ 报价，不完全等待买家询盘。</li>
+</ul>
+<h4>障碍 3：页面没有解决风险感</h4>
+<p>B2B 采购最大的心理障碍不是价格，而是风险。买家会担心工厂是否靠谱、质量是否稳定、售后是否有人负责、交期能不能保证。</p>
+<ul>
+<li>响应时间尽量做到 2 小时内。</li>
+</ul>
+<ul>
+<li>把认证放在主图第 2-3 张或详情页前部。</li>
+</ul>
+<ul>
+<li>历史成交、评价、工厂视频和质检流程要显眼展示。</li>
+</ul>
+<h4>障碍 4：关键词和买家采购阶段不匹配</h4>
+<p>买家采购分为探索期、比较期和决策期。探索期搜大词，例如 “GaN charger”；比较期会搜 “65W GaN charger manufacturer”；决策期会搜 “65W GaN charger CE certified OEM”。</p>
+<p>如果访客大量来自探索期大词，他们还没有进入询盘阶段，转化自然偏低。运营上应重点布局 manufacturer、supplier、OEM、wholesale、bulk、certified 等阶段 2-3 的关键词，大词可以投，但预算要控制。</p>
+<h4>障碍 5：竞品的视觉锚点更强</h4>
+<p>买家通常同时打开多个供应商页面，前 47 秒会快速形成“专业”或“一般”的直觉判断。这个判断很大程度来自主图前 3 张。</p>
+<ul>
+<li>第 1 张：产品 + 核心卖点，文字尽量少。</li>
+</ul>
+<ul>
+<li>第 2 张：认证 + 工厂实拍。</li>
+</ul>
+<ul>
+<li>第 3 张：场景图、对比图或客户案例。</li>
+</ul>
+<h4>障碍 6：没有明确的下一步行动</h4>
+<p>“欢迎询价”太弱。详情页结尾要给买家明确动作，例如样品申请、批量报价、定制需求、目标国家和数量信息。</p>
+<div class="quote-box">示例：样品申请请备注 “Sample Request”；批量报价请提供数量和目标国家，24 小时内回复含运费的完整报价；定制需求请说明 Logo、包装或规格要求。</div>
+<h4>完整闭环模型</h4>
+<p>买家搜索 → 关键词阶段匹配 → 主图 47 秒建立信任 → 详情页解决风险感 → 提供采购汇报素材 → 响应速度小于 2 小时 → 明确下一步行动 → 询盘或订单。</p>
+<div class="quote-box">任何一个环节断掉，链路就断了。</div>
       </article>
 
       <article id="doc-background" class="article">
         <a class="modal-close" href="#docs">关闭</a>
-        <h3>如何做外贸客户背景调查</h3>
+        <h3>外贸客户背景调查</h3>
         <div class="byline">作者：常征 Sean｜在线文档</div>
-        <div class="quote-box">第 1 页</div>
+        <div class="page-marker">第 1 页</div>
 <p>如何做客户背景调查</p>
 <p>分享内容主要包括：</p>
 <h4>一、客户分析，分析什么？</h4>
@@ -1265,8 +1293,8 @@
 <h4>11. 其它各种工具</h4>
 <h4>三、客户背景分析的方法</h4>
 <p>1.快速了解一个网站：</p>
-<p>Google 输入口令  info:xxxx.com  （info：后不用空格）</p>
-<div class="quote-box">第 2 页</div>
+<p>Google 输入口令 info:xxxx.com （info：后不用空格）</p>
+<div class="page-marker">第 2 页</div>
 <p>2.网站分析客户看哪些内容？</p>
 <p>About us 公司品牌，规模，发展历程是怎样的？</p>
 <p>Product 销售的产品有哪些，哪些一直在卖的产品，哪些是老产品，产品在网站上的排列顺</p>
@@ -1308,20 +1336,20 @@
 <p>3 HOT/NEW Products （市场畅销，新品）</p>
 <p>4 产品描述抓关键词（可用于官网和付费，免费平台推广）</p>
 <p>5 CATALOGUE 抓细节 （有些公司会根据销售季节做不同的CATALOGUE 关注 NEW/HOT SALE）</p>
-<div class="quote-box">第 3 页</div>
+<div class="page-marker">第 3 页</div>
 <p>6 产品中的蛛丝马迹（如显示 ONLY SELL AT ABC COMPANY-说明客户非常注重包销/代理）</p>
 <h4>七、如何快速找到客户公司的 CATALOGUE ？</h4>
 <p>Google 下搜索：</p>
-<p>site:网站域名+Catalogue PDF   如 site:kmart.com.au catalogue PDF</p>
+<p>site:网站域名+Catalogue PDF 如 site:kmart.com.au catalogue PDF</p>
 <p>Filetype:PDF Catalogue “网站域名” 如 Filetype:PDF catalogue“kmart.com.au”</p>
 <h4>八、如何通过社交平台分析客户？</h4>
 <p>推荐大家多通过社交平台了解客户，如</p>
-<p>LinkedIn    全面分析客户及公司，商业价值相对大</p>
-<p>Facebook   可更好了解买家以及实时动态</p>
-<p>Twitter   了解买家动态，如活动，促销等</p>
-<p>Youtube   全球第 1 大视频分享网站，被 GOOGLE 收购全球第 2 大搜索引擎</p>
+<p>LinkedIn 全面分析客户及公司，商业价值相对大</p>
+<p>Facebook 可更好了解买家以及实时动态</p>
+<p>Twitter 了解买家动态，如活动，促销等</p>
+<p>Youtube 全球第 1 大视频分享网站，被 GOOGLE 收购全球第 2 大搜索引擎</p>
 <p>怎么看客户有哪些 SNS 平台？</p>
-<p>在客户网站上注意找下是否有这些版块  Social Media / Follow us on ..../ Find us on</p>
+<p>在客户网站上注意找下是否有这些版块 Social Media / Follow us on ..../ Find us on</p>
 <p>Facebook......</p>
 <p>LINKEDIN 分析客户</p>
 <p>分为</p>
@@ -1330,21 +1358,21 @@
 <p>(1)公司分析：</p>
 <p>成立背景--company overview</p>
 <p>员工数 employee</p>
-<p>员工风采公司大事记  Company overview, Update</p>
-<p>主要产品  Company overview, Update</p>
-<p>销售季节  Home Update, Showcase</p>
+<p>员工风采公司大事记 Company overview, Update</p>
+<p>主要产品 Company overview, Update</p>
+<p>销售季节 Home Update, Showcase</p>
 <p>分子公司 Showcase, affilated company</p>
-<p>合作伙伴  Update ( like, comment, share )</p>
+<p>合作伙伴 Update ( like, comment, share )</p>
 <p>(2)客户个人分析</p>
 <p>人长什么样？ Profile picture</p>
 <p>毕业院校 Profile</p>
-<p>工作经历  Experience</p>
+<p>工作经历 Experience</p>
 <p>职位与权限 Tile</p>
-<p>工作能力与风格  recommendation, skills</p>
+<p>工作能力与风格 recommendation, skills</p>
 <p>上下游 connection, recommendation, skills</p>
 <p>性格爱好及志愿者经历</p>
 <p>等等</p>
-<div class="quote-box">第 4 页</div>
+<div class="page-marker">第 4 页</div>
 <h4>九、买家国际信用评级查询分析</h4>
 <p>查询方法：</p>
 <p>1 邓百氏（D&amp;B) Dun &amp; Bradstreet 可以查单个客户也可以每年打包方案合作</p>
@@ -1384,13 +1412,13 @@
 </ul>
 <p>Crystal</p>
 <p>然后就可以看到详细的分析结果</p>
-<div class="quote-box">第 1 页</div>
+<div class="page-marker">第 1 页</div>
 <p>在外贸客户开发的工作过程中， 客户背景的调查分析不可或缺， 最直观的重要性体现在几个</p>
 <p>方向：</p>
 <p>1.确认客户真实性(所在行业，主营产品，避免在无效客户身上花费大量时间)。</p>
 <p>2.挖掘客户价值(购买力，决策权，是否可持续性)。</p>
 <p>3.判断潜在竞争对手(通过所在国家及过往采购行为， 分析潜在竞争对手， 总结比对优劣势)。</p>
-<p>4.成为客户的"知己"(了解客户关注点和需求点，有针对性跟进客户，有的放矢)。</p>
+<p>4.成为客户的&quot;知己&quot;(了解客户关注点和需求点，有针对性跟进客户，有的放矢)。</p>
 <p>因为通过客户背景的调查分析我们能有效的了解到客户的企业文化、 发展历程、 经营模式、</p>
 <p>受众群体类型、真实的采购实力等。</p>
 <p>而这些， 在实际的跟进谈判中都将发挥着至关重要的作用。 你对客户的了解程度， 决定了是</p>
@@ -1405,7 +1433,7 @@
 <p>企业官网</p>
 <p>公司决策人名+公司名</p>
 <p>公司名+SNS 站点名或网址</p>
-<div class="quote-box">第 2 页</div>
+<div class="page-marker">第 2 页</div>
 <p>公司决策人名+SNS 站点名或网址</p>
 <p>SNS 站点主要锁定在 Facebook 和 LinkedIn</p>
 <p>公司名+B2B</p>
@@ -1432,12 +1460,12 @@
 <p>谷歌街景+地图</p>
 <p>这次依然是谷歌工具：</p>
 <p><a href="https://www.google.com/maps" target="_blank" rel="noopener">https://www.google.com/maps</a></p>
-<div class="quote-box">第 3 页</div>
+<div class="page-marker">第 3 页</div>
 <p>这个不用多做介绍， 用来搜索客户位置。如果客户有自己店铺， 谷歌地图会实景展现， 有助</p>
 <p>于你更好的了解客户规模和实力。谷歌还有很多帮助我们分析调查产品市场， 及时优化客户</p>
 <p>开发和营销推广的免费工具，之前都有过分享：10 个免费谷歌工具，帮你快速分析调查产</p>
 <p>品市场，及时优化客户开发和营销推广</p>
-<div class="quote-box">第 4 页</div>
+<div class="page-marker">第 4 页</div>
 <p>Whois 域名/网站年龄调查工具</p>
 <p><a href="http://www.whois.com/" target="_blank" rel="noopener">http://www.whois.com/</a></p>
 <p><a href="http://www.whois.net/" target="_blank" rel="noopener">http://www.whois.net/</a></p>
@@ -1454,7 +1482,7 @@
 <p>看出客户建设网站的历史变迁细节， 比如网站什么时候正式上线， 客户从什么时候开始从事</p>
 <p>这个行业等等。</p>
 <p>Web.Archive.org 网络时光机</p>
-<div class="quote-box">第 5 页</div>
+<div class="page-marker">第 5 页</div>
 <p><a href="https://archive.org/web/" target="_blank" rel="noopener">https://archive.org/web/</a></p>
 <p>“archive.org”这个工具和维基百科一样是非盈利性组织，又叫互联网档案馆，提供数字数据</p>
 <p>的免费存储。利用它可分析域名的首页快照历史变迁情况，判断对方公司网站最早上线时</p>
@@ -1477,11 +1505,11 @@
 <p>数据。 因为很多B 端网站流量很少， 分析不出效果， 而电商平台的流量大， 流量渠道种类多，</p>
 <p>我们以“bestbuy”百思买为例。</p>
 <p>查看近 1-3 个月的流量情况。</p>
-<div class="quote-box">第 6 页</div>
+<div class="page-marker">第 6 页</div>
 <p>查看流量市场情况， 通过分析前五大流量来源国家， 大概猜出对方的主要市场， 可结合海关</p>
 <p>数据进一步确认。</p>
 <p>分析网站流量的来源及渠道。</p>
-<div class="quote-box">第 7 页</div>
+<div class="page-marker">第 7 页</div>
 <p>Amfibi 查公司基本信息</p>
 <p><a href="http://www.amfibi.com/" target="_blank" rel="noopener">http://www.amfibi.com/</a></p>
 <p>了解买家成立时间、规模。</p>
@@ -1489,7 +1517,7 @@
 <p><a href="http://bbs.fobshanghai.com/checkemail.html" target="_blank" rel="noopener">http://bbs.fobshanghai.com/checkemail.html</a></p>
 <p>福步的懒人工具， 输入邮箱， 点击相应搜索引擎，可以尽可能地获取到客户在 B2B 平台， 社</p>
 <p>交平台等等曾经发布的询盘信息和相关公司资料。</p>
-<div class="quote-box">第 8 页</div>
+<div class="page-marker">第 8 页</div>
 <p>国家(地区)客户身份查询工具</p>
 <p>中国香港地区</p>
 <p>🔹 公司註冊處綜合資訊系統 (ICRIS)</p>
@@ -1502,11 +1530,11 @@
 <p>美国</p>
 <p>🔹 DUN 邓白氏公司</p>
 <p>网址：https://www.dnb.com</p>
-<div class="quote-box">第 9 页</div>
+<div class="page-marker">第 9 页</div>
 <p>美国老牌的商情数据库，可以查看企业的财务得分和付款历史记录。</p>
 <p>🔹 美国证券交易委员会（SEC）</p>
 <p>网址：https://www.sec.gov/edgar/searchedgar/companysearch.html</p>
-<div class="quote-box">第 10 页</div>
+<div class="page-marker">第 10 页</div>
 <p>使用 EDGAR 搜索工具研究公司的运营和财务信息。</p>
 <p>🔹 New York Secretary of State Corporation &amp; Business Entity Search</p>
 <p>网址：</p>
@@ -1516,19 +1544,19 @@
 <p>日本</p>
 <p>🔹 日本统计局与统计中心</p>
 <p>网址：http://www.stat.go.jp/index.html</p>
-<div class="quote-box">第 11 页</div>
+<div class="page-marker">第 11 页</div>
 <p>可以查询到日本全国企业的相关事项， 包括企业经营情况、1 年的营业收支等经营实际情况。</p>
 <p>新加坡</p>
 <p>🔹 ACRA Website</p>
 <p>网址：https://www.acra.gov.sg/home</p>
-<div class="quote-box">第 12 页</div>
+<div class="page-marker">第 12 页</div>
 <p>ACRA 是新加坡会计与企业管理局是新加坡企业实体和公共会计的国家监管机构，所有新企</p>
 <p>业的注册都需要通过 ACRA 进行。</p>
 <p>BVI（英属维尔京群岛）</p>
 <p>🔹 BVI Financial services Commission</p>
 <p>网址：https://www.bvifsc.vg</p>
 <p>网站首页&gt;&gt;Regulated Entities&gt;&gt;Keyword Search</p>
-<div class="quote-box">第 13 页</div>
+<div class="page-marker">第 13 页</div>
 <p>澳大利亚</p>
 <p>🔹澳大利亚工商局官网</p>
 <p>Australia Bussiness Register</p>
@@ -1537,7 +1565,7 @@
 <p>新西兰</p>
 <p>🔹 新西兰公司注册处</p>
 <p>网址：https://companies-register.companiesoffice.govt.nz/</p>
-<div class="quote-box">第 14 页</div>
+<div class="page-marker">第 14 页</div>
 <p>可以在线查询新西兰的所有公司注册信息（如注册时间、注册地址）等</p>
 <p>印度</p>
 <p>🔹 印度公司事务部</p>
@@ -1548,25 +1576,25 @@
 <p>🔹 Firmenwissen</p>
 <p>网址：</p>
 <p><a href="http://www.firmenwissen.de/index.html" target="_blank" rel="noopener">http://www.firmenwissen.de/index.html</a></p>
-<div class="quote-box">第 15 页</div>
+<div class="page-marker">第 15 页</div>
 <p>可以查询到企业的基本信息，通过信用报告来降低风险和评估业务伙伴的偿付能力。</p>
 <p>英国</p>
 <p>🔹 GOV.UK</p>
 <p>网址：https://www.gov.uk</p>
-<div class="quote-box">第 16 页</div>
+<div class="page-marker">第 16 页</div>
 <p>网站首页&gt;&gt;Business and self-employed，即可查询企业相关信息</p>
 <p>专业信用评级机构</p>
 <p>🔹 标准普尔</p>
 <p>网址：</p>
 <p><a href="https://www.standardandpoors.com/en_US/web/guest/home" target="_blank" rel="noopener">https://www.standardandpoors.com/en_US/web/guest/home</a></p>
-<div class="quote-box">第 17 页</div>
+<div class="page-marker">第 17 页</div>
 <p>标准普尔 （Standard &amp; Poor's， 简称S&amp;P） 是全球著名金融分析机构， 权威信用评级组织。 可</p>
 <p>以查银行（比如国外客户开证时，可以查下开证行的信用情况） 、企业、保险金融机构等。</p>
 <p>中国有些政府企业才有比较好的评级，如果是普通实体企业，能到B 就很不错了。</p>
 <p>专利、版权</p>
 <p>🔹 美国专利商标查询</p>
 <p>网址：http://www.uspto.gov</p>
-<div class="quote-box">第 18 页</div>
+<div class="page-marker">第 18 页</div>
 <p>通过美国专利商标局网站进入专利检索页面 （专利商标局官网&gt;&gt;Patents&gt;&gt;Search for Patents）</p>
 <p>美国专利包括发明、外观设计和植物新品种三种类型。向美国申请专利有三种途径：1.直接</p>
 <p>向美国申请专利 （需要在中国专利局预先做保密审查， 保密审查通过后， 即可直接向美国申</p>
@@ -1581,17 +1609,17 @@
 <p>彩蛋网址</p>
 <p><a href="http://haoweichi.com/" target="_blank" rel="noopener">http://haoweichi.com/</a></p>
 <p>能生成美国，英国，加拿大，德国，法国，西班牙等十多个国家身份信息和地址。</p>
-<div class="quote-box">第 19 页</div>
+<div class="page-marker">第 19 页</div>
 <p>能起到什么作用？看你自由发挥。</p>
       </article>
 
       <article id="doc-leads" class="article">
         <a class="modal-close" href="#docs">关闭</a>
-        <h3>寻找国外客户的 43 个方法</h3>
+        <h3>寻找国外客户 43 法</h3>
         <div class="byline">作者：常征 Sean｜在线文档</div>
         <p>寻找国外客户的43个方法</p>
 <h4>第一类：搜索引擎</h4>
-<h4>方法1：Importers方法【操作方法：在Google中输入产品名称+importers。】例如：MP3 player+importers 【小技巧：可以用importer替代importers】还可以在GOOGLE在不同的国家搜。【例如。  http://url.alibaba.com/r/aHR0cDovL3d3dy5nb29nbGUuY29tLnVrLw==?_lang=zh_CN&amp;_skin=intl_wmq www.GOOGLE.COM.UK  http://url.alibaba.com/r/aHR0cDovL3d3dy5nb29nbGUuY29tLmNhLw==?_lang=zh_CN&amp;_skin=intl_wmq www.GOOGLE.COM.CA 】</h4>
+<h4>方法1：Importers方法【操作方法：在Google中输入产品名称+importers。】例如：MP3 player+importers 【小技巧：可以用importer替代importers】还可以在GOOGLE在不同的国家搜。【例如。 http://url.alibaba.com/r/aHR0cDovL3d3dy5nb29nbGUuY29tLnVrLw==?_lang=zh_CN&amp;_skin=intl_wmq www.GOOGLE.COM.UK http://url.alibaba.com/r/aHR0cDovL3d3dy5nb29nbGUuY29tLmNhLw==?_lang=zh_CN&amp;_skin=intl_wmq www.GOOGLE.COM.CA 】</h4>
 <h4>方法2：关键词上加引号。【操作方法：搜索“产品名称 importer”或者“产品名称 importers”，在键入时将引号一起输入。】</h4>
 <h4>方法3：Distributor方法【操作方法：搜索产品名称+ Distributor 】</h4>
 <h4>方法4：其他类型目标客户搜索【操作方法：产品名称+其他客户类型（相关目标客户的词语除了importer，distributor，还包括buyer，company，wholesaler，retailer，supplier，vendor及其复数形式。】</h4>
@@ -1612,7 +1640,7 @@
 <h4>方法18：专业文档方法【搜索引擎还提供类似PPT、PDF、word、excel文档的高级搜索功能。】</h4>
 <h4>第三类 专业网站类</h4>
 <h4>方法19：网址目录方法【注重在网络上宣传自己的公司往往会将自己登陆到YAHOO和DMOZ.org这两个世界最有名的网址目录中】</h4>
-<h4>方法20：企业名录网站方法【全球有一些专门提供买家名录的公司和网站。  http://url.alibaba.com/r/aHR0cDovL3d3dy5rb21wYXNzLmNvbS8=?_lang=zh_CN&amp;_skin=intl_wmq www.Kompass.com 和  http://url.alibaba.com/r/aHR0cDovL3d3dy50Z3JuZXQuY29tLw==?_lang=zh_CN&amp;_skin=intl_wmq www.tgrnet.com 最为有名和受市场好评】</h4>
+<h4>方法20：企业名录网站方法【全球有一些专门提供买家名录的公司和网站。 http://url.alibaba.com/r/aHR0cDovL3d3dy5rb21wYXNzLmNvbS8=?_lang=zh_CN&amp;_skin=intl_wmq www.Kompass.com 和 http://url.alibaba.com/r/aHR0cDovL3d3dy50Z3JuZXQuY29tLw==?_lang=zh_CN&amp;_skin=intl_wmq www.tgrnet.com 最为有名和受市场好评】</h4>
 <h4>方法21：进口商与分销商名录网站方法【一方面可以请同事、业内朋友推荐，另一方面也可以通过互联网查询。这里推荐的方法是：搜索 importers directory 和distributors directory 】</h4>
 <h4>方法22：行业网站方法【到YAHOO、GOOGLE和DMOZ对应的行业目录中查找使用GOOGLE高级搜索中的标题搜索，搜索行业名称+industry（net、online，portal）使用GOOGLE搜索引擎查找某著名行业网站的反连接，一般来讲，会发现很多其他行业网站】</h4>
 <h4>方法23：综合商贸网站方法</h4>
@@ -1628,20 +1656,20 @@
 <h4>方法31：海关数据 比较昂贵，是出口营销各种数据名录的首先资料。</h4>
 <p>目前市场上主要提供中国、美国、英国、印度、韩国、阿根廷、智利、秘鲁、乌拉圭等国家海关数据库。</p>
 <p>收集的可免费使用的相关网站有：由加拿大海关和财政总署提供的进口商免费查询数据库： http://url.alibaba.com/r/aHR0cDovL3N0cmF0ZWdpcy5pYy5nYy5jYS9zY19tcmt0aS9jaWQvZW5nZG9jLw==?_lang=zh_CN&amp;_skin=intl_wmq http://strategis.ic.gc.ca/sc_mrkti/cid/engdoc/</p>
-<p>波兰最大的免费在线进出口名录：  http://url.alibaba.com/r/aHR0cDovL3d3dy5iabWIucGwv?_lang=zh_CN&amp;_skin=intl_wmq www.bmb.pl</p>
-<p>收费的有： 我国海关进出口详细数据：  http://url.alibaba.com/r/aHR0cDovL3d3dy5iaMmJjaGluYS5jb20uaGsv?_lang=zh_CN&amp;_skin=intl_wmq http://www.b2bchina.com.hk 中国的海关出口数据中只能提供出口商及进口国信息，要得到进口商信息只有利用国外的海关数据库。</p>
+<p>波兰最大的免费在线进出口名录： http://url.alibaba.com/r/aHR0cDovL3d3dy5iabWIucGwv?_lang=zh_CN&amp;_skin=intl_wmq www.bmb.pl</p>
+<p>收费的有： 我国海关进出口详细数据： http://url.alibaba.com/r/aHR0cDovL3d3dy5iaMmJjaGluYS5jb20uaGsv?_lang=zh_CN&amp;_skin=intl_wmq http://www.b2bchina.com.hk 中国的海关出口数据中只能提供出口商及进口国信息，要得到进口商信息只有利用国外的海关数据库。</p>
 <h4>方法32：包括“世界进口商信息查询卡”在内的商务部全部服务项目</h4>
 <h4>方法33：外汇、交单的银行记录、报关公司的记录、货代的单据、海关数据及提单等中存在的大量进口商信息。</h4>
 <p>事实上，大家可以从下面渠道找到资料：1.国际性的物流公司; 2.船公司; 3.快递公司（UPS，TNT等）。</p>
 <h4>方法34：国际招标投标信息</h4>
 <p>国内有国际招标信息的网站：</p>
-<p>中国政府采购：  http://url.alibaba.com/r/aHR0cDovL3d3dy5jY2dwLmdvdia5jbia8=?_lang=zh_CN&amp;_skin=intl_wmq http://www.ccgp.gov.cn/</p>
-<p>国外机构：澳大利亚政府招标系统：  http://url.alibaba.com/r/aHR0cHM6Ly93d3cudGVuZGVycy5nb3YuYXUv?_lang=zh_CN&amp;_skin=intl_wmq https://www.tenders.gov.au/来自158个国家的发展机构和政府发布的42457项投标采购机会：  http://url.alibaba.com/r/aHR0cDovL3d3dy5kZ21hcmtldC5jb20vU2VsbDJhcmFiaaWE=?_lang=zh_CN&amp;_skin=intl_wmq http://www.dgmarket.com/Sell2arabia（  http://url.alibaba.com/r/aHR0cDovL3d3dy5zZWxsMmFyYWJpYS5jb20v?_lang=zh_CN&amp;_skin=intl_wmq http://www.sell2arabia.com/ ）：提供给用户在阿拉伯地区做生意的有关商业信息。用户注册为会员后，就好比在中东有了自己的办公室，通过阿拉伯实时项目与招标数据库，能够获得最新的招标、求购、工程项目和贸易信息。Tenders：[网址见材料]站点每日有超过5000项采购消息更新，丰富及时的信息资源蕴涵着巨大商机，由于是买方市场站点，因此少了很多无效信息和广告 联合国中国最新采购和招标信息：  http://url.alibaba.com/r/aHR0cDovL3d3dy51bia1jaGluYS5jb20v?_lang=zh_CN&amp;_skin=intl_wmq http://www.un-china.com/阿拉伯市场招标数据库：  http://url.alibaba.com/r/aHR0cDovL3d3dy5zZWxsMmFyYWJpYS5jb20v?_lang=zh_CN&amp;_skin=intl_wmq http://www.sell2arabia.com</p>
+<p>中国政府采购： http://url.alibaba.com/r/aHR0cDovL3d3dy5jY2dwLmdvdia5jbia8=?_lang=zh_CN&amp;_skin=intl_wmq http://www.ccgp.gov.cn/</p>
+<p>国外机构：澳大利亚政府招标系统： http://url.alibaba.com/r/aHR0cHM6Ly93d3cudGVuZGVycy5nb3YuYXUv?_lang=zh_CN&amp;_skin=intl_wmq https://www.tenders.gov.au/来自158个国家的发展机构和政府发布的42457项投标采购机会： http://url.alibaba.com/r/aHR0cDovL3d3dy5kZ21hcmtldC5jb20vU2VsbDJhcmFiaaWE=?_lang=zh_CN&amp;_skin=intl_wmq http://www.dgmarket.com/Sell2arabia（ http://url.alibaba.com/r/aHR0cDovL3d3dy5zZWxsMmFyYWJpYS5jb20v?_lang=zh_CN&amp;_skin=intl_wmq http://www.sell2arabia.com/ ）：提供给用户在阿拉伯地区做生意的有关商业信息。用户注册为会员后，就好比在中东有了自己的办公室，通过阿拉伯实时项目与招标数据库，能够获得最新的招标、求购、工程项目和贸易信息。Tenders：[网址见材料]站点每日有超过5000项采购消息更新，丰富及时的信息资源蕴涵着巨大商机，由于是买方市场站点，因此少了很多无效信息和广告 联合国中国最新采购和招标信息： http://url.alibaba.com/r/aHR0cDovL3d3dy51bia1jaGluYS5jb20v?_lang=zh_CN&amp;_skin=intl_wmq http://www.un-china.com/阿拉伯市场招标数据库： http://url.alibaba.com/r/aHR0cDovL3d3dy5zZWxsMmFyYWJpYS5jb20v?_lang=zh_CN&amp;_skin=intl_wmq http://www.sell2arabia.com</p>
 <p>这些招标信息网站信息内容基本上是免费享用的。</p>
 <p>其它好站等着各位自己去发现。网络上有着很多很多的商机，虽然可直接利用的有价值的信息大部分是需付费的，但可免费使用的也有不少的，就看各位找的本领了。</p>
 <h4>方法35：第三方机构提供的数据、名录</h4>
 <p>专业的信息公司、经贸咨讯机构、国际性的行业信息情报机构、市场研究机构等提供的行业公司目录、区域公司目录、进口商数据库等以光盘、书籍、在线购买使用等形式出售。 这样的机构很的。</p>
-<p>比如，国贸资讯（  http://url.alibaba.com/r/aHR0cDovL3d3dy5pbnRlcnRyYWRlLmNvbS5jbia8=?_lang=zh_CN&amp;_skin=intl_wmq www.intertrade.com.cn）上提供驻华采购商数据库、外商驻华代表机构数据库打开这个网址，点击“数据库服务”就看到了。注册一个免费会员就可以搜索一下有无某种产品的外商驻华采购机构，有的话，查一条信息只要几元钱。不过在搜索时要注意灵活使用关键词，一方面注意尝试使用产品的其它名字来组合查询，另一方面买也有几种说法：采购，求购，购买，进口等。再试试英文，用buy, purchase, import,need等词组合产品的不同名称来充分查找。</p>
+<p>比如，国贸资讯（ http://url.alibaba.com/r/aHR0cDovL3d3dy5pbnRlcnRyYWRlLmNvbS5jbia8=?_lang=zh_CN&amp;_skin=intl_wmq www.intertrade.com.cn）上提供驻华采购商数据库、外商驻华代表机构数据库打开这个网址，点击“数据库服务”就看到了。注册一个免费会员就可以搜索一下有无某种产品的外商驻华采购机构，有的话，查一条信息只要几元钱。不过在搜索时要注意灵活使用关键词，一方面注意尝试使用产品的其它名字来组合查询，另一方面买也有几种说法：采购，求购，购买，进口等。再试试英文，用buy, purchase, import,need等词组合产品的不同名称来充分查找。</p>
 <h4>方法36：网站推广</h4>
 <h4>1、新建一个网站，或者更新已有网站，增加常见问题问答，客户合作照片，推出新品、参加展览等公司新闻，体现公司专业性、成熟性，从而增加公司网站的吸引力。</h4>
 <h4>2、实行会员制，当浏览者注册会员后，可以给他们发最新产品信息。</h4>
@@ -1664,7 +1692,7 @@
 
       <article id="doc-google" class="article">
         <a class="modal-close" href="#docs">关闭</a>
-        <h3>用 Google 搜索国外客户的三十绝招</h3>
+        <h3>Google 搜索 30 招</h3>
         <div class="byline">作者：常征 Sean｜在线文档</div>
         <p>用google搜索国外客户的三十绝招</p>
 <h4>1、在Google中输入产品名称+importers。(也可以用importer代替importers进行搜索。不同的产品或者行业，这些网站的排名往往不太一样，大家要是用自己的产品测试，应选取排名比较靠前的网站加以利用。)</h4>
@@ -1702,7 +1730,7 @@
 
       <article id="doc-research" class="article">
         <a class="modal-close" href="#docs">关闭</a>
-        <h3>市场调研报告与阿里国际站 OEM 运营方案</h3>
+        <h3>市场调研与 OEM 方案</h3>
         <div class="byline">作者：常征 Sean｜在线文档</div>
         <p>你现在是一名资深阿里国际站运营专家、B2B市场调研专家、跨境电商选品顾问和HTML报告设计师。</p>
 <p>请围绕以下产品，生成一份完整的《市场调研报告与阿里国际站 OEM 运营方案》，并最终输出一个可下载的 HTML 文件。</p>
@@ -1717,9 +1745,17 @@
 <p>例如：</p>
 <ul>
 <li>充电器要看插头规格、认证法规、USB-C政策、消费电子需求、快充协议；</li>
+</ul>
+<ul>
 <li>包装盒要看电商渗透、环保包装法规、品牌包装需求；</li>
+</ul>
+<ul>
 <li>奖牌要看赛事数量、学校体育、促销礼品市场；</li>
+</ul>
+<ul>
 <li>工业加热器要看制造业、工业设备、能源、温控设备需求；</li>
+</ul>
+<ul>
 <li>空气净化器要看空气质量、宠物家庭、过敏人群、室内健康消费。</li>
 </ul>
 <h4>2. 数据必须尽量精准。</h4>
@@ -1731,76 +1767,144 @@
 <p>每个国家或区域需要说明：</p>
 <ul>
 <li>机会评分；</li>
+</ul>
+<ul>
 <li>证据等级；</li>
+</ul>
+<ul>
 <li>推荐产品；</li>
+</ul>
+<ul>
 <li>为什么适合做；</li>
+</ul>
+<ul>
 <li>对应运营策略；</li>
+</ul>
+<ul>
 <li>需要后台进一步验证的数据。</li>
 </ul>
 <p>证据等级请分为：</p>
 <ul>
 <li>强证据：有官方政策、权威行业报告、明确市场数据支撑；</li>
+</ul>
+<ul>
 <li>中强证据：有公开行业趋势、平台现象、消费场景支撑；</li>
+</ul>
+<ul>
 <li>市场推导：基于B2B采购逻辑和运营经验推导；</li>
+</ul>
+<ul>
 <li>待验证市场：需要阿里后台关键词指数、询盘指数、GMV指数验证。</li>
 </ul>
 <h4>4. 报告结构必须完整，包含以下模块：</h4>
 <p>01 执行摘要</p>
 <ul>
 <li>产品是否值得做；</li>
+</ul>
+<ul>
 <li>综合机会评分；</li>
+</ul>
+<ul>
 <li>最优切入方向；</li>
+</ul>
+<ul>
 <li>首要市场；</li>
+</ul>
+<ul>
 <li>核心壁垒；</li>
+</ul>
+<ul>
 <li>最推荐主推定位；</li>
+</ul>
+<ul>
 <li>最优先执行的5件事。</li>
 </ul>
 <p>02 调研方法与数据等级</p>
 <ul>
 <li>说明数据来源；</li>
+</ul>
+<ul>
 <li>说明哪些是公开数据；</li>
+</ul>
+<ul>
 <li>哪些是市场推导；</li>
+</ul>
+<ul>
 <li>哪些需要阿里后台验证。</li>
 </ul>
 <p>03 市场趋势</p>
 <ul>
 <li>行业规模；</li>
+</ul>
+<ul>
 <li>增长原因；</li>
+</ul>
+<ul>
 <li>消费趋势；</li>
+</ul>
+<ul>
 <li>B2B采购趋势；</li>
+</ul>
+<ul>
 <li>该产品未来机会。</li>
 </ul>
 <p>04 目标国家机会</p>
 <ul>
 <li>必须根据产品重新调研；</li>
+</ul>
+<ul>
 <li>不允许固定模板；</li>
+</ul>
+<ul>
 <li>用表格输出国家/区域、机会评分、证据等级、推荐产品、原因、运营策略；</li>
+</ul>
+<ul>
 <li>最后给出主攻市场、第二梯队市场、补充市场。</li>
 </ul>
 <p>05 买家画像</p>
 <ul>
 <li>典型买家类型；</li>
+</ul>
+<ul>
 <li>采购目的；</li>
+</ul>
+<ul>
 <li>关注点；</li>
+</ul>
+<ul>
 <li>转化策略；</li>
+</ul>
+<ul>
 <li>哪些询盘信号代表高质量客户。</li>
 </ul>
 <p>06 产品矩阵</p>
 <ul>
 <li>至少6-10条产品线；</li>
+</ul>
+<ul>
 <li>每条包括规格、目标市场、核心卖点、目标客户、优先级。</li>
 </ul>
 <p>07 核心卖点</p>
 <ul>
 <li>买家真正关心的卖点；</li>
+</ul>
+<ul>
 <li>对应英文表达；</li>
+</ul>
+<ul>
 <li>转化作用；</li>
+</ul>
+<ul>
 <li>应放在主图还是详情页。</li>
 </ul>
 <p>08 竞品与价格带</p>
 <ul>
 <li>市场常见价格区间；</li>
+</ul>
+<ul>
 <li>竞争状态；</li>
+</ul>
+<ul>
 <li>阿里国际站建议策略。</li>
 </ul>
 <p>如果没有精准价格数据，请明确说明需要用阿里后台、Amazon、</p>
@@ -1808,88 +1912,174 @@
 <p>09 认证、法规与风险</p>
 <ul>
 <li>如果产品涉及认证，必须写清不同国家的合规要求；</li>
+</ul>
+<ul>
 <li>不确定的不能写死；</li>
+</ul>
+<ul>
 <li>可以用 “certification support available” 这类安全表达；</li>
+</ul>
+<ul>
 <li>列出主要风险和应对策略。</li>
 </ul>
 <p>10 关键词矩阵</p>
 <ul>
 <li>核心主词；</li>
+</ul>
+<ul>
 <li>高转化长尾词；</li>
+</ul>
+<ul>
 <li>B2B意图词；</li>
+</ul>
+<ul>
 <li>国家词；</li>
+</ul>
+<ul>
 <li>场景词；</li>
+</ul>
+<ul>
 <li>认证词或材质词；</li>
+</ul>
+<ul>
 <li>每类说明用途和优先级。</li>
 </ul>
 <p>11 阿里国际站标题矩阵</p>
 <ul>
 <li>生成10个适合阿里国际站的英文标题；</li>
+</ul>
+<ul>
 <li>标题要偏B2B；</li>
+</ul>
+<ul>
 <li>包含OEM、wholesale、factory、custom、manufacturer等词；</li>
+</ul>
+<ul>
 <li>核心关键词尽量放后面或合理布局；</li>
+</ul>
+<ul>
 <li>每个标题说明适合的客户类型。</li>
 </ul>
 <p>12 主图与详情页策略</p>
 <ul>
 <li>规划6张主图；</li>
+</ul>
+<ul>
 <li>每张图包括主题、英文文案、画面建议、转化目的；</li>
+</ul>
+<ul>
 <li>规划10-12屏详情页；</li>
+</ul>
+<ul>
 <li>详情页按销售漏斗排列。</li>
 </ul>
 <p>13 参数配置表</p>
 <ul>
 <li>列出产品参数；</li>
+</ul>
+<ul>
 <li>哪些参数必须真实填写；</li>
+</ul>
+<ul>
 <li>哪些参数影响转化；</li>
+</ul>
+<ul>
 <li>哪些参数容易引起售后风险。</li>
 </ul>
 <p>14 询盘转化话术</p>
 <ul>
 <li>报价前必须问的问题；</li>
+</ul>
+<ul>
 <li>标准高质量回复；</li>
+</ul>
+<ul>
 <li>客户问MOQ如何回复；</li>
+</ul>
+<ul>
 <li>客户问认证/材质/交期/定制如何回复；</li>
+</ul>
+<ul>
 <li>报价后跟进话术。</li>
 </ul>
 <p>15 AEO FAQ</p>
 <ul>
 <li>生成5条FAQ；</li>
+</ul>
+<ul>
 <li>需要适合Google、AI搜索、ChatGPT类答案引擎抓取；</li>
+</ul>
+<ul>
 <li>问答要围绕该产品和B2B采购场景；</li>
+</ul>
+<ul>
 <li>语言为英文。</li>
 </ul>
 <p>16 90天执行SOP</p>
 <ul>
 <li>0-15天做什么；</li>
+</ul>
+<ul>
 <li>16-30天做什么；</li>
+</ul>
+<ul>
 <li>31-60天做什么；</li>
+</ul>
+<ul>
 <li>61-90天做什么；</li>
+</ul>
+<ul>
 <li>每个阶段对应关键指标和优化方向。</li>
 </ul>
 <p>17 最终结论</p>
 <ul>
 <li>是否值得做；</li>
+</ul>
+<ul>
 <li>最推荐市场；</li>
+</ul>
+<ul>
 <li>最推荐产品线；</li>
+</ul>
+<ul>
 <li>最推荐标题；</li>
+</ul>
+<ul>
 <li>最推荐产品定位；</li>
+</ul>
+<ul>
 <li>需要进一步用后台验证的数据。</li>
 </ul>
 <p>18 资料来源与更新建议</p>
 <ul>
 <li>列出使用的数据来源；</li>
+</ul>
+<ul>
 <li>给出每月需要更新的内容；</li>
+</ul>
+<ul>
 <li>包括阿里后台关键词指数、询盘指数、GMV指数、直通车点击率、国家成交分布、竞品主图和价格带。</li>
 </ul>
 <h4>5. 输出风格：</h4>
 <ul>
 <li>使用中文报告；</li>
+</ul>
+<ul>
 <li>表格尽量丰富；</li>
+</ul>
+<ul>
 <li>结论要明确；</li>
+</ul>
+<ul>
 <li>不要空泛；</li>
+</ul>
+<ul>
 <li>不要模板化；</li>
+</ul>
+<ul>
 <li>所有判断必须有依据；</li>
+</ul>
+<ul>
 <li>不确定的地方要明确写“待后台验证”。</li>
 </ul>
 <h4>6. 最终需要生成一个 HTML 文件。</h4>
@@ -1897,13 +2087,29 @@
 <p>风格要求：</p>
 <ul>
 <li>顶部大标题 Hero 区；</li>
+</ul>
+<ul>
 <li>有目录；</li>
+</ul>
+<ul>
 <li>卡片式布局；</li>
+</ul>
+<ul>
 <li>表格清晰；</li>
+</ul>
+<ul>
 <li>有重点提示框；</li>
+</ul>
+<ul>
 <li>有风险提示框；</li>
+</ul>
+<ul>
 <li>有执行SOP时间线；</li>
+</ul>
+<ul>
 <li>移动端也能正常查看；</li>
+</ul>
+<ul>
 <li>文件名用英文产品名命名。</li>
 </ul>
 <p>请先完成完整调研分析，再生成 HTML 文件。</p>
@@ -1911,7 +2117,7 @@
 
       <article id="doc-small-order" class="article">
         <a class="modal-close" href="#docs">关闭</a>
-        <h3>服装定制小单多如何处理</h3>
+        <h3>服装定制小单处理</h3>
         <div class="byline">作者：常征 Sean｜在线文档</div>
         <p>定制 T 恤 / 卫衣客户只要几件，但款式、颜色、尺码一大堆，国际站业务到底该怎么接？</p>
 <h4>一、开头：服装定制类目最常见的“高沟通低产出”问题</h4>
@@ -1926,12 +2132,26 @@
 <p>因为客户数量很少，可能只有几件、十几件；但需求却很多：</p>
 <ul>
 <li>不同颜色；</li>
+</ul>
+<ul>
 <li>不同尺码；</li>
+</ul>
+<ul>
 <li>不同图案；</li>
+</ul>
+<ul>
 <li>不同姓名；</li>
+</ul>
+<ul>
 <li>不同号码；</li>
+</ul>
+<ul>
 <li>不同印花位置；</li>
+</ul>
+<ul>
 <li>不同工艺要求；</li>
+</ul>
+<ul>
 <li>还要反复确认效果图。</li>
 </ul>
 <p>最后业务花了很多时间沟通，工厂也不好排产，利润还不高。</p>
@@ -1947,11 +2167,23 @@
 <p>客户可能要：</p>
 <ul>
 <li>2 件黑色；</li>
+</ul>
+<ul>
 <li>3 件白色；</li>
+</ul>
+<ul>
 <li>1 件灰色；</li>
+</ul>
+<ul>
 <li>每件尺码不同；</li>
+</ul>
+<ul>
 <li>每件背后名字不同；</li>
+</ul>
+<ul>
 <li>每件号码不同；</li>
+</ul>
+<ul>
 <li>胸前 logo 也要调整。</li>
 </ul>
 <p>这种订单不是生产难，而是沟通确认难。</p>
@@ -1968,6 +2200,8 @@
 <p>同样是 50 件：</p>
 <ul>
 <li>50 件同款同图案，比较好做；</li>
+</ul>
+<ul>
 <li>50 件每件不同名字、不同号码、不同尺码，复杂度就高很多。</li>
 </ul>
 <p>所以服装定制不能只看数量，还要看“定制复杂度”。</p>
@@ -1978,11 +2212,23 @@
 <p>因为有些客户虽然第一单只有几件，但可能是：</p>
 <ul>
 <li>品牌打样；</li>
+</ul>
+<ul>
 <li>球队样衣；</li>
+</ul>
+<ul>
 <li>学校社团测试单；</li>
+</ul>
+<ul>
 <li>公司活动服试单；</li>
+</ul>
+<ul>
 <li>网红品牌首批样品；</li>
+</ul>
+<ul>
 <li>采购商先测试供应商质量；</li>
+</ul>
+<ul>
 <li>大订单前的确认样。</li>
 </ul>
 <p>所以不能简单用“数量太少”判断客户价值。</p>
@@ -2075,9 +2321,17 @@
 <p>聊天确认很容易乱：</p>
 <ul>
 <li>哪个颜色几件？</li>
+</ul>
+<ul>
 <li>哪个尺码几件？</li>
+</ul>
+<ul>
 <li>哪个名字对应哪个号码？</li>
+</ul>
+<ul>
 <li>哪个图案放哪个位置？</li>
+</ul>
+<ul>
 <li>哪件衣服对应哪张效果图？</li>
 </ul>
 <p>所以必须让客户用表格提交需求。</p>
@@ -2167,8 +2421,14 @@
 <p>服装小单要看 4 个因素：</p>
 <ul>
 <li>件数；</li>
+</ul>
+<ul>
 <li>款式数量；</li>
+</ul>
+<ul>
 <li>图案数量；</li>
+</ul>
+<ul>
 <li>个性化内容数量。</li>
 </ul>
 <p>比如：</p>
@@ -2190,8 +2450,14 @@
 <p>例如：</p>
 <ul>
 <li>Sample handling fee；</li>
+</ul>
+<ul>
 <li>Design service fee；</li>
+</ul>
+<ul>
 <li>Small order service fee；</li>
+</ul>
+<ul>
 <li>Personalization fee。</li>
 </ul>
 <p>可以这样回复：</p>
@@ -2214,32 +2480,58 @@
 <p>先判断：</p>
 <ul>
 <li>是样衣？</li>
+</ul>
+<ul>
 <li>是小团队？</li>
+</ul>
+<ul>
 <li>是品牌打样？</li>
+</ul>
+<ul>
 <li>是大单前测试？</li>
+</ul>
+<ul>
 <li>还是纯个人零售？</li>
 </ul>
 <p>Step 2：要求客户填需求表</p>
 <p>只要出现以下情况，就必须让客户填表：</p>
 <ul>
 <li>多颜色；</li>
+</ul>
+<ul>
 <li>多尺码；</li>
+</ul>
+<ul>
 <li>多图案；</li>
+</ul>
+<ul>
 <li>多姓名；</li>
+</ul>
+<ul>
 <li>多号码；</li>
+</ul>
+<ul>
 <li>多印花位置。</li>
 </ul>
 <p>Step 3：推荐合适工艺</p>
 <p>小单多款优先推荐：</p>
 <ul>
 <li>DTF；</li>
+</ul>
+<ul>
 <li>热转印；</li>
+</ul>
+<ul>
 <li>数码印花。</li>
 </ul>
 <p>同图案批量再推荐：</p>
 <ul>
 <li>丝印；</li>
+</ul>
+<ul>
 <li>刺绣；</li>
+</ul>
+<ul>
 <li>更复杂工艺。</li>
 </ul>
 <p>Step 4：给客户三档方案</p>
@@ -2262,10 +2554,20 @@
 <p>建议在 CRM 或生意助手里打标签：</p>
 <ul>
 <li>Small Custom Order</li>
+</ul>
+<ul>
 <li>Sample Buyer</li>
+</ul>
+<ul>
 <li>Team Order Buyer</li>
+</ul>
+<ul>
 <li>Personalized Design Buyer</li>
+</ul>
+<ul>
 <li>Potential Bulk Buyer</li>
+</ul>
+<ul>
 <li>Need Design File</li>
 </ul>
 <p>后续复盘这些客户的转化情况。</p>
@@ -2314,12 +2616,26 @@
 <p>真正可落地的方法是：</p>
 <ul>
 <li>不直接拒绝，但先判断客户类型；</li>
+</ul>
+<ul>
 <li>多款、多色、多尺码必须让客户填表；</li>
+</ul>
+<ul>
 <li>小单多图案优先推荐 DTF / 热转印；</li>
+</ul>
+<ul>
 <li>设置 1–5pcs、10–30pcs、50pcs+ 三档套餐；</li>
+</ul>
+<ul>
 <li>小单必须收样品费、设计服务费或个性化服务费；</li>
+</ul>
+<ul>
 <li>限制免费修改次数；</li>
+</ul>
+<ul>
 <li>有潜力客户打标签持续跟进；</li>
+</ul>
+<ul>
 <li>不配合、不填表、不付费的客户快速放弃。</li>
 </ul>
 <p>一句话总结：</p>
@@ -2354,41 +2670,69 @@
 
       <article id="doc-accio" class="article">
         <a class="modal-close" href="#docs">关闭</a>
-        <h3>Accio Work 的生意助手智能体如何用好</h3>
+        <h3>Accio Work 生意助手用法</h3>
         <div class="byline">作者：常征 Sean｜在线文档</div>
         <p>Accio Work的生意助手智能体如何用好</p>
 <p>辅助提高国际站流量与转化的工作</p>
 <ul>
 <li>询盘记录的抓取 最长的30天的抓取</li>
-<li></li>
+</ul>
+<p>-</p>
+<ul>
 <li>去下载技能：https://t.zsxq.com/b8Ztf</li>
+</ul>
+<ul>
 <li>然后丢给生意助手智能体，安装下技能</li>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
+</ul>
+<p>-</p>
+<p>-</p>
+<p>-</p>
+<p>-</p>
+<ul>
 <li>大概4分钟采集完</li>
-<li></li>
+</ul>
+<p>-</p>
+<ul>
 <li>把聊天记录的表格导出</li>
-<li>可以丢给deepseek或者chatgpt  去做深度聊天记录分析</li>
-<li></li>
+</ul>
+<ul>
+<li>可以丢给deepseek或者chatgpt 去做深度聊天记录分析</li>
+</ul>
+<p>-</p>
+<ul>
 <li>做聊天记录的深度分析，请你分析聊天内容，并且给出汇总，我方回复的内容如何，以及接下来的回复建议；哪些客户是重点客户，可重点跟进的，给单独标记；</li>
-<li></li>
+</ul>
+<p>-</p>
+<ul>
 <li>询盘，gmv的指数化【30天】</li>
+</ul>
+<ul>
 <li>作用：想知道国际站上哪些询盘比较多，</li>
+</ul>
+<ul>
 <li>交易额比较多的产品</li>
+</ul>
+<ul>
 <li>技能：热销爆品洞察</li>
-<li></li>
-<li></li>
-<li></li>
+</ul>
+<p>-</p>
+<p>-</p>
+<p>-</p>
+<ul>
 <li>3</li>
-<li></li>
-<li></li>
+</ul>
+<p>-</p>
+<p>-</p>
+<ul>
 <li>可以做客户的背调 -</li>
+</ul>
+<ul>
 <li>技能：国际站买家圈选</li>
-<li></li>
-<li></li>
-<li></li>
+</ul>
+<p>-</p>
+<p>-</p>
+<p>-</p>
+<ul>
 <li>可以做市场调研报告</li>
 </ul>
 <p>技能：深度选品报告</p>
@@ -2399,7 +2743,7 @@
         <a class="modal-close" href="#docs">关闭</a>
         <h3>Facebook 个号养号攻略</h3>
         <div class="byline">作者：常征 Sean｜在线文档</div>
-        <div class="quote-box">第 1 页</div>
+        <div class="page-marker">第 1 页</div>
 <p>Facebook 个号养号攻略</p>
 <p>Facebook 个人账号是很容易被封，而且一旦被封就很难找回。这个问题也是让大家非常头疼，今天聊聊 Facebook 养号技巧。很多人都</p>
 <p>说 Facebook 老号比较稳定，新号就很容易被封，其实说白了老号用的比较多，Facebook 觉得你是一个真人，你的账号也就安全了。新</p>
@@ -2413,28 +2757,48 @@
 <p>注册 Facebook 第一天</p>
 <ul>
 <li>注册完毕，验证邮箱，上传个头像，使用手机号或者邮箱都可以注册，按照操作提示就可以完成注册。</li>
+</ul>
+<ul>
 <li>接着上传头像、封面、填写资料等等。</li>
+</ul>
+<ul>
 <li>不用操作太多，浏览 5 分钟退出即可。</li>
 </ul>
 <p>注册 Facebook 第二天</p>
-<div class="quote-box">第 2 页</div>
+<div class="page-marker">第 2 页</div>
 <ul>
 <li>同样的设备，比如之前电脑注册的那就用电脑登录。</li>
+</ul>
+<ul>
 <li>前面至少半个月不要换设备登录。</li>
+</ul>
+<ul>
 <li>关注几个你喜欢的博主，添加一两个熟悉好友。</li>
+</ul>
+<ul>
 <li>Facebook 会根据你的信息去推荐好友，你熟悉的好友一般看到你的好友申请也会同意申请，这样也会对你的账号非常有好处。</li>
 </ul>
 <p>注册 Facebook 第三天</p>
 <ul>
 <li>完善资料，下载资料副本。</li>
+</ul>
+<ul>
 <li>浏览浏览动态，摸索一下 Facebook 的其他功能，比如看个视频，玩玩自己的主页，玩玩游戏，看看直播等等。</li>
+</ul>
+<ul>
 <li>继续添加 Facebook 推荐的你熟悉的好友，注意是你熟悉的。</li>
+</ul>
+<ul>
 <li>可以加加同事、同学，让 Facebook 感觉你是一个真人，如果你加的人都不通过你，那 Facebook 可能会怀疑你不是个真人。</li>
 </ul>
 <p>注册 Facebook 第四天</p>
 <ul>
 <li>浏览浏览关注的人的动态，看看 Facebook 的“那年今天”，听听直播、玩玩游戏、看看天气。</li>
+</ul>
+<ul>
 <li>加入一两个小组。</li>
+</ul>
+<ul>
 <li>一天好友添加建议不超过 10 个。</li>
 </ul>
 <p>注册 Facebook 一周后</p>
@@ -2445,7 +2809,7 @@
 <p>册一两天开始建立公共主页推广发帖，每天加人加到弹窗提示，仔细想想你作为一个新用户，对 Facebook 平台也不了解，上来就加小</p>
 <p>组，建立主页推广，甚至直接开广告，Facebook 会不会认为你这个账号是一个小号专门就是打广告的？仔细想想，你作为一个新用户，</p>
 <p>对 Facebook 平台也不了解，上来就加小组，建立主页推广，甚至直接开广告，Facebook 会不会认为你这个账号是一个小号专门就是打</p>
-<div class="quote-box">第 3 页</div>
+<div class="page-marker">第 3 页</div>
 <p>广告的？在这里提示大家，做广告可以开通 Facebook 企业广告。不了解的朋友可以了解 Facebook 个人广告账号和 Facebook 企业广告，</p>
 <p>其实花钱都是一样的，Facebook 企业户还稳定，何乐而不为呢？</p>
 <p>国内用 Facebook 大多是做跨境电商或者海外留学的人，做跨境电商的用户大多是把 Facebook 当成打广告的平台，其他直播、游戏、</p>
@@ -2456,36 +2820,64 @@
 <p>创建时要实名注册</p>
 <ul>
 <li>要想账号稳，在创建时就要做到完全“真实”，所有个人账户必须通过 Facebook 官方渠道亲自创建。</li>
+</ul>
+<ul>
 <li>用户不应该通过其他渠道购买/获取 Facebook 个人账户。</li>
+</ul>
+<ul>
 <li>创建使用的姓名必须要是实名，并填写真实的出生日期和性别。</li>
 </ul>
 <p>请不要在姓名中添加以下任何内容</p>
 <ul>
 <li>符号、数字、异常大写、重复字符或标点。</li>
+</ul>
+<ul>
 <li>使用多语种言和混杂字符。</li>
+</ul>
+<ul>
 <li>使用各种称谓（例如：专家、教士）。</li>
+</ul>
+<ul>
 <li>使用单词、短语或昵称作为中间名。</li>
+</ul>
+<ul>
 <li>各种侮辱或暗示性字词。</li>
 </ul>
 <p>Facebook 个人账号不可以用明星当头像</p>
-<div class="quote-box">第 4 页</div>
+<div class="page-marker">第 4 页</div>
 <ul>
 <li>头像一定要上传真人正脸头像，Facebook 验证最常出现的就是头像验证。</li>
+</ul>
+<ul>
 <li>如果你上传宠物、风景、卡通等头像，账号被封很难解封拿回账号。</li>
+</ul>
+<ul>
 <li>Facebook 个人账户不能使用模仿某人（例如明星艺人）或其它虚假陈述身份的头像，也不要使用侵权的图片。</li>
 </ul>
 <p>不要和别人共用 Facebook 个人账号</p>
 <ul>
 <li>Facebook 只允许每个用户创建一个个人账户。</li>
+</ul>
+<ul>
 <li>不与亲朋好友共用帐户。</li>
+</ul>
+<ul>
 <li>如果一个用户拥有多个账户，Facebook 会认为这些是不真实的账号，可能导致所有账户被封锁。</li>
+</ul>
+<ul>
 <li>Facebook 会删除任何冒充他人的个人主页。</li>
 </ul>
 <p>不要同时登录两个 Facebook 个人账号</p>
 <ul>
 <li>不要经常使用不同的设备登入个人账户，使用稳定的 IP 是首要条件。</li>
+</ul>
+<ul>
 <li>最保守的方法是一台电脑上只登陆一个账号，刚注册的时候至少半个月不要换设备登录。</li>
+</ul>
+<ul>
 <li>后期如果要用一个设备登录两个账户建议用不同的浏览器。</li>
+</ul>
+<ul>
 <li>有封户历史的电脑要将 IP 痕迹、MAC 地址及 COOKIE 缓存清除干净。</li>
 </ul>
 <p>不能只用邮箱完成 Facebook 个人账号注册验证</p>
@@ -2501,9 +2893,11 @@
 <li>点击 Facebook 在用户注册时发送的电子邮件中的链接，确认电子邮箱。</li>
 </ul>
 <p>一定要开双重验证</p>
-<div class="quote-box">第 5 页</div>
+<div class="page-marker">第 5 页</div>
 <ul>
 <li>双重验证是一种安全保护功能，可在密码保护的基础上为 Facebook 帐户提供额外安全保护，提高个人账户的安全性。</li>
+</ul>
+<ul>
 <li>如果设置了双重验证，那么当有人尝试从陌生浏览器或移动设备访问 Facebook 时，需要用户输入特殊的登录验证码或确认登录。</li>
 </ul>
 <p>Facebook 个人账户开启双重验证的步骤</p>
@@ -2513,153 +2907,200 @@
 <p>不要违反 Facebook 政策，否则账户会被封禁，比如：</p>
 <ul>
 <li>贴文发布/广告内容违反 Facebook 的条款。</li>
+</ul>
+<ul>
 <li>出于骚扰、广告、促销、约会或其它不当行为等目的，擅自与他人联系。</li>
+</ul>
+<ul>
 <li>使用假名，或创建多个个人账户。</li>
+</ul>
+<ul>
 <li>模仿某人或实体，或者其它虚假陈述身份的行为。</li>
 </ul>
 <p>Facebook 养号的重点</p>
 <ul>
 <li>完善真实信息，绑定邮箱、手机/开启双重验证。</li>
+</ul>
+<ul>
 <li>回归社交媒体的属性，按照上方总结的每天应该做什么事情去养号。</li>
+</ul>
+<ul>
 <li>适当频率的发布或转发体验度较好的内容。</li>
+</ul>
+<ul>
 <li>不要多人、多设备同时登录一个 Facebook 账号，也不要多个 Facebook 账号登录同一个设备。</li>
+</ul>
+<ul>
 <li>使用稳定的 VPN 线路，用固定设备登录。</li>
+</ul>
+<ul>
 <li>注意个人广告帐户广告的频率及质量。</li>
+</ul>
+<ul>
 <li>绑定信用良好的信用卡，且卡和注册姓名一致，IP 和卡签发地最好一致。</li>
+</ul>
+<ul>
 <li>不要违反 Facebook 政策。</li>
 </ul>
-<div class="quote-box">第 6 页</div>
+<div class="page-marker">第 6 页</div>
       </article>
 
       <article id="doc-inquiry-skill" class="article">
         <a class="modal-close" href="#docs">关闭</a>
-        <h3>询盘分析报告规范：从聊天记录到今日行动清单</h3>
-        <div class="byline">作者：常征 Sean｜专题文档</div>
+        <h3>询盘分析报告规范</h3>
+        <div class="byline">作者：常征 Sean｜在线文档</div>
         <p>询盘分析 Skill 的价值不是简单统计“今天多少条询盘”，而是把阿里国际站询盘和 TM 消息整理成销售管理可执行的日报：谁要马上跟、谁没有回复、哪个负责人需要提醒、哪些客户已经出现成交信号。</p>
-        <div class="callout">核心原则：没有本轮新抓取的数据，就不生成报告；没有完整时间窗、负责人看板和全量询盘明细，就不是合格询盘日报。</div>
-        <h4>适用场景</h4>
-        <ul>
-          <li><strong>每日晨会：</strong> 复盘昨日询盘质量、负责人回复情况和今日重点客户。</li>
-          <li><strong>销售主管看板：</strong> 判断每个业务员的未回复、待跟进、重点商机和潜在丢单风险。</li>
-          <li><strong>老板经营日报：</strong> 快速看到询盘总量、TM 与询盘商机结构、客户等级和高意向客户。</li>
-          <li><strong>阶段复盘：</strong> 对近 7 天、30 天聊天记录做客户类型、产品需求、回复质量和转化卡点分析。</li>
-        </ul>
-        <h4>运行前准备</h4>
-        <ol>
-          <li>确认阿里国际站卖家后台已经登录，Chrome CDP 或 Accio Work 浏览器连接正常。</li>
-          <li>明确时间口径：只说“今天/昨天”默认按美西自然日；明确说“中国时间/北京时间”才按北京时间。</li>
-          <li>明确过滤条件：全部询盘、只看 TM、只看询盘商机、按负责人、按买家名或指定时间段。</li>
-          <li>要求抓取本轮新数据，不读取历史 JSON、旧报告或缓存结果。</li>
-        </ol>
-        <h4>标准报告必须包含 6 个模块</h4>
-        <table class="mini-table">
-          <thead><tr><th>模块</th><th>内容要求</th></tr></thead>
-          <tbody>
-            <tr><td>1. 总览统计</td><td>统计时间、总询盘数、详情抓取数、未回复数、异常数据和关键提醒。</td></tr>
-            <tr><td>2. 商机类型</td><td>区分 TM 商机与询盘商机，必要时加入前一日对比。</td></tr>
-            <tr><td>3. 负责人跟进看板</td><td>按负责人展示总数、已回复、待回复、未回复和未知，不从买家名倒推负责人。</td></tr>
-            <tr><td>4. 待跟进重点</td><td>列出 P0/P1 客户、未回复客户、成交信号客户和风险客户。</td></tr>
-            <tr><td>5. 全量询盘明细</td><td>每条询盘都要展示，不省略；至少包含买家、等级、时间、前五句对话和自然语言摘要。</td></tr>
-            <tr><td>6. 数据完整性说明</td><td>说明抓取窗口、详情失败、重复、部分缺失、登录状态和数据可信度。</td></tr>
-          </tbody>
-        </table>
-        <h4>输出纪律</h4>
-        <ul>
-          <li>报告不能只给摘要，除非明确要求“只要简版”。</li>
-          <li>不能用旧文件补写今日报告；登录失效、抓取失败、数据未更新时必须停止。</li>
-          <li>不能把内部运行路径、日志路径、临时文件路径展示给最终读者。</li>
-          <li>每条询盘要转成业务语言：客户想买什么、卡在哪里、下一步怎么跟、英文话术是什么。</li>
-        </ul>
-        <div class="quote-box">推荐指令：请按北京时间昨日 00:00-24:00 抓取阿里国际站全部询盘和 TM 消息，生成完整询盘日报。报告必须包含总览统计、商机类型、负责人跟进看板、待跟进重点、全量询盘明细和数据完整性说明，并输出今日 P0 客户行动清单。</div>
+<div class="quote-box">核心原则：没有本轮新抓取的数据，就不生成报告；没有完整时间窗、负责人看板和全量询盘明细，就不是合格询盘日报。</div>
+<h4>适用场景</h4>
+<ul>
+<li>每日晨会： 复盘昨日询盘质量、负责人回复情况和今日重点客户。</li>
+</ul>
+<ul>
+<li>销售主管看板： 判断每个业务员的未回复、待跟进、重点商机和潜在丢单风险。</li>
+</ul>
+<ul>
+<li>老板经营日报： 快速看到询盘总量、TM 与询盘商机结构、客户等级和高意向客户。</li>
+</ul>
+<ul>
+<li>阶段复盘： 对近 7 天、30 天聊天记录做客户类型、产品需求、回复质量和转化卡点分析。</li>
+</ul>
+<h4>运行前准备</h4>
+<ul>
+<li>确认阿里国际站卖家后台已经登录，Chrome CDP 或 Accio Work 浏览器连接正常。</li>
+</ul>
+<ul>
+<li>明确时间口径：只说“今天/昨天”默认按美西自然日；明确说“中国时间/北京时间”才按北京时间。</li>
+</ul>
+<ul>
+<li>明确过滤条件：全部询盘、只看 TM、只看询盘商机、按负责人、按买家名或指定时间段。</li>
+</ul>
+<ul>
+<li>要求抓取本轮新数据，不读取历史 JSON、旧报告或缓存结果。</li>
+</ul>
+<h4>标准报告必须包含 6 个模块</h4>
+<p>| 模块 | 内容要求 |</p>
+<p>| --- | --- |</p>
+<p>| 1. 总览统计 | 统计时间、总询盘数、详情抓取数、未回复数、异常数据和关键提醒。 |</p>
+<p>| 2. 商机类型 | 区分 TM 商机与询盘商机，必要时加入前一日对比。 |</p>
+<p>| 3. 负责人跟进看板 | 按负责人展示总数、已回复、待回复、未回复和未知，不从买家名倒推负责人。 |</p>
+<p>| 4. 待跟进重点 | 列出 P0/P1 客户、未回复客户、成交信号客户和风险客户。 |</p>
+<p>| 5. 全量询盘明细 | 每条询盘都要展示，不省略；至少包含买家、等级、时间、前五句对话和自然语言摘要。 |</p>
+<p>| 6. 数据完整性说明 | 说明抓取窗口、详情失败、重复、部分缺失、登录状态和数据可信度。 |</p>
+<h4>输出纪律</h4>
+<ul>
+<li>报告不能只给摘要，除非明确要求“只要简版”。</li>
+</ul>
+<ul>
+<li>不能用旧文件补写今日报告；登录失效、抓取失败、数据未更新时必须停止。</li>
+</ul>
+<ul>
+<li>不能把内部运行路径、日志路径、临时文件路径展示给最终读者。</li>
+</ul>
+<ul>
+<li>每条询盘要转成业务语言：客户想买什么、卡在哪里、下一步怎么跟、英文话术是什么。</li>
+</ul>
+<div class="quote-box">推荐指令：请按北京时间昨日 00:00-24:00 抓取阿里国际站全部询盘和 TM 消息，生成完整询盘日报。报告必须包含总览统计、商机类型、负责人跟进看板、待跟进重点、全量询盘明细和数据完整性说明，并输出今日 P0 客户行动清单。</div>
       </article>
 
       <article id="doc-supplier-skill" class="article">
         <a class="modal-close" href="#docs">关闭</a>
-        <h3>供应商分析与标杆对标：看清行业竞争格局</h3>
-        <div class="byline">作者：常征 Sean｜专题文档</div>
+        <h3>供应商分析与标杆对标</h3>
+        <div class="byline">作者：常征 Sean｜在线文档</div>
         <p>供应商分析 Skill 适合用来回答三个问题：这个行业谁做得好、他们靠什么拿到询盘和订单、我方店铺与标杆供应商差在哪里。它不只是找同行名单，而是形成可执行的竞争改进表。</p>
-        <h4>分析流程</h4>
-        <ol>
-          <li><strong>行业/品类摸底：</strong> 用产品关键词搜索供应商维度，先建立目标行业 Top 供应商池。</li>
-          <li><strong>初步筛选：</strong> 优先看 Verified Supplier、经营年限、交易规模、回复速度和响应率。</li>
-          <li><strong>多维画像：</strong> 提取年营收、员工规模、核心产品线、认证、定制能力和主要出口区域。</li>
-          <li><strong>自店对标：</strong> 把自店 7 天/30 天数据与 Top 3 标杆供应商做横向对比。</li>
-          <li><strong>差距诊断：</strong> 判断差距来自流量、点击、转化、产品力、认证、详情页还是广告投放。</li>
-          <li><strong>行动计划：</strong> 输出短期、中期、长期动作，落到标题、主图、详情页、关键词、认证和产品升级。</li>
-        </ol>
-        <h4>关键指标</h4>
-        <table class="mini-table">
-          <thead><tr><th>维度</th><th>重点看什么</th><th>常见动作</th></tr></thead>
-          <tbody>
-            <tr><td>供应商可信度</td><td>Verified、经营年限、工厂信息、交易规模</td><td>补足公司实力、认证、工厂视频和案例素材。</td></tr>
-            <tr><td>响应质量</td><td>Reply Time 建议 ≤3h，Response Rate 建议 ≥90%</td><td>优化首响 SOP、自动接待知识库和重点客户提醒。</td></tr>
-            <tr><td>技术/认证</td><td>ISO、CE、FCC、RoHS、行业认证、测试报告</td><td>把缺失认证纳入中期补齐计划。</td></tr>
-            <tr><td>定制能力</td><td>Logo、包装、软件、硬件、颜色、规格、场景方案</td><td>详情页增加定制流程、MOQ、打样周期和案例图。</td></tr>
-            <tr><td>产品结构</td><td>爆款属性、价格区间、热卖规格、产品数量</td><td>升级潜优产品，补齐标杆热卖属性。</td></tr>
-          </tbody>
-        </table>
-        <h4>输出报告结构</h4>
-        <ul>
-          <li>Top 供应商清单：公司名、链接、Verified、经营年限、交易信号、核心产品。</li>
-          <li>标杆画像：目标市场、认证、定制能力、详情页表达、价格区间。</li>
-          <li>自店对比矩阵：曝光、点击率、询盘转化率、P4P 表现、实力优品数、产品结构。</li>
-          <li>差距判断：哪些是短期可改，哪些需要认证、产品升级或供应链补强。</li>
-          <li>行动计划：短期优化 Top 5 产品标题和主图；中期补齐认证与详情页信任模块；长期建立测款上新机制。</li>
-        </ul>
-        <div class="quote-box">推荐指令：请以 [产品关键词] 为核心，分析阿里国际站 Top 供应商，重点对比 Verified、经营年限、交易规模、响应速度、认证、定制能力、出口区域和热销产品属性，并输出我方店铺可执行的差距诊断和 30 天优化计划。</div>
+<h4>分析流程</h4>
+<ul>
+<li>行业/品类摸底： 用产品关键词搜索供应商维度，先建立目标行业 Top 供应商池。</li>
+</ul>
+<ul>
+<li>初步筛选： 优先看 Verified Supplier、经营年限、交易规模、回复速度和响应率。</li>
+</ul>
+<ul>
+<li>多维画像： 提取年营收、员工规模、核心产品线、认证、定制能力和主要出口区域。</li>
+</ul>
+<ul>
+<li>自店对标： 把自店 7 天/30 天数据与 Top 3 标杆供应商做横向对比。</li>
+</ul>
+<ul>
+<li>差距诊断： 判断差距来自流量、点击、转化、产品力、认证、详情页还是广告投放。</li>
+</ul>
+<ul>
+<li>行动计划： 输出短期、中期、长期动作，落到标题、主图、详情页、关键词、认证和产品升级。</li>
+</ul>
+<h4>关键指标</h4>
+<p>| 维度 | 重点看什么 | 常见动作 |</p>
+<p>| --- | --- | --- |</p>
+<p>| 供应商可信度 | Verified、经营年限、工厂信息、交易规模 | 补足公司实力、认证、工厂视频和案例素材。 |</p>
+<p>| 响应质量 | Reply Time 建议 ≤3h，Response Rate 建议 ≥90% | 优化首响 SOP、自动接待知识库和重点客户提醒。 |</p>
+<p>| 技术/认证 | ISO、CE、FCC、RoHS、行业认证、测试报告 | 把缺失认证纳入中期补齐计划。 |</p>
+<p>| 定制能力 | Logo、包装、软件、硬件、颜色、规格、场景方案 | 详情页增加定制流程、MOQ、打样周期和案例图。 |</p>
+<p>| 产品结构 | 爆款属性、价格区间、热卖规格、产品数量 | 升级潜优产品，补齐标杆热卖属性。 |</p>
+<h4>输出报告结构</h4>
+<ul>
+<li>Top 供应商清单：公司名、链接、Verified、经营年限、交易信号、核心产品。</li>
+</ul>
+<ul>
+<li>标杆画像：目标市场、认证、定制能力、详情页表达、价格区间。</li>
+</ul>
+<ul>
+<li>自店对比矩阵：曝光、点击率、询盘转化率、P4P 表现、实力优品数、产品结构。</li>
+</ul>
+<ul>
+<li>差距判断：哪些是短期可改，哪些需要认证、产品升级或供应链补强。</li>
+</ul>
+<ul>
+<li>行动计划：短期优化 Top 5 产品标题和主图；中期补齐认证与详情页信任模块；长期建立测款上新机制。</li>
+</ul>
+<div class="quote-box">推荐指令：请以 [产品关键词] 为核心，分析阿里国际站 Top 供应商，重点对比 Verified、经营年限、交易规模、响应速度、认证、定制能力、出口区域和热销产品属性，并输出我方店铺可执行的差距诊断和 30 天优化计划。</div>
       </article>
 
       <article id="doc-prompts" class="article">
         <a class="modal-close" href="#docs">关闭</a>
-        <h3>Accio Work 指令汇总：从运营到成交的可复制指令</h3>
-        <div class="byline">作者：常征 Sean｜专题文档</div>
+        <h3>Accio Work 指令汇总</h3>
+        <div class="byline">作者：常征 Sean｜在线文档</div>
         <p>好指令的核心不是“请帮我分析”，而是目标市场、品类方向、硬性约束、输出格式和执行边界都说清楚。下面按 Agent 场景整理。</p>
-        <h4>1. 供应链管理 Agent</h4>
-        <p>目标：从 1688、速卖通、百度、专业论坛等渠道寻找源头工厂。必须标注工厂是否做外贸、是否正规、面积、质检流程、交期、价格、证书和联系方式。</p>
-        <div class="quote-box">指令骨架：我给你产品关键词、图片或链接，请从 1688、速卖通、百度和行业论坛寻找源头工厂，要求工厂正规、面积不低于 2000 平方米、有质检流程、支持外贸供货、具备 ISO/CE 等证书，并输出 Excel/PDF 寻源报告。</div>
-        <h4>2. 同行调研 Agent</h4>
-        <p>目标：分析国际站和中国制造网同行热卖款、价格、目标国家、优势劣势、年出口额和可落地机会。</p>
-        <h4>3. 市场调研 Agent</h4>
-        <p>宏观调研看产品在国际站的市场潜力、主要市场、热卖款式、当地价格、采购痛点和竞争对手。微观调研则聚焦某个国家，进一步分析采购周期、当地竞争对手和切入策略。</p>
-        <h4>4. 优爆品标题、图片与结构化商详 Agent</h4>
-        <p>要求标题符合国际站流量匹配逻辑，尽量写满 128 字符；详情页要结构化、覆盖 FAQ、卖点和关键词；6 张主图要与标题、详情页一一对应，符合发布规则。</p>
-        <h4>5. 产品卖点 Agent</h4>
-        <p>输出 1950-2000 字符英文卖点，包含材质、热卖规格、特点、场景、客户收益、关键词和长尾词，适合 AI 抓取和 B2B 买家阅读。</p>
-        <h4>6. 广告与爆品 Agent</h4>
-        <p>根据顶展、问鼎、品牌聚量、全站推、标准推广和免费渠道，生成 2 周测试产品方案或月度爆品打造方案，包含预算、关键词、推流节奏和阶段判断。</p>
-        <h4>7. 客户开发 Agent</h4>
-        <p>从国际站、Google、独立站、社媒、海关数据、电商平台找到进口商、批发商、零售商，输出公司、官网、决策人、邮箱、采购痛点、采购周期、优先级和初次话术。</p>
-        <h4>8. 客户背调与高效回复 Agent</h4>
-        <p>根据客户姓名、公司、邮箱、浏览记录、国家和需求，背调客户痛点、采购旺季、采购周期，并生成英文初次回复、跟进、已读不回、谈判和复购话术。</p>
-        <h4>9. 每日新询价分析 Agent</h4>
-        <p>每天自动分析国际站新询价和自主开发客户，标注优先级、生成背调、回复话术、跟进话术，并形成日报。</p>
-        <h4>10. 高效回复与开口率 Agent</h4>
-        <p>先判断客户类型、国家、需求量、价格敏感度和采购痛点，再生成 3 个英文邮件主题和 3 套回复内容。回复不只介绍产品，要突出客户利益最大化：稳定供货、降低售后、提升利润、缩短交期、支持定制。</p>
-        <div class="quote-box">指令骨架：你是外贸销冠。客户来自 [国家]，客户类型是 [进口商/批发商/零售商/项目方]，正在询问 [产品]。请结合客户采购痛点，生成 3 个英文邮件主题和 3 套初次回复话术，每套都要突出我方产品价值、合作利益和下一步问题。</div>
-        <h4>11. 已读不回与高效跟进 Agent</h4>
-        <p>客户已读不回时，不要机械催促。先判断原因：价格没优势、需求未明确、决策链未完成、供应商对比中、交期/认证/MOQ 有顾虑、我方回复没有抓住价值点。然后按不同原因生成跟进话术。</p>
-        <table class="mini-table">
-          <thead><tr><th>可能原因</th><th>跟进方向</th></tr></thead>
-          <tbody>
-            <tr><td>价格敏感</td><td>强调总成本、稳定质量、长期毛利和售后风险降低。</td></tr>
-            <tr><td>还在比较</td><td>补充认证、案例、交期、定制流程和样品方案。</td></tr>
-            <tr><td>需求未明确</td><td>用 2-3 个选择题降低回复门槛。</td></tr>
-            <tr><td>内部审批</td><td>提供老板/采购团队可转发的简版资料。</td></tr>
-          </tbody>
-        </table>
-        <h4>12. 客户谈判 Agent</h4>
-        <p>谈判话术要从质量、价格、交期、付款方式和价值五个方面展开。不要只降价，要先给价格梯度、样品方案、替代规格、阶梯 MOQ、付款节点和交期保障。</p>
-        <h4>13. 客户复盘与复购 Agent</h4>
-        <p>每天复盘询盘、RFQ、自主开发客户和老客户进展，记录客户背景、谈判阶段、卡点、采购痛点、采购周期、预计下单时间和下一步话术。成交后进入复购链路，围绕使用反馈、补货周期、新品推荐、节日活动和库存提醒设计触达。</p>
-        <h4>14. 创建企业网站 Agent</h4>
-        <p>网站不是展示册，而是询盘转化工具。指令必须说明公司名称、主营产品、目标客户、核心优势、SEO 关键词、社媒联系方式和询盘入口。页面结构建议包含：首屏价值主张、核心产品、解决方案、定制能力、工厂实力、案例、FAQ 和联系表单。</p>
+<h4>1. 供应链管理 Agent</h4>
+<p>目标：从 1688、速卖通、百度、专业论坛等渠道寻找源头工厂。必须标注工厂是否做外贸、是否正规、面积、质检流程、交期、价格、证书和联系方式。</p>
+<div class="quote-box">指令骨架：我给你产品关键词、图片或链接，请从 1688、速卖通、百度和行业论坛寻找源头工厂，要求工厂正规、面积不低于 2000 平方米、有质检流程、支持外贸供货、具备 ISO/CE 等证书，并输出 Excel/PDF 寻源报告。</div>
+<h4>2. 同行调研 Agent</h4>
+<p>目标：分析国际站和中国制造网同行热卖款、价格、目标国家、优势劣势、年出口额和可落地机会。</p>
+<h4>3. 市场调研 Agent</h4>
+<p>宏观调研看产品在国际站的市场潜力、主要市场、热卖款式、当地价格、采购痛点和竞争对手。微观调研则聚焦某个国家，进一步分析采购周期、当地竞争对手和切入策略。</p>
+<h4>4. 优爆品标题、图片与结构化商详 Agent</h4>
+<p>要求标题符合国际站流量匹配逻辑，尽量写满 128 字符；详情页要结构化、覆盖 FAQ、卖点和关键词；6 张主图要与标题、详情页一一对应，符合发布规则。</p>
+<h4>5. 产品卖点 Agent</h4>
+<p>输出 1950-2000 字符英文卖点，包含材质、热卖规格、特点、场景、客户收益、关键词和长尾词，适合 AI 抓取和 B2B 买家阅读。</p>
+<h4>6. 广告与爆品 Agent</h4>
+<p>根据顶展、问鼎、品牌聚量、全站推、标准推广和免费渠道，生成 2 周测试产品方案或月度爆品打造方案，包含预算、关键词、推流节奏和阶段判断。</p>
+<h4>7. 客户开发 Agent</h4>
+<p>从国际站、Google、独立站、社媒、海关数据、电商平台找到进口商、批发商、零售商，输出公司、官网、决策人、邮箱、采购痛点、采购周期、优先级和初次话术。</p>
+<h4>8. 客户背调与高效回复 Agent</h4>
+<p>根据客户姓名、公司、邮箱、浏览记录、国家和需求，背调客户痛点、采购旺季、采购周期，并生成英文初次回复、跟进、已读不回、谈判和复购话术。</p>
+<h4>9. 每日新询价分析 Agent</h4>
+<p>每天自动分析国际站新询价和自主开发客户，标注优先级、生成背调、回复话术、跟进话术，并形成日报。</p>
+<h4>10. 高效回复与开口率 Agent</h4>
+<p>先判断客户类型、国家、需求量、价格敏感度和采购痛点，再生成 3 个英文邮件主题和 3 套回复内容。回复不只介绍产品，要突出客户利益最大化：稳定供货、降低售后、提升利润、缩短交期、支持定制。</p>
+<div class="quote-box">指令骨架：你是外贸销冠。客户来自 [国家]，客户类型是 [进口商/批发商/零售商/项目方]，正在询问 [产品]。请结合客户采购痛点，生成 3 个英文邮件主题和 3 套初次回复话术，每套都要突出我方产品价值、合作利益和下一步问题。</div>
+<h4>11. 已读不回与高效跟进 Agent</h4>
+<p>客户已读不回时，不要机械催促。先判断原因：价格没优势、需求未明确、决策链未完成、供应商对比中、交期/认证/MOQ 有顾虑、我方回复没有抓住价值点。然后按不同原因生成跟进话术。</p>
+<p>| 可能原因 | 跟进方向 |</p>
+<p>| --- | --- |</p>
+<p>| 价格敏感 | 强调总成本、稳定质量、长期毛利和售后风险降低。 |</p>
+<p>| 还在比较 | 补充认证、案例、交期、定制流程和样品方案。 |</p>
+<p>| 需求未明确 | 用 2-3 个选择题降低回复门槛。 |</p>
+<p>| 内部审批 | 提供老板/采购团队可转发的简版资料。 |</p>
+<h4>12. 客户谈判 Agent</h4>
+<p>谈判话术要从质量、价格、交期、付款方式和价值五个方面展开。不要只降价，要先给价格梯度、样品方案、替代规格、阶梯 MOQ、付款节点和交期保障。</p>
+<h4>13. 客户复盘与复购 Agent</h4>
+<p>每天复盘询盘、RFQ、自主开发客户和老客户进展，记录客户背景、谈判阶段、卡点、采购痛点、采购周期、预计下单时间和下一步话术。成交后进入复购链路，围绕使用反馈、补货周期、新品推荐、节日活动和库存提醒设计触达。</p>
+<h4>14. 创建企业网站 Agent</h4>
+<p>网站不是展示册，而是询盘转化工具。指令必须说明公司名称、主营产品、目标客户、核心优势、SEO 关键词、社媒联系方式和询盘入口。页面结构建议包含：首屏价值主张、核心产品、解决方案、定制能力、工厂实力、案例、FAQ 和联系表单。</p>
       </article>
 
       <article id="doc-scripts" class="article">
         <a class="modal-close" href="#docs">关闭</a>
-        <h3>Accio Work 高阶话术库 2.0 完整版</h3>
+        <h3>高阶话术库 2.0 完整版</h3>
         <div class="byline">作者：常征 Sean｜在线文档</div>
-        <div class="quote-box">第 1 页</div>
+        <div class="page-marker">第 1 页</div>
 <p>Accio Work 高阶话术库 2.0 完整版</p>
 <p>本文档整合了两部分内容：一是“店铺整体诊断深度版”分析话术；二是“高阶话术库 2.0 完整运营版”全部模块。</p>
 <p>文档按照“能做什么— 使用目的— 需要提供什么— 标准话术— 预期输出”进行整理，便于老板、组长和运营直接</p>
@@ -2695,13 +3136,13 @@
 <h4>二、点击层</h4>
 <p>1 点击率是否异常</p>
 <p>2 主图是否可能影响点击</p>
-<p>gm]Þ~WdyÑbg	PQlSø</p>
-<div class="quote-box">第 2 页</div>
+<p>gm]Þ~WdyÑbg PQlSø</p>
+<div class="page-marker">第 2 页</div>
 <p>3 是否存在“曝光有但点击差 ”的问题</p>
 <h4>三、转化层</h4>
 <p>1 询盘转化是否正常</p>
 <p>2 是否存在“点击高但无询盘 ”的问题</p>
-<p>3 转化问题更可能来自：产品 / 页面 /  信任 / 价格</p>
+<p>3 转化问题更可能来自：产品 / 页面 / 信任 / 价格</p>
 <h4>四、产品结构</h4>
 <p>1 是否存在优爆品</p>
 <p>2 产品结构是否合理（是否过于单一）</p>
@@ -2731,8 +3172,8 @@
 <p>2 是否覆盖核心关键词</p>
 <p>3 是否缺少高转化属性词</p>
 <h4>二、主图</h4>
-<p>gm]Þ~WdyÑbg	PQlSø</p>
-<div class="quote-box">第 3 页</div>
+<p>gm]Þ~WdyÑbg PQlSø</p>
+<div class="page-marker">第 3 页</div>
 <p>1 是否具备点击吸引力</p>
 <p>2 是否存在B2B 表达问题</p>
 <p>3 是否清晰表达产品用途和优势</p>
@@ -2767,8 +3208,8 @@
 <p>3 投放属于：拉流量 / 测款 / 稳定转化 哪一阶段</p>
 <p>4 是否存在浪费预算</p>
 <p>输出：</p>
-<p>gm]Þ~WdyÑbg	PQlSø</p>
-<div class="quote-box">第 4 页</div>
+<p>gm]Þ~WdyÑbg PQlSø</p>
+<div class="page-marker">第 4 页</div>
 <p>问题总结 + 优化优先级</p>
 <p>预期输出：</p>
 <p>整体投放健康度、阶段判断、最大问题、优先优化建议。</p>
@@ -2798,8 +3239,8 @@
 <p>请帮我分析这个直通车计划的数据表现</p>
 <p>数据如下：</p>
 <p>（曝光 点击 点击率 花费 询盘 转化率）</p>
-<p>gm]Þ~WdyÑbg	PQlSø</p>
-<div class="quote-box">第 5 页</div>
+<p>gm]Þ~WdyÑbg PQlSø</p>
+<div class="page-marker">第 5 页</div>
 <p>请分析：</p>
 <p>1 流量是否精准</p>
 <p>2 点击问题还是转化问题</p>
@@ -2831,8 +3272,8 @@
 <p>使用目的：判断不同国家/地区的流量质量与转化差异，优化地域限制与出价策略。</p>
 <p>你需要提供：按国家或地区拆分的数据：曝光、点击、花费、询盘、询盘质量。</p>
 <p>gm]Þ~WdyÑ</p>
-<p>bg	PQlSø</p>
-<div class="quote-box">第 6 页</div>
+<p>bg PQlSø</p>
+<div class="page-marker">第 6 页</div>
 <p>标准话术：</p>
 <p>请帮我分析当前投放地域策略</p>
 <p>输出：</p>
@@ -2861,8 +3302,8 @@
 <p>使用建议：先用这一条拿到初始分析，再根据输出中的问题点继续追问具体模块，效果会更深。</p>
 <h4>模块 9：投放阶段判断</h4>
 <p>能做什么：投放阶段判断</p>
-<p>gm]Þ~WdyÑbg	PQlSø</p>
-<div class="quote-box">第 7 页</div>
+<p>gm]Þ~WdyÑbg PQlSø</p>
+<div class="page-marker">第 7 页</div>
 <p>使用目的：判断当前投放处于测款期、放量期还是转化期，并给出下一步动作。</p>
 <p>你需要提供：当前计划表现、产品状态、预算策略。</p>
 <p>标准话术：</p>
@@ -2892,8 +3333,8 @@
 <p>哪些词适合放结构化描述</p>
 <p>预期输出：关键词词库及不同位置的使用建议。</p>
 <p>使用建议：先用这一条拿到初始分析，再根据输出中的问题点继续追问具体模块，效果会更深。</p>
-<p>gm]Þ~WdyÑbg	PQlSø</p>
-<div class="quote-box">第 8 页</div>
+<p>gm]Þ~WdyÑbg PQlSø</p>
+<div class="page-marker">第 8 页</div>
 <h4>模块 11：选品分析（行业+产品方向）</h4>
 <p>能做什么：选品分析（行业+产品方向）</p>
 <p>使用目的：找到更有需求的产品方向，避免盲目铺货。</p>
@@ -2921,8 +3362,8 @@
 <p>3 我可以切入的方向</p>
 <p>预期输出：竞品主推结构与可切入机会。</p>
 <p>使用建议：先用这一条拿到初始分析，再根据输出中的问题点继续追问具体模块，效果会更深。</p>
-<p>gm]Þ~WdyÑbg	PQlSø</p>
-<div class="quote-box">第 9 页</div>
+<p>gm]Þ~WdyÑbg PQlSø</p>
+<div class="page-marker">第 9 页</div>
 <h4>模块 13：产品拓展分析</h4>
 <p>能做什么：产品拓展分析</p>
 <p>使用目的：围绕核心客户扩展上下游和关联产品线。</p>
@@ -2949,12 +3390,12 @@
 <p>使用建议：先用这一条拿到初始分析，再根据输出中的问题点继续追问具体模块，效果会更深。</p>
 <h4>模块 15：平台对比分析</h4>
 <p>能做什么：平台对比分析</p>
-<p>gm]Þ~WdyÑbg	PQlSø</p>
-<div class="quote-box">第 10 页</div>
+<p>gm]Þ~WdyÑbg PQlSø</p>
+<div class="page-marker">第 10 页</div>
 <p>使用目的：比较同一产品在国际站、亚马逊、TikTok 等平台的适配性。</p>
 <p>你需要提供：产品名称或链接。</p>
 <p>标准话术：</p>
-<p>请帮我分析这个产品在国际站 vs  亚马逊 vs TikTok 的差异</p>
+<p>请帮我分析这个产品在国际站 vs 亚马逊 vs TikTok 的差异</p>
 <p>输出：</p>
 <p>1 哪个平台更适合</p>
 <p>2 原因</p>
@@ -2979,8 +3420,8 @@
 <p>使用建议：先用这一条拿到初始分析，再根据输出中的问题点继续追问具体模块，效果会更深。</p>
 <h4>模块 17：详情页设计</h4>
 <p>能做什么：详情页设计</p>
-<p>gm]Þ~WdyÑbg	PQlSø</p>
-<div class="quote-box">第 11 页</div>
+<p>gm]Þ~WdyÑbg PQlSø</p>
+<div class="page-marker">第 11 页</div>
 <p>使用目的：输出详情页结构、卖点逻辑与可执行文案。</p>
 <p>你需要提供：产品名称、卖点、目标客户、产品优势。</p>
 <p>标准话术：</p>
@@ -3008,8 +3449,8 @@
 <p>可直接用于设计</p>
 <p>预期输出：每张图的核心卖点、展示内容与文案。</p>
 <p>使用建议：先用这一条拿到初始分析，再根据输出中的问题点继续追问具体模块，效果会更深。</p>
-<p>gm]Þ~WdyÑbg	PQlSø</p>
-<div class="quote-box">第 12 页</div>
+<p>gm]Þ~WdyÑbg PQlSø</p>
+<div class="page-marker">第 12 页</div>
 <h4>模块 19：卖点优化与重写</h4>
 <p>能做什么：卖点优化与重写</p>
 <p>使用目的：把产品卖点改写成更偏 B2B、更适合国际站的表达。</p>
@@ -3036,8 +3477,8 @@
 <p>使用建议：先用这一条拿到初始分析，再根据输出中的问题点继续追问具体模块，效果会更深。</p>
 <h4>模块 21：客户沟通— 报价话术</h4>
 <p>能做什么：客户沟通— 报价话术</p>
-<p>gm]Þ~WdyÑbg	PQlSø</p>
-<div class="quote-box">第 13 页</div>
+<p>gm]Þ~WdyÑbg PQlSø</p>
+<div class="page-marker">第 13 页</div>
 <p>使用目的：提升客户回复的专业度与成交概率。</p>
 <p>你需要提供：客户场景、产品、价格范围。</p>
 <p>标准话术：</p>
@@ -3062,8 +3503,8 @@
 <p>请帮我生成客户跟进话术</p>
 <p>场景：已报价未回复</p>
 <p>预期输出：跟进模板与催回复逻辑。</p>
-<p>gm]Þ~WdyÑbg	PQlSø</p>
-<div class="quote-box">第 14 页</div>
+<p>gm]Þ~WdyÑbg PQlSø</p>
+<div class="page-marker">第 14 页</div>
 <p>使用建议：先用这一条拿到初始分析，再根据输出中的问题点继续追问具体模块，效果会更深。</p>
 <h4>模块 24：团队训练— 运营思考题</h4>
 <p>能做什么：团队训练— 运营思考题</p>
@@ -3091,8 +3532,8 @@
 <p>问题 + 正确做法</p>
 <p>预期输出：错误案例与改法。</p>
 <p>使用建议：先用这一条拿到初始分析，再根据输出中的问题点继续追问具体模块，效果会更深。</p>
-<p>gm]Þ~WdyÑbg	PQlSø</p>
-<div class="quote-box">第 15 页</div>
+<p>gm]Þ~WdyÑbg PQlSø</p>
+<div class="page-marker">第 15 页</div>
 <h4>模块 26：组长训练— 管理场景题</h4>
 <p>能做什么：组长训练— 管理场景题</p>
 <p>使用目的：训练组长判断问题与带人能力。</p>
@@ -3118,8 +3559,8 @@
 <h4>模块 28：老板决策辅助（高级版）</h4>
 <p>能做什么：老板决策辅助（高级版）</p>
 <p>使用目的：站在老板视角判断风险、策略和决策方向。</p>
-<p>gm]Þ~WdyÑbg	PQlSø</p>
-<div class="quote-box">第 16 页</div>
+<p>gm]Þ~WdyÑbg PQlSø</p>
+<div class="page-marker">第 16 页</div>
 <p>你需要提供：运营问题描述、团队问题描述、客户情况等。</p>
 <p>标准话术：</p>
 <p>我现在有这个运营问题：</p>
@@ -3136,38 +3577,52 @@
 <h4>三、补充说明</h4>
 <ul>
 <li>Accio Work 适合做：判断、分析、生成、训练、辅助决策。</li>
+</ul>
+<ul>
 <li>Accio Work 不适合做：真实后台数据自动读取、完全替代人工运营、无约束自动执行。</li>
+</ul>
+<ul>
 <li>使用时建议遵循：先大后小、先整体后局部、先结论后追问。</li>
+</ul>
+<ul>
 <li>投放分析类问题，必须尽量提供计划、关键词、预算、地域、询盘数据，否则输出会偏泛。</li>
+</ul>
+<ul>
 <li>页面与文案类问题，必须尽量提供产品、目标客户、核心优势、主推卖点，否则内容会偏浅。</li>
 </ul>
 <h4>四、核心原则</h4>
 <p>AI 不会替代运营，但会替代不会用 AI 的运营。</p>
-<p>gm]Þ~WdyÑbg	PQlSø</p>
+<p>gm]Þ~WdyÑbg PQlSø</p>
       </article>
 
       <article id="doc-growth-camp" class="article">
         <a class="modal-close" href="#docs">关闭</a>
         <h3>AI 外贸运营增长方法</h3>
-        <div class="byline">作者：常征 Sean｜专题文档</div>
+        <div class="byline">作者：常征 Sean｜在线文档</div>
         <p>本专题把 AI 外贸运营、智能体分工、询盘分析、供应商分析、客户深度背调和 Accio Work 指令体系整理成一套可落地的增长方法。</p>
-        <h4>1. 数字外贸军团</h4>
-        <p>核心思路是用多个智能体分工：市场调研、供应链、视觉、标题、广告、询盘、客户背调、销售话术、复盘。老板不只是用 AI 写内容，而是用 AI 分配任务、检查结果、训练员工。</p>
-        <h4>2. 询盘分析 Skill</h4>
-        <p>重点不是简单汇总询盘，而是要求抓取新鲜度、时间窗、负责人看板、全量询盘明细和数据完整性。报告必须包含总览统计、商机类型、负责人跟进看板、待跟进重点、全量明细和数据说明。</p>
-        <h4>3. 供应商分析 Skill</h4>
-        <p>从供应商搜索开始，看 Verified、经营年限、交易规模、回复时间、响应率、认证、定制能力、出口区域，再与自店做差距分析。</p>
-        <h4>4. 客户深度背调 Skill</h4>
-        <p>通过官网、LinkedIn、展会、新闻、案例、海关线索和邮箱校验，找到决策人、业务钩子、痛点和个性化开发信切入点。</p>
-        <h4>5. 公开课重点</h4>
-        <p>围绕星等级、商机分、优爆品打造、全站推组合营销、结构化商详、标题卖点、主图副图、旺铺装修、定时任务和商品分层诊断展开。</p>
-        <h4>6. 推荐定时任务</h4>
-        <ul>
-          <li>每月 1 号：生成新品主图、标题和卖点文案。</li>
-          <li>每月 3 号：分析 30/90 天商品分层，找 0 访客有商机、商机高无订单、订单有但反馈低等产品。</li>
-          <li>每天下午：分析广告数据和重点客户进展。</li>
-          <li>每周：复盘询盘质量、业务回复和客户再激活。</li>
-        </ul>
+<h4>1. 数字外贸军团</h4>
+<p>核心思路是用多个智能体分工：市场调研、供应链、视觉、标题、广告、询盘、客户背调、销售话术、复盘。老板不只是用 AI 写内容，而是用 AI 分配任务、检查结果、训练员工。</p>
+<h4>2. 询盘分析 Skill</h4>
+<p>重点不是简单汇总询盘，而是要求抓取新鲜度、时间窗、负责人看板、全量询盘明细和数据完整性。报告必须包含总览统计、商机类型、负责人跟进看板、待跟进重点、全量明细和数据说明。</p>
+<h4>3. 供应商分析 Skill</h4>
+<p>从供应商搜索开始，看 Verified、经营年限、交易规模、回复时间、响应率、认证、定制能力、出口区域，再与自店做差距分析。</p>
+<h4>4. 客户深度背调 Skill</h4>
+<p>通过官网、LinkedIn、展会、新闻、案例、海关线索和邮箱校验，找到决策人、业务钩子、痛点和个性化开发信切入点。</p>
+<h4>5. 公开课重点</h4>
+<p>围绕星等级、商机分、优爆品打造、全站推组合营销、结构化商详、标题卖点、主图副图、旺铺装修、定时任务和商品分层诊断展开。</p>
+<h4>6. 推荐定时任务</h4>
+<ul>
+<li>每月 1 号：生成新品主图、标题和卖点文案。</li>
+</ul>
+<ul>
+<li>每月 3 号：分析 30/90 天商品分层，找 0 访客有商机、商机高无订单、订单有但反馈低等产品。</li>
+</ul>
+<ul>
+<li>每天下午：分析广告数据和重点客户进展。</li>
+</ul>
+<ul>
+<li>每周：复盘询盘质量、业务回复和客户再激活。</li>
+</ul>
       </article>
 
     </section>

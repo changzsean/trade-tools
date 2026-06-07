@@ -59,7 +59,12 @@ function markdownToHtml(markdown) {
     }
     if (line.startsWith('> ')) {
       closeList();
-      out.push(`<div class="quote-box">${inlineMarkdown(line.slice(2))}</div>`);
+      const quote = line.slice(2).trim();
+      if (/^第\s*\d+\s*页$/.test(quote)) {
+        out.push(`<div class="page-marker">${inlineMarkdown(quote)}</div>`);
+      } else {
+        out.push(`<div class="quote-box">${inlineMarkdown(quote)}</div>`);
+      }
       continue;
     }
     if (line.startsWith('- ')) {
