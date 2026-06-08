@@ -219,6 +219,10 @@
     .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .download-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      align-items: stretch;
+    }
     .card {
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -348,7 +352,7 @@
     .resource-card {
       display: flex;
       flex-direction: column;
-      min-height: 285px;
+      min-height: 308px;
       padding: 18px;
     }
     .featured-skill {
@@ -384,8 +388,18 @@
       border-radius: 8px;
       background: rgba(255,255,255,.82);
     }
-    .resource-card h3 { margin-bottom: 8px; font-size: 19px; }
-    .resource-card p { color: var(--muted); font-size: 14px; }
+    .resource-card h3 {
+      min-height: 48px;
+      margin-bottom: 8px;
+      font-size: 19px;
+      line-height: 1.25;
+    }
+    .resource-card p {
+      min-height: 66px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
     .resource-meta {
       display: grid;
       gap: 8px;
@@ -399,6 +413,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      width: 100%;
       min-height: 42px;
       margin-top: auto;
       padding: 10px 14px;
@@ -644,12 +659,12 @@
     @media (max-width: 1120px) {
       .hero { grid-template-columns: 1fr; }
       .lifecycle, .grid-4, .tool-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .hero-actions, .grid-3, .doc-index, .proof-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero-actions, .grid-3, .download-grid, .doc-index, .proof-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 760px) {
       .topbar { align-items: flex-start; flex-direction: column; }
       .nav { justify-content: flex-start; }
-      .hero-actions, .grid-2, .grid-3, .grid-4, .lifecycle, .doc-index, .proof-strip, .module-list, .featured-skill, .contact-panel, .tool-grid { grid-template-columns: 1fr; }
+      .hero-actions, .grid-2, .grid-3, .grid-4, .download-grid, .lifecycle, .doc-index, .proof-strip, .module-list, .featured-skill, .contact-panel, .tool-grid { grid-template-columns: 1fr; }
       .section-head { align-items: flex-start; flex-direction: column; }
       .play-list div, .resource-meta div { grid-template-columns: 1fr; }
       .hero-shot img { aspect-ratio: 16 / 11; }
@@ -1026,83 +1041,83 @@
           <p class="section-desc">方法、案例和模板可在在线文档库中直接阅读；本区保留需要安装或本地运行的技能包与工具。</p>
         </div>
       </div>
-      <div class="grid grid-4">
+      <div class="grid download-grid">
         <article class="card resource-card">
           <span class="tag amber">询盘</span>
           <h3>昨日询盘日报专家</h3>
           <p>复盘昨日 IM 会话，输出意向分层、合规风险和今日行动清单。</p>
           <div class="resource-meta"><div><b>准备</b><span>昨日聊天记录、子账号</span></div><div><b>产出</b><span>10 大版块日报</span></div></div>
-          <a class="download" href="./国际站昨日询盘日报专家.skill" download>下载技能包</a>
+          <a class="download" href="./downloads/inquiry-daily-report.skill" download>下载技能包</a>
         </article>
         <article class="card resource-card">
           <span class="tag green">客户</span>
           <h3>高价值买家再激活</h3>
           <p>找出已读未回但有购买意向的客户，生成跟进报告和英文话术。</p>
           <div class="resource-meta"><div><b>准备</b><span>近 7-30 天聊天数据</span></div><div><b>产出</b><span>P0/P1/P2 客户清单</span></div></div>
-          <a class="download" href="./国际站高价值买家再激活.skill" download>下载技能包</a>
+          <a class="download" href="./downloads/high-value-buyer-reactivation.skill" download>下载技能包</a>
         </article>
         <article class="card resource-card">
           <span class="tag amber">询盘</span>
           <h3>30天询盘聊天采集</h3>
           <p>采集最长 30 天聊天记录，再用于深度分析、客户分层和销售复盘。</p>
           <div class="resource-meta"><div><b>准备</b><span>店铺账号、日期范围</span></div><div><b>产出</b><span>聊天表格和分析数据</span></div></div>
-          <a class="download" href="./30天询盘聊天记录采集分析skill.zip" download>下载压缩包</a>
+          <a class="download" href="./downloads/30-day-inquiry-chat-analysis.zip" download>下载压缩包</a>
         </article>
         <article class="card resource-card">
           <span class="tag green">流量</span>
           <h3>P4P 诊断</h3>
           <p>诊断账户、计划、商品、国家、搜索词、时段和标签定向。</p>
           <div class="resource-meta"><div><b>准备</b><span>直通车数据、计划 ID</span></div><div><b>产出</b><span>优化执行表</span></div></div>
-          <a class="download" href="./P4P诊断skill.zip" download>下载压缩包</a>
+          <a class="download" href="./downloads/p4p-diagnosis-skill.zip" download>下载压缩包</a>
         </article>
         <article class="card resource-card">
           <span class="tag blue">产品</span>
           <h3>DTC 市场调查分析</h3>
           <p>调研市场、品类、竞品格局、用户需求和新细分机会。</p>
           <div class="resource-meta"><div><b>准备</b><span>研究对象、目标市场</span></div><div><b>产出</b><span>市场机会报告</span></div></div>
-          <a class="download" href="./DTC市场调查分析SKILL.zip" download>下载压缩包</a>
+          <a class="download" href="./downloads/dtc-market-research-skill.zip" download>下载压缩包</a>
         </article>
         <article class="card resource-card">
           <span class="tag green">流量</span>
           <h3>标题王</h3>
           <p>生成阿里国际站 120-128 字符标题，兼顾 SRF 布局和核心关键词。</p>
           <div class="resource-meta"><div><b>准备</b><span>产品词、属性、场景</span></div><div><b>产出</b><span>标题和关键词说明</span></div></div>
-          <a class="download" href="./【常征负责全深圳】标题王skill.zip" download>下载压缩包</a>
+          <a class="download" href="./downloads/title-king-skill.zip" download>下载压缩包</a>
         </article>
         <article class="card resource-card">
           <span class="tag red">转化</span>
           <h3>PI 生成器 Windows</h3>
           <p>快速整理产品、数量、单价、图片并生成报价单或形式发票。</p>
           <div class="resource-meta"><div><b>准备</b><span>Windows 电脑</span></div><div><b>产出</b><span>报价单 / PI</span></div></div>
-          <a class="download" href="./PI生成器免安装win版_PDF修复.zip" download>下载 Windows 版</a>
+          <a class="download" href="./downloads/pi-generator-windows.zip" download>下载 Windows 版</a>
         </article>
         <article class="card resource-card">
           <span class="tag red">转化</span>
           <h3>PI 生成器 macOS</h3>
           <p>macOS 环境下使用的 PI 和报价单生成工具。</p>
           <div class="resource-meta"><div><b>准备</b><span>macOS 电脑</span></div><div><b>产出</b><span>报价单 / PI</span></div></div>
-          <a class="download" href="./【常征负责国际站全深圳】PI生成器_macOS_分享版.zip" download>下载 macOS 版</a>
+          <a class="download" href="./downloads/pi-generator-macos.zip" download>下载 macOS 版</a>
         </article>
         <article class="card resource-card">
           <span class="tag amber">询盘分析</span>
           <h3>Alibaba Inquiry Analyst</h3>
           <p>抓取并分析阿里国际站询盘和 TM 消息，生成负责人看板、待跟进重点和完整询盘明细。</p>
           <div class="resource-meta"><div><b>准备</b><span>登录态、时间窗、子账号</span></div><div><b>产出</b><span>1-6 模块完整报告</span></div></div>
-          <a class="download" href="./资料/alibaba-inquiry-analyst-generic-v2.zip" download>下载技能包</a>
+          <a class="download" href="./downloads/alibaba-inquiry-analyst.zip" download>下载技能包</a>
         </article>
         <article class="card resource-card">
           <span class="tag blue">供应商分析</span>
           <h3>Alibaba Supplier Analysis</h3>
           <p>对国际站目标行业供应商做 Verified、交易量、响应率、认证、定制能力和标杆差距分析。</p>
           <div class="resource-meta"><div><b>准备</b><span>品类关键词、目标市场</span></div><div><b>产出</b><span>标杆矩阵和提升动作</span></div></div>
-          <a class="download" href="./资料/5.24-25 Ai老板增长营讲师分享资料/罗畅/alibaba-supplier-analysis-skill-v2(3).zip" download>下载技能包</a>
+          <a class="download" href="./downloads/alibaba-supplier-analysis.zip" download>下载技能包</a>
         </article>
         <article class="card resource-card">
           <span class="tag green">客户背调</span>
           <h3>Company Deep Research</h3>
           <p>围绕官网、决策人、邮箱、贸易线索和业务钩子生成 B2B 客户深度背调报告。</p>
           <div class="resource-meta"><div><b>准备</b><span>公司名、官网、邮箱、国家</span></div><div><b>产出</b><span>客户画像和开发信切入点</span></div></div>
-          <a class="download" href="./资料/company-deep-research.zip" download>下载技能包</a>
+          <a class="download" href="./downloads/company-deep-research.zip" download>下载技能包</a>
         </article>
       </div>
       <div class="note-band">说明：技能包和本地工具保留下载入口；案例、方法和模板可在在线文档库中直接阅读。</div>
