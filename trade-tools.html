@@ -1113,6 +1113,25 @@
             </div>
           </div>
         </div>
+        <!-- Alipay -->
+        <div class="mb-4">
+          <div class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#1677ff;">支付宝收款信息（可选）</div>
+          <div class="space-y-2">
+            <input class="inp" id="pi_alipay_name" placeholder="支付宝收款人姓名（备注）" oninput="renderPI()">
+            <div class="pi-img-uploader">
+              <div class="pi-img-box" id="pi_alipay_qr_box">
+                <span style="font-size:10px;color:#94a3b8;">收款码</span>
+              </div>
+              <div class="pi-img-actions">
+                <label class="pi-img-btn" style="cursor:pointer;">
+                  <i class="fas fa-upload mr-1"></i>上传收款码
+                  <input type="file" accept="image/*" style="display:none;" onchange="piUploadAlipayQR(this)">
+                </label>
+                <button class="pi-img-btn" onclick="piClearAlipayQR()" style="color:#dc2626;">清除</button>
+              </div>
+            </div>
+          </div>
+        </div>
         <!-- Remarks -->
         <div class="mb-4">
           <div class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">备注 Remarks</div>
@@ -2561,6 +2580,20 @@ function renderPI() {
       </div>
       ` : ''}
 
+      <!-- ALIPAY -->
+      ${(g('pi_alipay_name') || window._piAlipayQR) ? `
+      <div style="border:1px solid #e0eeff;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:12px;background:#f0f7ff;">
+        <div style="font-weight:bold;font-size:11px;text-transform:uppercase;color:#1677ff;margin-bottom:8px;">支付宝收款 / Alipay Payment</div>
+        <div style="display:flex;align-items:flex-start;gap:16px;">
+          ${window._piAlipayQR ? `<img src="${window._piAlipayQR}" style="width:90px;height:90px;object-fit:contain;border:1px solid #d0e4ff;border-radius:6px;background:#fff;" alt="Alipay QR Code">` : ''}
+          <div>
+            ${g('pi_alipay_name') ? `<div><span style="color:#777;width:80px;display:inline-block;">收款人：</span><strong>${g('pi_alipay_name')}</strong></div>` : ''}
+            <div style="color:#888;font-size:11px;margin-top:4px;">请扫描二维码付款 / Scan to pay via Alipay</div>
+          </div>
+        </div>
+      </div>
+      ` : ''}
+
       <!-- PACKING -->
       ${g('pi_packing') ? `<div style="margin-bottom:10px;font-size:12px;"><span style="color:#777;">Packing / 包装: </span>${g('pi_packing')}</div>` : ''}
 
@@ -2595,6 +2628,27 @@ function renderPI() {
 
 function printPI() {
   window.print();
+}
+
+// Alipay QR helpers
+window._piAlipayQR = null;
+function piUploadAlipayQR(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    window._piAlipayQR = e.target.result;
+    const box = document.getElementById('pi_alipay_qr_box');
+    box.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;display:block;">`;
+    renderPI();
+  };
+  reader.readAsDataURL(file);
+}
+function piClearAlipayQR() {
+  window._piAlipayQR = null;
+  const box = document.getElementById('pi_alipay_qr_box');
+  box.innerHTML = '<span style="font-size:10px;color:#94a3b8;">收款码</span>';
+  renderPI();
 }
 
 function piSaveTemplate() {
