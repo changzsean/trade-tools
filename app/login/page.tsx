@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Meeka } from "@/components/meeka/meeka";
+import { AuthForm } from "@/components/auth/auth-form";
 
 export const metadata: Metadata = { title: "登录 | MEEKA" };
 
@@ -17,37 +18,7 @@ export default function LoginPage() {
           <h1 className="mt-8 text-xl font-semibold">欢迎回来，我们继续成长。</h1>
           <p className="mt-1 text-sm text-muted">登录 MEEKA，接着上次的进度学习和交流。</p>
 
-          <form className="mt-6 space-y-4">
-            <div>
-              <label className="text-sm font-medium" htmlFor="account">手机号 / 邮箱</label>
-              <input
-                id="account"
-                type="text"
-                autoComplete="username"
-                className="mt-1.5 h-10 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-brand"
-                placeholder="you@example.com"
-              />
-            </div>
-            <div>
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium" htmlFor="password">密码</label>
-                <Link href="#" className="text-xs text-brand hover:underline">忘记密码</Link>
-              </div>
-              <input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                className="mt-1.5 h-10 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-brand"
-                placeholder="••••••••"
-              />
-            </div>
-            <button
-              type="submit"
-              className="h-10 w-full rounded-lg bg-brand text-sm font-semibold text-white hover:opacity-90"
-            >
-              登录
-            </button>
-          </form>
+          <AuthForm mode="login" />
 
           <p className="mt-6 text-sm text-muted">
             还没有账号？

@@ -10,7 +10,6 @@ import {
   Inbox,
   LayoutGrid,
   MapPin,
-  Search,
   Settings,
   Sparkles,
   Star,
@@ -18,6 +17,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "@/components/app-shell/user-menu";
+import { SearchBar } from "@/components/app-shell/search-bar";
 import type { NavItem } from "@/types/navigation";
 
 const primaryNav: NavItem[] = [
@@ -68,10 +68,7 @@ export function AppShell({ children, rightRail }: { children: ReactNode; rightRa
               </Button>
             ))}
           </nav>
-          <div className="hidden h-10 w-[360px] items-center gap-2 rounded-lg border border-border bg-white px-3 text-sm text-muted xl:flex">
-            <Search className="h-4 w-4" />
-            搜索问题、资源、供应链、人...
-          </div>
+          <SearchBar />
           <UserMenu />
         </div>
       </header>
