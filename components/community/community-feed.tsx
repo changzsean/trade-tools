@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Factory, Handshake, MessageCircle, MoreHorizontal, PackageSearch, Share2, ThumbsUp, Truck } from "lucide-react";
 import { SectionHeading } from "@/components/common/section-heading";
 import { Badge } from "@/components/ui/badge";
@@ -6,10 +7,10 @@ import { Card } from "@/components/ui/card";
 import type { CommunityPost } from "@/types/community";
 
 const matchingItems = [
-  { icon: PackageSearch, title: "找货源", desc: "发布采购需求，匹配供货方" },
-  { icon: Factory, title: "找供应商", desc: "工厂、档口、代工伙伴" },
-  { icon: Truck, title: "找物流仓配", desc: "货代、海外仓、清关资源" },
-  { icon: Handshake, title: "求合作", desc: "联名开发、拼单、渠道互换" },
+  { icon: PackageSearch, title: "找货源", desc: "发布采购需求，匹配供货方", href: "/community/resource-matching" },
+  { icon: Factory, title: "找供应商", desc: "工厂、档口、代工伙伴", href: "/community/resource-matching" },
+  { icon: Truck, title: "找物流仓配", desc: "货代、海外仓、清关资源", href: "/community/resource-matching" },
+  { icon: Handshake, title: "求合作", desc: "联名开发、拼单、渠道互换", href: "/community/resource-matching" },
 ];
 
 export function CommunityFeed({ posts }: { posts: CommunityPost[] }) {
@@ -18,26 +19,33 @@ export function CommunityFeed({ posts }: { posts: CommunityPost[] }) {
       <SectionHeading title="社区互动" description="动态、问答、组队和资源对接放在同一个协作场景里" href="/community/feed" />
       <div className="mb-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         {matchingItems.map((item) => (
-          <Card key={item.title} className="min-h-[108px] p-4">
-            <div className="flex h-full items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-muted text-slate-700">
-                <item.icon className="h-5 w-5" />
+          <Link key={item.title} href={item.href} className="block">
+            <Card className="min-h-[108px] p-4 transition-colors hover:border-border-strong">
+              <div className="flex h-full items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-muted text-slate-700">
+                  <item.icon className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <div className="whitespace-nowrap text-base font-semibold leading-6 text-foreground">{item.title}</div>
+                  <div className="mt-1 line-clamp-2 text-sm leading-5 text-muted">{item.desc}</div>
+                </div>
               </div>
-              <div className="min-w-0">
-                <div className="whitespace-nowrap text-base font-semibold leading-6 text-foreground">{item.title}</div>
-                <div className="mt-1 line-clamp-2 text-sm leading-5 text-muted">{item.desc}</div>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          </Link>
         ))}
       </div>
       <Card className="mb-4 p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">S</div>
-          <div className="min-h-10 flex-1 rounded-xl border border-border px-4 py-2.5 text-sm text-muted">
+          <Link
+            href="/community/feed"
+            className="min-h-10 flex-1 rounded-xl border border-border px-4 py-2.5 text-sm text-muted transition-colors hover:border-border-strong"
+          >
             分享经验、提出问题，或发布资源对接需求...
-          </div>
-          <Button className="sm:w-auto">发布</Button>
+          </Link>
+          <Button asChild className="sm:w-auto">
+            <Link href="/community/feed">发布</Link>
+          </Button>
         </div>
       </Card>
       <div className="space-y-4">

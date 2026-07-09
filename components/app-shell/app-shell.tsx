@@ -38,6 +38,7 @@ const resourceNav: NavItem[] = [
 
 const communityNav: NavItem[] = [
   { title: "动态广场", href: "/community/feed", icon: LayoutGrid },
+  { title: "自我介绍", href: "/community/say-hello", icon: Sparkles },
   { title: "问答专区", href: "/community/questions", icon: Inbox },
   { title: "资源对接", href: "/community/resource-matching", icon: Handshake },
   { title: "组队学习", href: "/community/teams", icon: Users },
