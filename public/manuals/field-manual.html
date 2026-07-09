@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>外贸业务员实战手册 · AI时代先锋</title>
+<meta name="description" content="AI时代先锋原创：面向 0–3 年外贸业务员的全流程实战手册。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* MEEKA Design Kit v2.0 · Warm Minimalism */
+  --forest:#1E1E1E;--sage:#EAE3D8;--keylime:#F1EDE6;--mint:#EDE7DD;--slate:#E9E4DC;
+  --cream:#F7F5F2;--charcoal:#1E1E1E;--mist:#E0DAD1;--muted:#6B625A;--terra:#C96C3B;
+  --serif:'Inter',-apple-system,'PingFang SC',sans-serif;
+  --sans:'Inter',-apple-system,'PingFang SC',sans-serif;
+  --sidebar:280px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);font-weight:400;font-size:15px;line-height:1.7;color:var(--charcoal);background:var(--cream);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{font-family:var(--serif);font-weight:700;letter-spacing:-.01em;color:var(--forest)}
+section>.eyebrow{color:var(--terra)!important}
+.mono{font-family:'Inter',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* Top bar */
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:14px clamp(18px,3vw,32px);background:var(--cream);border-bottom:1px solid var(--mist)}
+.top-left{display:flex;align-items:center;gap:16px;min-width:0}
+.back{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--forest);color:var(--forest);border-radius:999px;padding:8px 16px;font-size:13px;white-space:nowrap;transition:background .15s}
+.back:hover{background:var(--keylime)}
+.top-title{font-family:var(--serif);font-size:22px;color:var(--forest);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-switch{display:flex;gap:8px}
+.top-switch a{border:1px solid var(--mist);border-radius:999px;padding:7px 14px;font-size:12px;white-space:nowrap;transition:all .15s}
+.top-switch a:hover{background:var(--keylime);border-color:var(--keylime);color:var(--forest)}
+
+/* Layout: sidebar + main */
+.doc{display:grid;grid-template-columns:var(--sidebar) 1fr;max-width:1200px;margin:0 auto}
+.sidebar{position:sticky;top:59px;align-self:start;height:calc(100vh - 59px);overflow-y:auto;
+  padding:32px 20px 32px clamp(18px,3vw,32px);border-right:1px solid var(--mist)}
+.side-head{font-family:var(--serif);font-size:20px;color:var(--forest);margin-bottom:4px}
+.side-sub{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:24px}
+.toc a{display:flex;gap:12px;align-items:baseline;padding:9px 12px;border-radius:10px;font-size:14px;color:var(--charcoal);transition:background .15s;margin-bottom:2px}
+.toc a:hover{background:var(--keylime)}
+.toc a.active{background:var(--keylime);color:var(--forest);font-weight:600}
+.toc a.active .tnum{color:var(--forest)}
+.tnum{font-family:var(--serif);font-size:15px;color:var(--muted);width:24px;flex-shrink:0}
+.toc .group{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:20px 0 8px 12px}
+
+.main{padding:clamp(24px,4vw,56px) clamp(20px,4vw,64px);max-width:860px}
+
+/* Cover */
+.cover{margin-bottom:48px}
+.cover .kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+.cover h1{font-size:clamp(38px,5.5vw,58px);line-height:1.08;letter-spacing:-.03em;margin-bottom:20px}
+.cover .lead{font-weight:300;font-size:17px;max-width:600px;margin-bottom:28px;color:var(--charcoal)}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat{background:var(--keylime);border-radius:14px;padding:20px}
+.stat .n{font-family:var(--serif);font-size:34px;color:var(--forest);line-height:1}
+.stat .l{font-size:12px;color:var(--muted);margin-top:6px}
+.usehint{font-size:13px;font-weight:300;color:var(--muted);border-top:1px solid var(--mist);padding-top:16px}
+
+/* Sections */
+section{padding-top:48px;margin-top:8px;scroll-margin-top:72px}
+section>.eyebrow{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--forest);display:block;margin-bottom:10px}
+section h2{font-size:clamp(26px,3.4vw,38px);letter-spacing:-.01em;margin-bottom:10px}
+.sec-lead{font-weight:300;max-width:640px;margin-bottom:24px;color:var(--charcoal)}
+
+.card{background:var(--keylime);border-radius:14px;padding:26px;margin-bottom:14px}
+.card.mint{background:var(--mint)}.card.sage{background:var(--sage)}
+.card h3{font-size:22px;margin-bottom:10px}
+.card p{font-weight:300}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+
+table{width:100%;border-collapse:collapse;font-size:14px;background:var(--cream);border-radius:14px;overflow:hidden;border:1px solid var(--mist)}
+th{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--forest);background:var(--keylime);text-align:left;padding:12px 14px}
+td{padding:12px 14px;border-bottom:1px solid var(--mist);vertical-align:top;font-weight:300}
+tr:last-child td{border-bottom:none}
+
+.tpl{background:var(--cream);border:1px solid var(--mist);border-radius:10px;padding:14px 16px;margin-top:12px;position:relative}
+.tpl-en{font-size:14px;line-height:1.65;padding-right:60px}
+.tpl-note{font-size:12px;font-weight:300;color:var(--forest);margin-top:8px}
+.copy-btn{position:absolute;top:12px;right:12px;font-size:11px;padding:5px 12px;border-radius:999px;border:1px solid var(--forest);background:var(--cream);color:var(--forest);cursor:pointer}
+.copy-btn:hover{background:var(--keylime)}
+
+.step{display:grid;grid-template-columns:52px 1fr;gap:16px;padding:16px 0;border-bottom:1px solid var(--mist)}
+.step:last-child{border-bottom:none}
+.step-n{font-family:var(--serif);font-weight:300;font-size:30px;color:var(--forest);line-height:1}
+.step b{display:block;font-weight:600;color:var(--forest);margin-bottom:3px;font-size:15px}
+.step p{font-weight:300}
+.callout{background:var(--mint);border-radius:14px;padding:20px 24px;margin:20px 0;font-weight:300}
+.callout b{font-weight:600;color:var(--forest)}
+.hl{background:#fdf3c4;padding:0 3px;border-radius:3px}
+
+footer{border-top:1px solid var(--mist);margin-top:56px;padding:24px 0;font-size:12px;font-weight:300;color:var(--muted)}
+#toast{position:fixed;bottom:24px;right:24px;background:var(--forest);color:var(--cream);padding:12px 18px;border-radius:12px;font-size:13px;display:none;z-index:99}
+
+@media(max-width:900px){
+  .doc{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .stat-row{grid-template-columns:repeat(2,1fr)}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .step{grid-template-columns:40px 1fr}
+  .top-switch{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="top-left">
+    <a class="back" href="./index.html#resources/docs">← 返回手册列表</a>
+    <span class="top-title">外贸业务员实战手册</span>
+  </div>
+  <div class="top-switch">
+    <a href="./外贸业务员进阶手册.html">进阶手册</a>
+    <a href="./外贸销冠手册.html">销冠手册</a>
+  </div>
+</div>
+
+<div class="doc">
+  <!-- Sidebar TOC -->
+  <aside class="sidebar">
+    <div class="side-head">实战手册</div>
+    <div class="side-sub">Field Manual · FT-2026</div>
+    <nav class="toc" id="toc">
+      <a href="#cover"><span class="tnum">00</span>封面 · 使用说明</a>
+      <a href="#s1"><span class="tnum">01</span>成长路径</a>
+      <a href="#s2"><span class="tnum">02</span>询盘回复框架</a>
+      <a href="#s3"><span class="tnum">03</span>谈判场景 ×8</a>
+      <a href="#s4"><span class="tnum">04</span>跟进节奏表</a>
+      <a href="#s5"><span class="tnum">05</span>客户维护与返单</a>
+      <a href="#s6"><span class="tnum">06</span>售后处理</a>
+      <div class="group">附录</div>
+      <a href="#s7"><span class="tnum">A</span>90 天行动清单</a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Cover -->
+    <div class="cover" id="cover">
+      <div class="kicker">Commercial Field Manual · AI时代先锋原创 · REV. 2026</div>
+      <h1>把每一条询盘，<br>谈成能<span class="hl">返单</span>的客户</h1>
+      <p class="lead">面向 0–3 年外贸业务员的全流程工具书：从收到询盘的第一分钟，到成交后的第一次返单。方法讲清"为什么"，模板给到"直接用"，英文话术全部可一键复制。</p>
+      <div class="stat-row">
+        <div class="stat"><div class="n">8</div><div class="l">高频谈判场景</div></div>
+        <div class="stat"><div class="n">18+</div><div class="l">可复制英文话术</div></div>
+        <div class="stat"><div class="n">5 档</div><div class="l">报价后跟进节奏</div></div>
+        <div class="stat"><div class="n">90 天</div><div class="l">新人行动清单</div></div>
+      </div>
+      <p class="usehint">使用提示：左侧目录可跳转章节；话术卡片点「复制」直接取用；本手册为社区原创撰写，可打印留档。</p>
+    </div>
+
+    <!-- 01 -->
+    <section id="s1">
+      <span class="eyebrow">Chapter 01</span>
+      <h2>成长路径：三年三个台阶</h2>
+      <p class="sec-lead">新人最大的焦虑是"不知道现在该练什么"。把三年拆成三个台阶，每个台阶只专注一件事，走得反而快。</p>
+      <div class="grid3">
+        <div class="card"><h3>第 1 年 · 把回复练标准</h3><p>目标：任何询盘 5 分钟内给出合格首回复。练询盘分类、模板熟练度、产品知识。这一年不求大单，求不丢单。</p></div>
+        <div class="card mint"><h3>第 2 年 · 把跟进练成系统</h3><p>目标：每个客户都知道"下一步是什么、什么时候做"。练跟进节奏、需求挖掘、报价策略。开始出稳定订单。</p></div>
+        <div class="card sage"><h3>第 3 年 · 把客户练成资产</h3><p>目标：30% 以上业绩来自老客户返单。练客户分层、节点维护、供应链协同。这时该去读《进阶手册》了。</p></div>
+      </div>
+      <div class="callout"><b>一个判断标准：</b>每天下班前问自己"今天推进了几个客户到下一步"。数字是 0 的天数越多，成长越慢——业务员的产出不是回了多少消息，是推进了多少节点。</div>
+    </section>
+
+    <!-- 02 -->
+    <section id="s2">
+      <span class="eyebrow">Chapter 02</span>
+      <h2>询盘回复框架：先分类，再回复</h2>
+      <p class="sec-lead">所有询盘先花 30 秒归到四类里，再选对应策略。用同一套话术回所有询盘，是新人丢单的第一原因。</p>
+      <table>
+        <tr><th style="width:92px">类型</th><th>识别特征</th><th>回复策略</th><th style="width:88px">首响时限</th></tr>
+        <tr><td><b>A 明确采购</b></td><td>有具体型号/数量/交期，企业域名邮箱</td><td>直接给阶梯报价 + 两个反问锁定规格</td><td>1 小时内</td></tr>
+        <tr><td><b>B 方案比较</b></td><td>问得专业但没给数量，多半在比供应商</td><td>不急报价，先给差异化证据（认证/案例/产能）</td><td>4 小时内</td></tr>
+        <tr><td><b>C 早期探价</b></td><td>一句"send me price list"，无具体需求</td><td>给价格区间 + 一个必答问题过滤诚意</td><td>当天内</td></tr>
+        <tr><td><b>D 风险询盘</b></td><td>免费样品导向、要求预付、链接可疑</td><td>只走平台内沟通，不点链接不垫付</td><td>不必抢</td></tr>
+      </table>
+      <div class="card" style="margin-top:20px">
+        <h3>首回复的四段结构</h3>
+        <div class="step"><div class="step-n">1</div><div><b>确认 + 具体化</b><p>复述对方需求里最具体的一点，证明你认真读了，不是群发。</p></div></div>
+        <div class="step"><div class="step-n">2</div><div><b>直接回答</b><p>能报价就报价（区间也行）。藏着掖着只会把 A 类客户推给响应更快的同行。</p></div></div>
+        <div class="step"><div class="step-n">3</div><div><b>一条增值信息</b><p>对方没问但对决策有用的：认证、起订灵活度、近期出货案例。一条就够，多了像推销。</p></div></div>
+        <div class="step"><div class="step-n">4</div><div><b>一个具体问题收尾</b><p>问题越具体，回复率越高。"What's your target market?" 好过 "Any other questions?"</p></div></div>
+        <div class="tpl">
+          <button class="copy-btn" onclick="copyTpl(this)">复制</button>
+          <div class="tpl-en">Hi [Name], thanks for your inquiry about the [product, model X]. For [quantity] units, our FOB price is USD [range] depending on configuration. One thing worth mentioning: this model passed [certification] last quarter, which most buyers in [market] require. To quote precisely — will these be used for [application A] or [application B]?</div>
+          <div class="tpl-note">A 类首回复：报价 + 增值信息 + 具体反问，全部在 90 秒可读完的长度里。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 -->
+    <section id="s3">
+      <span class="eyebrow">Chapter 03</span>
+      <h2>八个谈判场景：错误做法 vs 正确思路</h2>
+      <p class="sec-lead">每个场景按同一结构拆：买家在想什么 → 新人常犯的错 → 正确思路 → 可复制话术。话术是骨架，数字和产品词换成你自己的。</p>
+
+      <div class="card"><h3>场景 1 · "Your price is too high"</h3>
+        <p><b style="color:var(--forest)">买家在想：</b>多数时候不是真嫌贵，是在测你的底线，或需要一个降价理由向老板交代。<br>
+        <b style="color:var(--forest)">常见错误：</b>立刻降价。第一次就降，等于承认之前的报价有水分，后面每轮他都会再压。<br>
+        <b style="color:var(--forest)">正确思路：</b>先问基准（和谁比、比什么配置），再给"变量换价格"——量、配置、付款、交期，动一个才降一档。</p>
+        <div class="tpl"><button class="copy-btn" onclick="copyTpl(this)">复制</button><div class="tpl-en">I understand price matters. May I ask what you're comparing against — same material and certification? If the specs match and quantity reaches [X] units, I can review the price with my manager. Alternatively, with a 50% deposit instead of 30%, I have room to work on it.</div></div>
+      </div>
+
+      <div class="card mint"><h3>场景 2 · MOQ 太高，客户只要小单</h3>
+        <p><b style="color:var(--forest)">买家在想：</b>先小批量试市场，卖得动再加。这恰是优质长期客户的典型行为。<br>
+        <b style="color:var(--forest)">常见错误：</b>一句 "our MOQ is 1000pcs" 把人挡回去。<br>
+        <b style="color:var(--forest)">正确思路：</b>给"试单套餐"：单价上浮 10–15% 接小单，写明返单达 MOQ 后补差或降回。把小单定位成合作的开始。</p>
+        <div class="tpl"><button class="copy-btn" onclick="copyTpl(this)">复制</button><div class="tpl-en">We do have a trial-order option: [small qty] units at USD [price+12%], and once your reorder reaches [MOQ], we apply the standard price and refund the difference on the trial batch. Most of our long-term clients started exactly this way.</div></div>
+      </div>
+
+      <div class="card"><h3>场景 3 · 只要免费样品</h3>
+        <p><b style="color:var(--forest)">判断标准：</b>愿不愿意出运费。愿出运费的是真买家，样品费可谈；连运费都不出的，大概率在收集样品。<br>
+        <b style="color:var(--forest)">正确思路：</b>样品费照收，但写进承诺：下单即抵扣。既过滤非诚意买家，又不得罪真客户。</p>
+        <div class="tpl"><button class="copy-btn" onclick="copyTpl(this)">复制</button><div class="tpl-en">Sample cost is USD [X] plus shipping, and it's fully deductible from your first order. If you share your DHL/FedEx account, we can dispatch within 48 hours.</div></div>
+      </div>
+
+      <div class="card mint"><h3>场景 4 · "I'll get back to you" 之后消失</h3>
+        <p><b style="color:var(--forest)">买家在想：</b>可能在等审批、在比价、或需求优先级下降了。消失 ≠ 拒绝。<br>
+        <b style="color:var(--forest)">常见错误：</b>反复发 "Any update?"——每发一次，专业分降一档。<br>
+        <b style="color:var(--forest)">正确思路：</b>每次跟进都带新信息（见第 4 章）：新认证、库存变化、市场情报、同行案例。让对方觉得回你有价值。</p>
+        <div class="tpl"><button class="copy-btn" onclick="copyTpl(this)">复制</button><div class="tpl-en">Hi [Name], quick note rather than a chase-up: we just finished a shipment of the same model to [country], and the freight rate to your region dropped about 8% this month. If timing works, ordering before [date] locks in that rate.</div></div>
+      </div>
+
+      <div class="card"><h3>场景 5 · "Another supplier offers 20% less"</h3>
+        <p><b style="color:var(--forest)">正确思路：</b>不贬低同行，转向"总成本"框架：不良率、售后、交期延误的代价。给对方一个能带回去说服采购委员会的算法，而不是一句"我们质量好"。</p>
+        <div class="tpl"><button class="copy-btn" onclick="copyTpl(this)">复制</button><div class="tpl-en">That price is possible in the market — usually with [material B] instead of [material A]. Fair enough if that fits your positioning. One number worth checking: our defect rate is under [X]%, which on a [qty] order saves roughly USD [amount] in replacement and shipping. Happy to send our QC report so you can compare like for like.</div></div>
+      </div>
+
+      <div class="card mint"><h3>场景 6 · 付款方式僵持</h3>
+        <p><b style="color:var(--forest)">正确思路：</b>付款方式是风险分配问题，不是信任问题。给阶梯：首单 T/T 30/70，合作三单后谈 L/C at sight，年采购量达标再谈账期。把让步和合作深度绑定。</p>
+        <div class="tpl"><button class="copy-btn" onclick="copyTpl(this)">复制</button><div class="tpl-en">For a first cooperation we work with 30% T/T deposit, balance against BL copy. Once we've completed [2–3] smooth orders, we're open to L/C at sight, and credit terms can be discussed at [annual volume]. This is how we've built terms with our clients in [region].</div></div>
+      </div>
+
+      <div class="card"><h3>场景 7 · 交期做不到客户要求</h3>
+        <p><b style="color:var(--forest)">常见错误：</b>先答应再想办法——最后延期，客户永久流失。<br>
+        <b style="color:var(--forest)">正确思路：</b>给两个真实选项：分批出货，或加急费换产能。诚实的"做不到但有方案"远好于虚假的"没问题"。</p>
+        <div class="tpl"><button class="copy-btn" onclick="copyTpl(this)">复制</button><div class="tpl-en">Honest answer: full quantity by [date] isn't realistic without risking quality. Two workable options: (1) we ship [40%] by [earlier date] and the balance two weeks later; (2) with a rush fee of [X]% we can compress production to [Y] days. Which works better for your launch plan?</div></div>
+      </div>
+
+      <div class="card mint"><h3>场景 8 · 客户要认证，你暂时没有</h3>
+        <p><b style="color:var(--forest)">正确思路：</b>分清"强制门槛"和"加分项"。强制的（目标市场法规）如实说明并给办理时间表，或推荐有证的产品线；加分项用第三方检测报告 + 大客户出货记录补位。</p>
+        <div class="tpl"><button class="copy-btn" onclick="copyTpl(this)">复制</button><div class="tpl-en">We don't hold [cert] on this model yet — the application is in progress, expected by [month]. Meanwhile, we have [alternative cert / third-party test report] covering the same safety items, and this model has shipped to [market] buyers including [type of client]. I can share both documents today.</div></div>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section id="s4">
+      <span class="eyebrow">Chapter 04</span>
+      <h2>报价后跟进节奏表</h2>
+      <p class="sec-lead">报价发出去只是开始。五档节奏，每一档都有"新信息"作为跟进理由——没有新信息的跟进就是催单。</p>
+      <table>
+        <tr><th style="width:70px">时点</th><th style="width:130px">动作</th><th>跟进理由（新信息）</th></tr>
+        <tr><td><b>D+0</b></td><td>报价当天</td><td>报价单 PDF + 一句"有效期 15 天"制造温和时限</td></tr>
+        <tr><td><b>D+2</b></td><td>确认收到</td><td>补一条报价里没写的：包装细节 / 交期确认 / 可选配置</td></tr>
+        <tr><td><b>D+7</b></td><td>价值跟进</td><td>案例照片、验厂视频、检测报告——任选一样对方没见过的</td></tr>
+        <tr><td><b>D+14</b></td><td>市场情报</td><td>原材料价格走势、运费变化、目标市场动态</td></tr>
+        <tr><td><b>D+30</b></td><td>收尾确认</td><td>直接问状态 + 留门，转入月度维护池</td></tr>
+      </table>
+      <div class="callout"><b>纪律：</b>D+30 之后停止主动推销，转为每 4–6 周一次的轻触达（节日问候/新品/行业资讯）。纠缠只会让你在对方真正需要时已被拉黑。</div>
+    </section>
+
+    <!-- 05 -->
+    <section id="s5">
+      <span class="eyebrow">Chapter 05</span>
+      <h2>客户维护与返单</h2>
+      <p class="sec-lead">开发一个新客户的成本，约是维护一个老客户的五倍。返单不会自己来，它有明确的触发节点。</p>
+      <div class="grid2">
+        <div class="card"><h3>四个必做的维护节点</h3><p>① 发货后主动同步物流，别等客户来问；② 到货后一周内问使用/销售反馈；③ 按客户销售周期推算库存见底时间，提前 3–4 周提醒补货；④ 目标市场旺季/节日前 2 个月，主动给备货建议。</p></div>
+        <div class="card mint"><h3>返单触发话术</h3>
+          <div class="tpl" style="margin-top:4px"><button class="copy-btn" onclick="copyTpl(this)">复制</button><div class="tpl-en">Hi [Name], based on your last order in [month], your stock might be running low around [date]. Raw material prices are stable this month — a good window to reorder. Same terms as last time, and production slot can be reserved this week.</div></div>
+        </div>
+      </div>
+      <div class="callout"><b>客户档案最少字段：</b>公司/决策人/时区、采购的产品与规格、上次订单时间与数量、销售周期估算、沟通偏好、下次触达日期。没有 CRM 就用表格，但"下次触达日期"这列必须有。</div>
+    </section>
+
+    <!-- 06 -->
+    <section id="s6">
+      <span class="eyebrow">Chapter 06</span>
+      <h2>售后处理：投诉是第二次销售机会</h2>
+      <p class="sec-lead">处理得好的投诉，客户忠诚度反而高于从未出过问题的订单。原则只有一条：先响应态度，再核实事实，最后谈责任。</p>
+      <div class="step"><div class="step-n">1</div><div><b>24 小时内首响</b><p>先共情 + 承诺时间表，不承认责任也不推卸："We take this seriously, give us 48 hours to investigate."</p></div></div>
+      <div class="step"><div class="step-n">2</div><div><b>核实证据</b><p>要照片/视频/批次号，对照出货检验记录。区分：质量问题 / 运输损坏 / 使用不当 / 期望偏差，四类责任方不同。</p></div></div>
+      <div class="step"><div class="step-n">3</div><div><b>给方案不给争论</b><p>确属我方：补发、折扣、返款三选一让客户挑。责任在物流：协助索赔。使用不当：出使用指导，借机教育客户。</p></div></div>
+      <div class="step"><div class="step-n">4</div><div><b>闭环复盘</b><p>问题写进工厂 QC 清单，处理结果同步客户。一句 "here's what we changed so it won't happen again" 价值千金。</p></div></div>
+    </section>
+
+    <!-- 附录 -->
+    <section id="s7">
+      <span class="eyebrow">Appendix A</span>
+      <h2>新人 90 天行动清单</h2>
+      <div class="grid3">
+        <div class="card"><h3>第 1–30 天 · 打地基</h3><p>背熟 10 个主力产品的规格/价格区间/交期；整理公司认证与案例素材包；把四类询盘模板改写成自己产品的版本；每天拆解 3 条同事的成交对话。</p></div>
+        <div class="card mint"><h3>第 31–60 天 · 上手感</h3><p>独立处理所有 C/D 类询盘；A/B 类在主管复核下回复；建立自己的客户跟进表；用【昨日询盘日报专家】每天复盘，把 AI 的意向分层和自己的判断对照。</p></div>
+        <div class="card sage"><h3>第 61–90 天 · 出结果</h3><p>目标：至少 1 个样品单或试单；跟进表保持 20+ 活跃机会；沉淀 3 条自己验证过的话术进团队模板库；开始读《进阶手册》第一章。</p></div>
+      </div>
+    </section>
+
+    <footer>© 2026 AI时代先锋 · beseda.com.cn 原创内容 · 主理人：常征 Sean · 转载请注明出处</footer>
+  </main>
+</div>
+
+<div id="toast">已复制到剪贴板</div>
+<script>
+function copyTpl(btn){
+  const text=btn.parentElement.querySelector('.tpl-en').textContent.trim();
+  navigator.clipboard.writeText(text).then(()=>{
+    const t=document.getElementById('toast');t.style.display='block';
+    clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.style.display='none',1800);
+  });
+}
+// TOC scroll-spy
+const links=[...document.querySelectorAll('#toc a')];
+const map=links.map(a=>({a,sec:document.querySelector(a.getAttribute('href'))}));
+function spy(){
+  let cur=map[0];
+  for(const m of map){ if(m.sec&&m.sec.getBoundingClientRect().top<=120) cur=m; }
+  links.forEach(a=>a.classList.remove('active'));
+  if(cur) cur.a.classList.add('active');
+}
+document.addEventListener('scroll',spy,{passive:true});spy();
+</script>
+</body>
+</html>

@@ -1,12 +1,12 @@
 import { AppShell } from "@/components/app-shell/app-shell";
-import { QuestionList } from "@/components/community/question-list";
+import { QaBoard } from "@/components/community/qa-board";
 import { getQuestions } from "@/lib/data/trademind";
 
 export default async function QuestionsPage() {
-  const questions = await getQuestions();
+  const seed = await getQuestions();
   return (
     <AppShell>
-      <QuestionList questions={questions} />
+      <QaBoard seed={seed} />
     </AppShell>
   );
 }

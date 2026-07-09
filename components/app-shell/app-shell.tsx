@@ -41,6 +41,7 @@ const communityNav: NavItem[] = [
   { title: "自我介绍", href: "/community/say-hello", icon: Sparkles },
   { title: "问答专区", href: "/community/questions", icon: Inbox },
   { title: "资源对接", href: "/community/resource-matching", icon: Handshake },
+  { title: "许愿池", href: "/community/wishes", icon: Sparkles },
   { title: "组队学习", href: "/community/teams", icon: Users },
   { title: "成长伙伴", href: "/community/partners", icon: Star },
   { title: "同城交流", href: "/community/cities", icon: MapPin },

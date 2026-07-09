@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>外贸销冠手册 · AI时代先锋</title>
+<meta name="description" content="AI时代先锋原创：销冠操作系统。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* MEEKA Design Kit v2.0 · Warm Minimalism */
+  --forest:#1E1E1E;--sage:#EAE3D8;--keylime:#F1EDE6;--mint:#EDE7DD;--slate:#E9E4DC;
+  --cream:#F7F5F2;--charcoal:#1E1E1E;--mist:#E0DAD1;--muted:#6B625A;--terra:#C96C3B;
+  --serif:'Inter',-apple-system,'PingFang SC',sans-serif;
+  --sans:'Inter',-apple-system,'PingFang SC',sans-serif;--sidebar:280px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);font-weight:400;font-size:15px;line-height:1.7;color:var(--charcoal);background:var(--cream);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{font-family:var(--serif);font-weight:700;letter-spacing:-.01em;color:var(--forest)}
+section>.eyebrow{color:var(--terra)!important}
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px clamp(18px,3vw,32px);background:var(--cream);border-bottom:1px solid var(--mist)}
+.top-left{display:flex;align-items:center;gap:16px;min-width:0}
+.back{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--forest);color:var(--forest);border-radius:999px;padding:8px 16px;font-size:13px;white-space:nowrap;transition:background .15s}
+.back:hover{background:var(--keylime)}
+.top-title{font-family:var(--serif);font-size:22px;color:var(--forest);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-switch{display:flex;gap:8px}
+.top-switch a{border:1px solid var(--mist);border-radius:999px;padding:7px 14px;font-size:12px;white-space:nowrap;transition:all .15s}
+.top-switch a:hover{background:var(--keylime);border-color:var(--keylime);color:var(--forest)}
+.doc{display:grid;grid-template-columns:var(--sidebar) 1fr;max-width:1200px;margin:0 auto}
+.sidebar{position:sticky;top:59px;align-self:start;height:calc(100vh - 59px);overflow-y:auto;padding:32px 20px 32px clamp(18px,3vw,32px);border-right:1px solid var(--mist)}
+.side-head{font-family:var(--serif);font-size:20px;color:var(--forest);margin-bottom:4px}
+.side-sub{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:24px}
+.toc a{display:flex;gap:12px;align-items:baseline;padding:9px 12px;border-radius:10px;font-size:14px;color:var(--charcoal);transition:background .15s;margin-bottom:2px}
+.toc a:hover{background:var(--keylime)}
+.toc a.active{background:var(--keylime);color:var(--forest);font-weight:600}
+.tnum{font-family:var(--serif);font-size:15px;color:var(--muted);width:24px;flex-shrink:0}
+.toc a.active .tnum{color:var(--forest)}
+.main{padding:clamp(24px,4vw,56px) clamp(20px,4vw,64px);max-width:860px}
+.cover{margin-bottom:48px}
+.cover .kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+.cover h1{font-size:clamp(38px,5.5vw,58px);line-height:1.08;letter-spacing:-.03em;margin-bottom:20px}
+.cover .lead{font-weight:300;font-size:17px;max-width:600px;margin-bottom:28px}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat{background:var(--sage);border-radius:14px;padding:20px}
+.stat .n{font-family:var(--serif);font-size:30px;color:var(--forest);line-height:1.05}
+.stat .l{font-size:12px;color:var(--muted);margin-top:6px}
+.usehint{font-size:13px;font-weight:300;color:var(--muted);border-top:1px solid var(--mist);padding-top:16px}
+section{padding-top:48px;scroll-margin-top:72px}
+section>.eyebrow{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--forest);display:block;margin-bottom:10px}
+section h2{font-size:clamp(26px,3.4vw,38px);letter-spacing:-.01em;margin-bottom:10px}
+.sec-lead{font-weight:300;max-width:640px;margin-bottom:24px}
+.card{background:var(--keylime);border-radius:14px;padding:26px;margin-bottom:14px}
+.card.mint{background:var(--mint)}.card.sage{background:var(--sage)}
+.card h3{font-size:22px;margin-bottom:10px}.card p{font-weight:300}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+table{width:100%;border-collapse:collapse;font-size:14px;background:var(--cream);border-radius:14px;overflow:hidden;border:1px solid var(--mist)}
+th{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--forest);background:var(--keylime);text-align:left;padding:12px 14px}
+td{padding:12px 14px;border-bottom:1px solid var(--mist);vertical-align:top;font-weight:300}
+tr:last-child td{border-bottom:none}
+.callout{background:var(--mint);border-radius:14px;padding:20px 24px;margin:20px 0;font-weight:300}
+.callout b{font-weight:600;color:var(--forest)}
+.step{display:grid;grid-template-columns:52px 1fr;gap:16px;padding:16px 0;border-bottom:1px solid var(--mist)}
+.step:last-child{border-bottom:none}
+.step-n{font-family:var(--serif);font-weight:300;font-size:30px;color:var(--forest);line-height:1}
+.step b{display:block;font-weight:600;color:var(--forest);margin-bottom:3px;font-size:15px}.step p{font-weight:300}
+footer{border-top:1px solid var(--mist);margin-top:56px;padding:24px 0;font-size:12px;font-weight:300;color:var(--muted)}
+@media(max-width:900px){.doc{grid-template-columns:1fr}.sidebar,.top-switch{display:none}.stat-row{grid-template-columns:repeat(2,1fr)}.grid2,.grid3{grid-template-columns:1fr}.step{grid-template-columns:40px 1fr}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="top-left">
+    <a class="back" href="./index.html#resources/docs">← 返回手册列表</a>
+    <span class="top-title">外贸销冠手册</span>
+  </div>
+  <div class="top-switch">
+    <a href="./外贸业务员实战手册.html">实战手册</a>
+    <a href="./外贸业务员进阶手册.html">进阶手册</a>
+  </div>
+</div>
+
+<div class="doc">
+  <aside class="sidebar">
+    <div class="side-head">销冠手册</div>
+    <div class="side-sub">Top Performer OS · 2026</div>
+    <nav class="toc" id="toc">
+      <a href="#cover"><span class="tnum">00</span>封面 · 使用说明</a>
+      <a href="#s1"><span class="tnum">01</span>销冠操作系统</a>
+      <a href="#s2"><span class="tnum">02</span>市场操盘思维</a>
+      <a href="#s3"><span class="tnum">03</span>决策链攻防</a>
+      <a href="#s4"><span class="tnum">04</span>价值链上移</a>
+      <a href="#s5"><span class="tnum">05</span>SOP 与杠杆</a>
+      <a href="#s6"><span class="tnum">06</span>年度目标拆解</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="cover" id="cover">
+      <div class="kicker">Top Performer Operating System · AI时代先锋原创 · 面向冲击天花板的人</div>
+      <h1>销冠不靠天赋，<br>靠一套操作系统</h1>
+      <p class="lead">同一个平台、同样的产品、同样的流量，销冠的业绩是平均值的三到五倍。差距不在话术，在系统：时间怎么分配、市场怎么选、单子怎么攻、经验怎么沉淀。这本手册拆的就是这套系统。</p>
+      <div class="stat-row">
+        <div class="stat"><div class="n">3:7</div><div class="l">时间漏斗法则</div></div>
+        <div class="stat"><div class="n">5 步</div><div class="l">决策链攻防</div></div>
+        <div class="stat"><div class="n">L1→L3</div><div class="l">价值链上移</div></div>
+        <div class="stat"><div class="n">4 层</div><div class="l">SOP 杠杆</div></div>
+      </div>
+      <p class="usehint">使用提示：这本写给已能稳定出单、想突破业绩天花板的人。左侧目录可跳转章节。</p>
+    </div>
+
+    <section id="s1">
+      <span class="eyebrow">Chapter 01</span>
+      <h2>销冠操作系统：管漏斗，不管消息</h2>
+      <p class="sec-lead">普通业务员的一天被消息推着走，销冠的一天被漏斗推着走。先看数字，再定动作，最后才是回消息。</p>
+      <div class="grid2">
+        <div class="card"><h3>时间的三七法则</h3><p>销冠把 70% 主动时间投给两类事：金池客户的节点推进、高潜新机会的攻坚。剩下 30% 处理日常。反过来安排的人永远在忙，永远不出大单。判断方法：打开日历，看上周时间实际花在哪。</p></div>
+        <div class="card mint"><h3>漏斗的四个存量</h3><p>随时说得出四个数：活跃机会数、本周推进节点数、待收款 PI 数、金池客户数。今天的漏斗，就是 45 天后的银行流水。</p></div>
+      </div>
+      <div class="callout"><b>销冠的一天：</b>早上 30 分钟看昨日询盘日报和漏斗变化 → 上午攻坚 2–3 个关键节点 → 下午处理常规询盘（模板+AI）→ 下班前 15 分钟更新漏斗、写明日三件事。顺序不能反：攻坚永远排在处理之前。</div>
+    </section>
+
+    <section id="s2">
+      <span class="eyebrow">Chapter 02</span>
+      <h2>市场操盘思维：选对池塘再钓鱼</h2>
+      <p class="sec-lead">普通业务员接受市场，销冠选择市场。同样的产品，在不同国家、渠道、客户类型上的回报差十倍。</p>
+      <div class="step"><div class="step-n">1</div><div><b>画出自己的市场地图</b><p>把过去 12 个月的询盘和订单按国家 × 客户类型交叉统计。哪个格子成交率和客单价双高，哪个就是你的主战场。</p></div></div>
+      <div class="step"><div class="step-n">2</div><div><b>集中弹药打主战场</b><p>关键词、P4P 预算、内容素材向主战场倾斜；话术、认证、案例按主战场买家习惯定制。宁做两个市场的前三，不做十个市场的路人。</p></div></div>
+      <div class="step"><div class="step-n">3</div><div><b>留 10% 试探第二曲线</b><p>用小预算测相邻市场或新客户类型，每季度复盘。判断标准：连续两季询盘成本低于主战场、客单价可接受。</p></div></div>
+      <div class="callout"><b>用 AI 提效：</b>市场地图的原始统计交给【DTC 市场调研】和【昨日询盘日报专家】按月累计，你只做判断。操盘手的稀缺能力是决策，不是做表。</div>
+    </section>
+
+    <section id="s3">
+      <span class="eyebrow">Chapter 03</span>
+      <h2>决策链攻防：大单是设计出来的</h2>
+      <p class="sec-lead">十万美金以上的单子，从来不是"聊得好"聊下来的，是按地图一格一格攻下来的。</p>
+      <table>
+        <tr><th style="width:80px">阶段</th><th>目标</th><th>关键动作</th></tr>
+        <tr><td><b>侦察</b></td><td>画全决策链</td><td>用【Company Deep Research】背调、识别四角色、找出内部支持者</td></tr>
+        <tr><td><b>破局</b></td><td>建立第一个支点</td><td>从最易接触的角色切入，用他关心的价值换引荐</td></tr>
+        <tr><td><b>多线</b></td><td>覆盖 ≥ 2 角色</td><td>给每个角色定制材料；促成一次多角色会议（视频验厂是最好的借口）</td></tr>
+        <tr><td><b>合围</b></td><td>让"选你"成为集体决定</td><td>给支持者提供说服同事的弹药：对比表、总成本账、风险预案</td></tr>
+        <tr><td><b>守城</b></td><td>防同行反攻</td><td>交付超预期 + 决策链维护 + 年度框架锁定，把城墙修高</td></tr>
+      </table>
+      <div class="callout"><b>攻防的防：</b>你的每个大客户，都是同行的攻坚目标。每季度自查：决策链里我认识几个人？最近一次超预期交付是什么时候？对方采购明天离职，客户还在吗？</div>
+    </section>
+
+    <section id="s4">
+      <span class="eyebrow">Chapter 04</span>
+      <h2>价值链上移：从卖货到卖确定性</h2>
+      <p class="sec-lead">价格战的尽头是价值战。销冠的溢价能力，来自在客户价值链里占的位置——位置越靠上，越不可替代。</p>
+      <div class="grid3">
+        <div class="card"><h3>L1 · 卖产品</h3><p>比价格、比交期。客户随时能换掉你，议价权为零。大部分人停在这一层。</p></div>
+        <div class="card mint"><h3>L2 · 卖方案</h3><p>按客户市场定制规格、包装、认证组合；帮客户算终端账。换掉你 = 重新磨合一套方案，开始有粘性。</p></div>
+        <div class="card sage"><h3>L3 · 卖确定性</h3><p>参与客户新品规划和备货节奏，成为供应链默认选项。换掉你 = 供应链重构。溢价 10–20% 客户依然留下。</p></div>
+      </div>
+      <div class="callout"><b>上移的抓手：</b>每次交付后多做一步——给客户市场提一条观察、给采购计划提一个建议。这些不收费的动作，就是从 L1 爬到 L3 的梯子。</div>
+    </section>
+
+    <section id="s5">
+      <span class="eyebrow">Chapter 05</span>
+      <h2>SOP 与杠杆：让经验替你打工</h2>
+      <p class="sec-lead">销冠和劳模的区别：劳模用时间换业绩，销冠把重复劳动变成 SOP 和工具，把自己解放出来做只有人能做的事。</p>
+      <div class="grid2">
+        <div class="card"><h3>值得沉淀的四类 SOP</h3><p>① 询盘首响模板库；② 跟进节奏与触发条件；③ 谈判场景应对手册（每打赢一仗补一条）；④ 交付与售后检查清单。每月底花一小时把新经验写进去。</p></div>
+        <div class="card mint"><h3>AI 是杠杆的放大器</h3><p>日报交给【昨日询盘日报专家】，沉默客户交给【买家再激活】，背调交给【Company Deep Research】，PI 交给生成器。凡是做第三遍的事，要么写成 SOP，要么交给工具。</p></div>
+      </div>
+      <div class="callout"><b>带团队的销冠多一条：</b>你的 SOP 要让新人"照着做能到你 70 分"。教不会的经验是玄学，教得会的经验才是资产——也是你往管理和分成走的谈判筹码。</div>
+    </section>
+
+    <section id="s6">
+      <span class="eyebrow">Chapter 06</span>
+      <h2>年度目标拆解：把大数字拆到每一周</h2>
+      <p class="sec-lead">"今年做 500 万美金"是愿望不是计划。销冠的拆法是从结果倒推到每周动作。</p>
+      <div class="step"><div class="step-n">1</div><div><b>拆结构</b><p>500 万 = 老客户返单 300 万 + 在谈大单 120 万 + 新开发 80 万。三块打法、时间配比、风险完全不同，混在一起就没法管理。</p></div></div>
+      <div class="step"><div class="step-n">2</div><div><b>拆漏斗</b><p>新开发 80 万 ÷ 客单 4 万 = 20 个新客户；倒推：20 单 ← 60 个 PI ← 200 个有效报价 ← 600 个 A/B 类询盘。数字不够，年初就知道该加流量还是提转化。</p></div></div>
+      <div class="step"><div class="step-n">3</div><div><b>拆到周</b><p>600 个有效询盘 ÷ 48 周 ≈ 每周 12–13 个。每周检查表只有三行：有效询盘够不够 12 个？金池推进了几个节点？在谈大单卡在哪一格？</p></div></div>
+      <div class="step"><div class="step-n">4</div><div><b>季度校准</b><p>每季度末对照三块结构完成率，把资源向跑赢的一块倾斜。年度计划不是刻在石头上的，是每 90 天迭代一版的作战地图。</p></div></div>
+    </section>
+
+    <footer>© 2026 AI时代先锋 · beseda.com.cn 原创内容 · 主理人：常征 Sean · 转载请注明出处</footer>
+  </main>
+</div>
+
+<script>
+const links=[...document.querySelectorAll('#toc a')];
+const map=links.map(a=>({a,sec:document.querySelector(a.getAttribute('href'))}));
+function spy(){let cur=map[0];for(const m of map){if(m.sec&&m.sec.getBoundingClientRect().top<=120)cur=m;}links.forEach(a=>a.classList.remove('active'));if(cur)cur.a.classList.add('active');}
+document.addEventListener('scroll',spy,{passive:true});spy();
+</script>
+</body>
+</html>

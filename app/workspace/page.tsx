@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Bookmark, FileText, GraduationCap, Package } from "lucide-react";
 import { AppShell } from "@/components/app-shell/app-shell";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { WorkspacePanel } from "@/components/workspace/workspace-panel";
 
 const SECTIONS = [
   { icon: Bookmark, title: "我的收藏", desc: "收藏的资源、问答和案例", href: "/resources", cta: "去资源市场收藏" },
@@ -15,20 +15,7 @@ export default function WorkspacePage() {
   return (
     <AppShell>
       <div className="space-y-5">
-        <Card className="p-6">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight">工作台</h1>
-              <p className="mt-2 text-sm text-muted">
-                集中管理收藏资源、学习笔记、我的发布、已购内容和 AI Lab 运行结果。
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <Badge variant="neutral">Lv.8</Badge>
-              <Badge variant="neutral">成长值 8,620</Badge>
-            </div>
-          </div>
-        </Card>
+        <WorkspacePanel />
 
         <div className="grid gap-4 md:grid-cols-2">
           {SECTIONS.map((s) => (
@@ -49,10 +36,6 @@ export default function WorkspacePage() {
             </Card>
           ))}
         </div>
-
-        <Card className="p-6 text-sm text-muted">
-          登录后，这里会显示你真实的收藏、发布和学习数据。
-        </Card>
       </div>
     </AppShell>
   );
