@@ -41,7 +41,12 @@ export function buildAlibabaAuthorizeUrl(state: string): string {
   url.searchParams.set("state", state);
   url.searchParams.set("view", "web");
   url.searchParams.set("sp", "ICBU");
-  url.searchParams.set("force_auth", "true");
+  // Avoid refreshing Alibaba's login cookie on every attempt. For some ICBU
+  // accounts that causes a sign-in loop after the account is selected.
+  // Keep an opt-in switch for accounts that explicitly require forced auth.
+  if (process.env.ALIBABA_FORCE_AUTH === "true") {
+    url.searchParams.set("force_auth", "true");
+  }
   return url.toString();
 }
 
