@@ -61,10 +61,7 @@ export function UserMenu() {
   // 读取登录态
   useEffect(() => {
     const sb = getSupabase();
-    if (!sb) {
-      setLoading(false);
-      return;
-    }
+    if (!sb) return;
     let active = true;
 
     async function loadProfile(userId: string, email: string | undefined) {

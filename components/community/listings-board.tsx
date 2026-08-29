@@ -49,10 +49,7 @@ export function ListingsBoard() {
 
   useEffect(() => {
     const sb = getSupabase();
-    if (!sb) {
-      setReady(true);
-      return;
-    }
+    if (!sb) return;
     sb.auth.getUser().then(async ({ data }) => {
       setUserId(data.user?.id ?? null);
       if (data.user) await load();

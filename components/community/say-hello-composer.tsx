@@ -23,10 +23,7 @@ export function SayHelloComposer() {
 
   useEffect(() => {
     const sb = getSupabase();
-    if (!sb) {
-      setAuthed(false);
-      return;
-    }
+    if (!sb) return;
     sb.auth.getUser().then(({ data }) => setAuthed(Boolean(data.user)));
   }, []);
 

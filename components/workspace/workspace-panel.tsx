@@ -17,7 +17,6 @@ type MyPost = { id: string; title: string; type: string; created_at: string };
 type MyListing = { id: string; title: string; kind: string; created_at: string };
 
 export function WorkspacePanel() {
-  const [ready, setReady] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [posts, setPosts] = useState<MyPost[]>([]);
@@ -25,10 +24,7 @@ export function WorkspacePanel() {
 
   useEffect(() => {
     const sb = getSupabase();
-    if (!sb) {
-      setReady(true);
-      return;
-    }
+    if (!sb) return;
     sb.auth.getUser().then(async ({ data }) => {
       const uid = data.user?.id ?? null;
       setUserId(uid);
@@ -42,7 +38,6 @@ export function WorkspacePanel() {
         setPosts((ps as MyPost[]) ?? []);
         setListings((ls as MyListing[]) ?? []);
       }
-      setReady(true);
     });
   }, []);
 
@@ -68,7 +63,7 @@ export function WorkspacePanel() {
         </div>
       </Card>
 
-      {ready && SUPABASE_READY && userId ? (
+      {SUPABASE_READY && userId ? (
         <Card className="p-6">
           <h2 className="text-lg font-semibold">我的发布</h2>
           {posts.length === 0 && listings.length === 0 ? (

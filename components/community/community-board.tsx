@@ -50,10 +50,7 @@ export function CommunityBoard({ seed = [] }: { seed?: CommunityPost[] }) {
 
   const load = useCallback(async () => {
     const sb = getSupabase();
-    if (!sb) {
-      setReady(true);
-      return;
-    }
+    if (!sb) return;
     const { data } = await sb
       .from("posts_with_author")
       .select("id,title,content,type,tags,vote_count,created_at,display_name,username")
@@ -64,10 +61,7 @@ export function CommunityBoard({ seed = [] }: { seed?: CommunityPost[] }) {
 
   useEffect(() => {
     const sb = getSupabase();
-    if (!sb) {
-      setReady(true);
-      return;
-    }
+    if (!sb) return;
     sb.auth.getUser().then(async ({ data }) => {
       setUserId(data.user?.id ?? null);
       if (data.user) await load();
