@@ -106,3 +106,26 @@ git push -u origin main
 - 资源详情、用户主页、创作者中心、通知/私信中心
 - Supabase 接入：auth（登录注册真实化）、feed_items / resources / matching_requests 表
 - 管理后台 CMS（§12）：先做 资源管理 + 标签管理 + 活动管理 三个最小模块
+
+## 6. 阿里国际站 OAuth 回调（当前接入）
+
+网站服务端已预留 OAuth 路由：
+
+```text
+https://meeka.com.cn/api/alibaba/oauth/start
+https://meeka.com.cn/api/alibaba/oauth/callback
+```
+
+在阿里开放平台登记的回调地址必须填写：
+
+```text
+https://meeka.com.cn/api/alibaba/oauth/callback
+```
+
+### 6.1 Vercel 环境变量
+
+在 Vercel 项目 Settings → Environment Variables 中配置 `.env.example` 的变量。`ALIBABA_APP_SECRET` 和 `ALIBABA_TOKEN_COOKIE_SECRET` 只能配置在服务端，不能放在 `NEXT_PUBLIC_*` 变量，也不能提交到 GitHub。
+
+完成部署后，访问 `/api/alibaba/oauth/start` 发起授权。回调会校验 `state`，调用 `/auth/token/create` 换取 token，并把最小 token 信息以 HttpOnly、加密 cookie 保存；页面不会显示 access token。
+
+如果阿里应用控制台给出的 OAuth 或 token 服务地址与默认值不同，以控制台和对应 API 文档为准，覆盖 `.env.example` 中的三个可选地址变量。
