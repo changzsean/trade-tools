@@ -129,3 +129,7 @@ https://meeka.com.cn/api/alibaba/oauth/callback
 完成部署后，访问 `/api/alibaba/oauth/start` 发起授权。回调会校验 `state`，调用 `/auth/token/create` 换取 token，并把最小 token 信息以 HttpOnly、加密 cookie 保存；页面不会显示 access token。
 
 如果阿里应用控制台给出的 OAuth 或 token 服务地址与默认值不同，以控制台和对应 API 文档为准，覆盖 `.env.example` 中的三个可选地址变量。
+
+### 6.2 快速搬品 MVP
+
+部署后访问 `/product-copy`。当前流程为：粘贴公开商品链接 → 读取公开元数据 → 人工改写与检查 → 填写阿里国际站叶子类目 ID → 保存本机草稿。正式接入阿里发品前，还需要根据 `alibaba.icbu.product.schema.get` 获取并渲染类目规则，使用 `alibaba.icbu.photobank.upload` 将有权使用的图片上传到图片中心，再调用草稿/正式发布接口。当前页面不会自动上架。
