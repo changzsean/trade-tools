@@ -61,15 +61,68 @@ async function loadLazyProducts() {
   window.scrollTo(0, originalY);
 }
 
+function pageNumberFromUrl(url) {
+  try {
+    const parsed = new URL(url, window.location.href);
+    for (const key of ["page", "pageNo", "pageNum", "currentPage", "pageIndex"]) {
+      const value = Number(parsed.searchParams.get(key));
+      if (Number.isFinite(value) && value > 0) return value;
+    }
+  } catch { /* ignore malformed candidate URLs */ }
+  return 0;
+}
+
+function currentPageNumber() {
+  const fromUrl = pageNumberFromUrl(window.location.href);
+  if (fromUrl) return fromUrl;
+  const current = document.querySelector("[aria-current='page'], .pagination .active, [class*='pagination'] [class*='active']");
+  const match = clean(current?.textContent).match(/^\d+$/);
+  return match ? Number(match[0]) : 1;
+}
+
+function candidatePageNumber(element, href) {
+  for (const attribute of ["data-page", "data-pageno", "data-page-num", "data-page-number"]) {
+    const value = Number(element.getAttribute(attribute));
+    if (Number.isFinite(value) && value > 0) return value;
+  }
+  const fromUrl = pageNumberFromUrl(href);
+  if (fromUrl) return fromUrl;
+  const match = clean(element.textContent).match(/^\d+$/);
+  return match ? Number(match[0]) : 0;
+}
+
 function nextPageUrl() {
-  const candidates = [...document.querySelectorAll("a[href]")].filter((link) => {
-    const label = clean(`${link.textContent} ${link.getAttribute("aria-label")} ${link.getAttribute("title")} ${link.className}`, 200).toLowerCase();
-    return /next|下一页|下页/.test(label);
-  });
-  const link = candidates.find((candidate) => {
-    try { return new URL(candidate.href).origin === window.location.origin; } catch { return false; }
-  });
-  return link?.href ?? "";
+  const currentPage = currentPageNumber();
+  const candidates = [...document.querySelectorAll("a[href], [role='link'][href], button, [role='button']")]
+    .map((element) => {
+      const childLink = element.querySelector?.("a[href]");
+      const href = element.getAttribute("href") || element.getAttribute("data-href") || element.getAttribute("data-url") || childLink?.getAttribute("href") || "";
+      const label = clean(`${element.textContent} ${element.getAttribute("aria-label")} ${element.getAttribute("title")} ${element.getAttribute("data-spm-anchor-id")} ${element.className}`, 300).toLowerCase();
+      const paginationAncestor = element.closest("[class*='pagination'], [class*='pager'], nav, ul");
+      const disabled = element.hasAttribute("disabled") || element.getAttribute("aria-disabled") === "true" || /disabled|disable/.test(label);
+      const page = candidatePageNumber(element, href);
+      return { element, href, label, page, inPagination: Boolean(paginationAncestor), disabled };
+    })
+    .filter((candidate) => {
+      if (candidate.disabled || !candidate.href || candidate.href.startsWith("javascript:")) return false;
+      try {
+        const parsed = new URL(candidate.href, window.location.href);
+        return parsed.protocol === "https:" && parsed.hostname.endsWith(".alibaba.com") && ["/productlist.html", "/featureproductlist.html", "/search/product"].includes(parsed.pathname);
+      } catch { return false; }
+    })
+    .map((candidate) => {
+      let score = 0;
+      if (/next|下一页|下页|nextpage|next-page/.test(candidate.label)) score += 100;
+      if (candidate.inPagination) score += 30;
+      if (candidate.page === currentPage + 1) score += 80;
+      else if (candidate.page > currentPage) score += 20;
+      if (pageNumberFromUrl(candidate.href)) score += 10;
+      return { ...candidate, score };
+    })
+    .filter((candidate) => candidate.page === currentPage + 1 || /next|下一页|下页|nextpage|next-page/.test(candidate.label))
+    .sort((left, right) => right.score - left.score);
+
+  return candidates[0]?.href ? new URL(candidates[0].href, window.location.href).toString() : "";
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

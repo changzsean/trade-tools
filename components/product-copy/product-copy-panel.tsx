@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, ClipboardPaste, ExternalLink, Loader2, ShieldCheck } from "lucide-react";
+import { ArrowRight, CheckCircle2, ClipboardPaste, ExternalLink, Loader2, RefreshCw, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getSupabase, SUPABASE_READY } from "@/lib/supabase/client";
 
 type Product = {
   sourceUrl: string;
@@ -83,6 +84,8 @@ export function ProductCopyPanel() {
         </div>
       </Card>
 
+      <ProductCopyRunsPanel />
+
       {product ? (
         <Card className="space-y-5 p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -109,6 +112,137 @@ export function ProductCopyPanel() {
         </Card>
       ) : null}
     </div>
+  );
+}
+
+type BatchRun = {
+  id: string;
+  source_store_url: string;
+  status: string;
+  total_count: number;
+  queued_count: number;
+  success_count: number;
+  failed_count: number;
+  created_at: string;
+};
+
+type BatchItem = {
+  id: string;
+  run_id: string;
+  source_product_id: string;
+  source_url: string;
+  source_title: string | null;
+  source_image_url: string | null;
+  status: string;
+};
+
+function ProductCopyRunsPanel() {
+  const [runs, setRuns] = useState<BatchRun[]>([]);
+  const [items, setItems] = useState<BatchItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+  const loadingRef = useRef(false);
+
+  const load = useCallback(async () => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+    try {
+      if (!SUPABASE_READY) {
+        setMessage("MEEKA 数据库尚未配置，暂时无法读取同步结果。");
+        return;
+      }
+      const client = getSupabase();
+      if (!client) return;
+      const { data: userData, error: userError } = await client.auth.getUser();
+      if (userError || !userData.user) {
+        setMessage("请先登录 MEEKA，登录后才能查看同步结果。");
+        return;
+      }
+      const { data: runData, error: runError } = await client
+        .from("product_copy_runs")
+        .select("id, source_store_url, status, total_count, queued_count, success_count, failed_count, created_at")
+        .eq("user_id", userData.user.id)
+        .order("created_at", { ascending: false })
+        .limit(20);
+      if (runError) throw runError;
+      const nextRuns = (runData ?? []) as BatchRun[];
+      setRuns(nextRuns);
+      const latestRun = nextRuns[0];
+      if (!latestRun) {
+        setItems([]);
+        setMessage("还没有同步记录。采集完成后点击扩展中的“同步到 MEEKA 后台”。");
+        return;
+      }
+      const { data: itemData, error: itemError } = await client
+        .from("product_copy_items")
+        .select("id, run_id, source_product_id, source_url, source_title, source_image_url, status")
+        .eq("user_id", userData.user.id)
+        .eq("run_id", latestRun.id)
+        .order("created_at", { ascending: true })
+        .limit(100);
+      if (itemError) throw itemError;
+      setItems((itemData ?? []) as BatchItem[]);
+      setMessage("");
+    } catch (error) {
+      setMessage(error instanceof Error ? `同步结果读取失败：${error.message}` : "同步结果读取失败，请稍后刷新");
+    } finally {
+      loadingRef.current = false;
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+    const timer = window.setInterval(load, 3000);
+    return () => window.clearInterval(timer);
+  }, [load]);
+
+  const latestRun = runs[0];
+  return (
+    <Card className="space-y-5 p-6" aria-live="polite">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-semibold">同步记录与商品明细</h2>
+          <p className="mt-1 text-xs text-muted">采集结果写入 Supabase 后会自动出现在这里，页面每 3 秒刷新一次。</p>
+        </div>
+        <Button variant="secondary" size="sm" onClick={() => load()} disabled={loading}>
+          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />刷新结果
+        </Button>
+      </div>
+
+      {message ? <p className="rounded-lg bg-surface-muted px-3 py-2 text-sm text-muted">{message}</p> : null}
+
+      {runs.length ? (
+        <div className="grid gap-3 md:grid-cols-2">
+          {runs.slice(0, 6).map((run) => (
+            <div key={run.id} className={`rounded-xl border p-4 ${run.id === latestRun?.id ? "border-brand/40 bg-brand-soft/30" : "border-border"}`}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-medium">{run.total_count} 个商品 · {run.status === "queued" ? "待处理" : run.status}</div>
+                  <a href={run.source_store_url} target="_blank" rel="noreferrer" className="mt-1 block truncate text-xs text-brand">{run.source_store_url}</a>
+                </div>
+                <span className="shrink-0 text-xs text-muted">{new Date(run.created_at).toLocaleString()}</span>
+              </div>
+              <div className="mt-3 text-xs text-muted">已入队 {run.queued_count} · 成功 {run.success_count} · 失败 {run.failed_count}</div>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      {latestRun && items.length ? (
+        <div>
+          <div className="mb-3 flex items-center justify-between"><h3 className="text-sm font-semibold">最近一次同步的商品（{items.length}/{latestRun.total_count}）</h3><span className="text-xs text-muted">仅展示前 100 条</span></div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {items.map((item) => (
+              <a key={item.id} href={item.source_url} target="_blank" rel="noreferrer" className="flex gap-3 rounded-xl border border-border p-3 transition hover:border-brand/50">
+                {item.source_image_url ? <img src={item.source_image_url} alt="来源商品" className="h-16 w-16 shrink-0 rounded-lg border border-border object-cover" /> : <div className="h-16 w-16 shrink-0 rounded-lg bg-surface-muted" />}
+                <div className="min-w-0"><div className="line-clamp-2 text-sm font-medium">{item.source_title || `商品 ${item.source_product_id}`}</div><div className="mt-2 text-xs text-muted">{item.status === "queued" ? "待处理" : item.status}</div></div>
+              </a>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </Card>
   );
 }
 

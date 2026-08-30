@@ -1,5 +1,6 @@
 const MAX_PAGES = 20;
 const state = { active: false, tabId: null, startUrl: "", items: {}, pageCount: 0 };
+let scanInFlight = false;
 
 function supportedStorePage(url) {
   try {
@@ -32,7 +33,8 @@ async function finish() {
 }
 
 async function scanTab() {
-  if (!state.active || state.tabId === null) return;
+  if (!state.active || state.tabId === null || scanInFlight) return;
+  scanInFlight = true;
   try {
     const currentPage = state.pageCount + 1;
     await saveStatus("scanning", { currentPage, stage: `正在加载第 ${currentPage} 页，触发懒加载…` });
@@ -51,6 +53,8 @@ async function scanTab() {
   } catch (error) {
     state.active = false;
     await saveStatus("error", { stage: "采集中断", error: error instanceof Error ? error.message : "页面扫描失败" });
+  } finally {
+    scanInFlight = false;
   }
 }
 
