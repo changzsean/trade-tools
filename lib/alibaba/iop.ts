@@ -32,7 +32,7 @@ export function alibabaCallbackUrl(): string {
 
 export function buildAlibabaAuthorizeUrl(state: string): string {
   const appKey = requiredEnv("ALIBABA_APP_KEY");
-  const endpoint = process.env.ALIBABA_OAUTH_AUTHORIZE_URL ?? "https://open-api.alibaba.com/oauth/authorize";
+  const endpoint = process.env.ALIBABA_OAUTH_AUTHORIZE_URL ?? "https://oauth.alibaba.com/authorize";
   const url = new URL(endpoint);
 
   url.searchParams.set("response_type", "code");
