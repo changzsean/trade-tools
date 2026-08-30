@@ -40,10 +40,14 @@ export function buildAlibabaAuthorizeUrl(state: string): string {
   url.searchParams.set("redirect_uri", alibabaCallbackUrl());
   url.searchParams.set("state", state);
   url.searchParams.set("view", "web");
-  url.searchParams.set("sp", "ICBU");
-  // Avoid refreshing Alibaba's login cookie on every attempt. For some ICBU
-  // accounts that causes a sign-in loop after the account is selected.
-  // Keep an opt-in switch for accounts that explicitly require forced auth.
+  url.searchParams.set("sp", "icbu");
+  // Alibaba's ICBU OAuth flow can return to the account selector without
+  // issuing a code when the existing browser session is only partially
+  // authenticated. The documented force_login flag makes the user complete
+  // a fresh seller login before showing the authorization page.
+  if (process.env.ALIBABA_FORCE_LOGIN !== "false") {
+    url.searchParams.set("force_login", "true");
+  }
   if (process.env.ALIBABA_FORCE_AUTH === "true") {
     url.searchParams.set("force_auth", "true");
   }
