@@ -65,6 +65,33 @@ function signIopRequest(method: string, params: StringMap, appSecret: string): s
   return createHmac("sha256", appSecret).update(`${method}${payload}`, "utf8").digest("hex").toUpperCase();
 }
 
+export async function callAlibabaIop(method: string, session: string, input: Record<string, string>): Promise<Record<string, unknown>> {
+  const appKey = requiredEnv("ALIBABA_APP_KEY");
+  const appSecret = requiredEnv("ALIBABA_APP_SECRET");
+  const endpoint = process.env.ALIBABA_API_ENDPOINT ?? "https://eco.taobao.com/router/rest";
+  const params: StringMap = {
+    app_key: appKey,
+    format: "json",
+    method,
+    session,
+    sign_method: "hmac",
+    timestamp: new Date().toISOString().slice(0, 19).replace("T", " "),
+    v: "2.0",
+    ...input,
+  };
+  const body = new URLSearchParams({ ...params, sign: signIopRequest(method, params, appSecret) });
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded;charset=utf-8" },
+    body,
+    cache: "no-store",
+  });
+  const parsed = (await response.json().catch(() => null)) as Record<string, unknown> | null;
+  if (!response.ok) throw new Error(`Alibaba API returned HTTP ${response.status}`);
+  if (!parsed) throw new Error("Alibaba API returned an unreadable response");
+  return parsed;
+}
+
 export async function exchangeAlibabaCode(code: string): Promise<AlibabaToken> {
   const appKey = requiredEnv("ALIBABA_APP_KEY");
   const appSecret = requiredEnv("ALIBABA_APP_SECRET");
