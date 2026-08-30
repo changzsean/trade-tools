@@ -24,10 +24,33 @@ function text(value: unknown, max = 50000): string {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
 }
 
-function firstImage(value: unknown): string {
+function imagePayload(value: unknown): string {
   if (!Array.isArray(value)) return "";
-  const image = value.find((candidate) => typeof candidate === "string" && candidate.trim());
-  return typeof image === "string" ? image.trim().slice(0, 2048) : "";
+  const images = value
+    .filter((candidate): candidate is string => typeof candidate === "string" && Boolean(candidate.trim()))
+    .map((candidate) => candidate.trim().slice(0, 2048))
+    .filter((candidate) => {
+      try {
+        const url = new URL(candidate);
+        return url.protocol === "https:" && (url.hostname === "alicdn.com" || url.hostname.endsWith(".alicdn.com") || url.hostname === "alibaba.com" || url.hostname.endsWith(".alibaba.com"));
+      } catch {
+        return false;
+      }
+    })
+    .slice(0, 8);
+  return images.length ? JSON.stringify({ images }) : "";
+}
+
+function decimal(value: unknown): string {
+  const candidate = text(value, 32);
+  return /^\d+(?:\.\d{1,2})?$/.test(candidate) && Number(candidate) > 0 ? candidate : "";
+}
+
+function positiveInteger(value: unknown): number | null {
+  const candidate = text(value, 16);
+  if (!/^\d+$/.test(candidate)) return null;
+  const number = Number(candidate);
+  return Number.isSafeInteger(number) && number > 0 && number <= 99999 ? number : null;
 }
 
 function findValue(value: unknown, keys: string[]): string | null {
@@ -81,10 +104,14 @@ export async function POST(request: Request) {
     const product = input.product ?? {};
     const title = text(product.title, 128);
     const description = text(product.description, 50000);
+    const brand = text(product.brand, 128);
     const categoryId = text(product.categoryId, 32);
+    const price = decimal(product.price);
+    const moq = positiveInteger(product.moq);
     const keywords = Array.isArray(product.keywords) ? product.keywords.filter((value): value is string => typeof value === "string").map((value) => value.trim()).filter(Boolean).slice(0, 3) : [];
-    if (!title || !categoryId) {
-      const error = "缺少英文标题或叶子类目 ID";
+    if (!title || !categoryId || !price || !moq) {
+      const missing = [!title ? "英文标题" : "", !categoryId ? "叶子类目 ID" : "", !price ? "有效价格" : "", !moq ? "有效 MOQ" : ""].filter(Boolean).join("、");
+      const error = `请补充${missing}`;
       await auth.client.from("product_copy_items").update({ status: "needs_review", error_message: error }).eq("id", id).eq("user_id", auth.user.id);
       results.push({ id, ok: false, error });
       continue;
@@ -92,8 +119,16 @@ export async function POST(request: Request) {
 
     try {
       // This compatibility endpoint creates a draft only. It never submits or publishes the product.
+      const attributes = brand ? [{ attribute_name: "Brand Name", value_name: brand }] : [];
+      const mainImage = imagePayload(product.images);
+      const wholesaleTrade = {
+        unit_type: "piece",
+        sale_type: "normal",
+        price: Number(price),
+        min_order_quantity: moq,
+      };
       const response = await callAlibabaIop("alibaba.icbu.product.add.draft", session, {
-        attributes: "[]",
+        attributes: JSON.stringify(attributes),
         bulk_discount_prices: "[]",
         category_id: categoryId,
         custom_info: "{}",
@@ -103,13 +138,13 @@ export async function POST(request: Request) {
         is_smart_edit: "false",
         keywords: JSON.stringify(keywords),
         language: "ENGLISH",
-        main_image: firstImage(product.images) || row.source_image_url || "",
+        main_image: mainImage,
         market: "onesite",
         product_sku: "{}",
         product_type: "wholesale",
         sourcing_trade: "{}",
         subject: title,
-        wholesale_trade: "{}",
+        wholesale_trade: JSON.stringify(wholesaleTrade),
       });
       const error = apiError(response);
       const draftId = findValue(response, ["product_id", "productId"]);
