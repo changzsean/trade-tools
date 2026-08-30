@@ -37,6 +37,10 @@ function scanCards() {
 
 async function wait(ms) { return new Promise((resolve) => window.setTimeout(resolve, ms)); }
 
+function reportProgress(payload) {
+  chrome.runtime.sendMessage({ type: "PAGE_PROGRESS", ...payload }).catch(() => undefined);
+}
+
 async function loadLazyProducts() {
   const originalY = window.scrollY;
   let previousHeight = 0;
@@ -45,6 +49,11 @@ async function loadLazyProducts() {
     window.scrollTo(0, document.body.scrollHeight);
     await wait(550);
     const height = document.body.scrollHeight;
+    reportProgress({
+      stage: `正在滚动加载第 ${i + 1} 轮（页面高度 ${height}px）…`,
+      scrollRound: i + 1,
+      pageHeight: height,
+    });
     if (height === previousHeight) stableRounds += 1;
     else stableRounds = 0;
     previousHeight = height;
@@ -67,7 +76,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message?.type !== "SCAN_PAGE") return;
   if (!isSupportedPage()) { sendResponse({ items: [], pageUrl: window.location.href, nextUrl: "" }); return; }
   (async () => {
+    reportProgress({ stage: "正在检查商品卡片…" });
     if (message.autoScroll) await loadLazyProducts();
+    reportProgress({ stage: "正在解析当前页商品信息…" });
     sendResponse({ items: scanCards(), pageUrl: window.location.href, nextUrl: nextPageUrl() });
   })();
   return true;

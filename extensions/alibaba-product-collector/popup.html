@@ -5,12 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>MEEKA 快速搬品</title>
     <style>
-      body { width: 340px; margin: 0; padding: 16px; color: #171717; font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      body { width: 360px; margin: 0; padding: 16px; color: #171717; font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
       h1 { margin: 0 0 4px; font-size: 17px; } p { margin: 0; color: #737373; font-size: 12px; }
       button { width: 100%; margin-top: 12px; padding: 10px 12px; border: 0; border-radius: 8px; background: #2563eb; color: white; font-weight: 600; cursor: pointer; }
       button.secondary { background: #f5f5f4; color: #262626; border: 1px solid #e7e5e4; }
       button:disabled { cursor: wait; opacity: .55; }
-      .status { margin-top: 14px; padding: 10px; border-radius: 8px; background: #fafaf9; color: #525252; font-size: 12px; }
+      .status { margin-top: 14px; padding: 12px; border-radius: 8px; background: #fafaf9; color: #525252; font-size: 12px; }
+      .status-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-weight: 600; color: #262626; }
+      .status-stage { margin-top: 6px; line-height: 1.45; }
+      .status-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 10px; color: #737373; }
+      .status-meta strong { display: block; color: #262626; font-size: 15px; }
+      .progress-track { height: 6px; margin-top: 12px; overflow: hidden; border-radius: 99px; background: #e7e5e4; }
+      .progress-bar { height: 100%; min-width: 4%; border-radius: inherit; background: #2563eb; transition: width .3s ease; }
+      .updated { margin-top: 8px; color: #a3a3a3; font-size: 11px; }
       .ok { color: #047857; } .error { color: #b91c1c; }
       .small { margin-top: 10px; font-size: 11px; color: #a3a3a3; }
     </style>
@@ -21,7 +28,16 @@
     <button id="scan">自动采集全部分页</button>
     <button id="sync" class="secondary">同步到 MEEKA 后台</button>
     <button id="clear" class="secondary">解除本机配对</button>
-    <div id="status" class="status">正在读取状态…</div>
+    <div id="status" class="status" aria-live="polite">
+      <div class="status-head"><span id="status-title">正在读取状态…</span><span id="status-percent"></span></div>
+      <div id="status-stage" class="status-stage"></div>
+      <div class="status-meta">
+        <div><strong id="status-page">—</strong>页数</div>
+        <div><strong id="status-items">—</strong>已识别商品</div>
+      </div>
+      <div class="progress-track" aria-hidden="true"><div id="status-progress" class="progress-bar" style="width: 0%"></div></div>
+      <div id="status-updated" class="updated"></div>
+    </div>
     <div class="small">最多连续采集 20 页；只读取公开页面，不绕过验证码或登录限制。</div>
     <script src="popup.js"></script>
   </body>

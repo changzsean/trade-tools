@@ -57,6 +57,8 @@ docs/                # 产品与设计文档
 
 集合页批量采集：先在 `/product-copy/pair` 配对 Chrome 扩展 `extensions/alibaba-product-collector`，再打开 Alibaba 店铺产品集合页，扩展会自动滚动并尝试连续采集最多 20 页，完成后可同步到 MEEKA 后台。首次部署还需在 Supabase SQL Editor 执行 `supabase/migrations/202608300001_product_copy.sql`。
 
+快速搬品是内部工具：它不会出现在公共主导航中，`/product-copy` 和 `/product-copy/pair` 需要先通过内部访问密码。请在 Vercel Production 环境配置 `PRODUCT_COPY_ACCESS_PASSWORD`，不要把实际密码写入代码或提交到 GitHub；密码验证成功后仍要求登录 MEEKA。
+
 ## 品牌与素材版权
 
 MEEKA 品牌名称、Logo 与米卡（Meeka）IP 形象为项目自有资产，未经授权请勿商用。

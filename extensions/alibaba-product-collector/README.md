@@ -8,7 +8,7 @@
 2. 点击“加载已解压的扩展程序”，选择本目录：`extensions/alibaba-product-collector`。
 3. 登录 `https://meeka.com.cn`，打开 `/product-copy/pair`，点击“配对扩展”。
 4. 打开 Alibaba 店铺集合页，例如 `https://ekiy.en.alibaba.com/productlist.html`。
-5. 点击扩展图标 → “自动采集全部分页” → 完成后点击“同步到 MEEKA 后台”。
+5. 点击扩展图标 → “自动采集全部分页”。弹窗会实时显示当前页、已识别商品数、加载阶段、进度条和最近更新时间；完成后点击“同步到 MEEKA 后台”。
 
 ## 当前边界
 

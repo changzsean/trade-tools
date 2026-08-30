@@ -10,7 +10,6 @@ import {
   Inbox,
   LayoutGrid,
   MapPin,
-  PackageSearch,
   Settings,
   Sparkles,
   Star,
@@ -26,7 +25,6 @@ const primaryNav: NavItem[] = [
   { title: "成长", href: "/growth", icon: Star },
   { title: "资源", href: "/resources", icon: LayoutGrid },
   { title: "社区", href: "/community/feed", icon: Users },
-  { title: "快速搬品", href: "/product-copy", icon: PackageSearch },
   { title: "实验室", href: "/lab", icon: FlaskConical },
   { title: "工作台", href: "/workspace", icon: BriefcaseBusiness },
 ];

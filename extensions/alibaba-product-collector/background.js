@@ -12,29 +12,45 @@ function supportedStorePage(url) {
 }
 
 async function saveStatus(status, extra = {}) {
-  await chrome.storage.local.set({ collectorStatus: { status, pageCount: state.pageCount, itemCount: Object.keys(state.items).length, ...extra } });
+  const collectorStatus = {
+    status,
+    pageCount: state.pageCount,
+    itemCount: Object.keys(state.items).length,
+    pageLimit: MAX_PAGES,
+    updatedAt: new Date().toISOString(),
+    ...extra,
+  };
+  await chrome.storage.local.set({ collectorStatus });
+  chrome.runtime.sendMessage({ type: "COLLECTOR_STATUS", collectorStatus }).catch(() => undefined);
 }
 
 async function finish() {
   state.active = false;
   const items = Object.values(state.items);
   await chrome.storage.local.set({ lastScan: { sourceStoreUrl: state.startUrl, items, pageCount: state.pageCount, savedAt: new Date().toISOString() } });
-  await saveStatus("complete", { sourceStoreUrl: state.startUrl });
+  await saveStatus("complete", { sourceStoreUrl: state.startUrl, stage: "采集完成，可同步到 MEEKA 后台" });
 }
 
 async function scanTab() {
   if (!state.active || state.tabId === null) return;
   try {
+    const currentPage = state.pageCount + 1;
+    await saveStatus("scanning", { currentPage, stage: `正在加载第 ${currentPage} 页，触发懒加载…` });
     const result = await chrome.tabs.sendMessage(state.tabId, { type: "SCAN_PAGE", autoScroll: true });
     state.pageCount += 1;
     for (const item of result?.items ?? []) state.items[item.sourceProductId] = item;
-    await saveStatus("scanning", { currentPageUrl: result?.pageUrl ?? "" });
+    await saveStatus("scanning", {
+      currentPage,
+      currentPageUrl: result?.pageUrl ?? "",
+      stage: `第 ${currentPage} 页完成，已识别 ${Object.keys(state.items).length} 个商品，正在判断下一页…`,
+    });
     const nextUrl = typeof result?.nextUrl === "string" ? result.nextUrl : "";
     if (!nextUrl || nextUrl === result.pageUrl || state.pageCount >= MAX_PAGES) return finish();
+    await saveStatus("scanning", { currentPage: currentPage + 1, stage: `准备打开第 ${currentPage + 1} 页…` });
     await chrome.tabs.update(state.tabId, { url: nextUrl });
   } catch (error) {
     state.active = false;
-    await saveStatus("error", { error: error instanceof Error ? error.message : "页面扫描失败" });
+    await saveStatus("error", { stage: "采集中断", error: error instanceof Error ? error.message : "页面扫描失败" });
   }
 }
 
@@ -58,6 +74,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message?.type === "GET_STATUS") {
     chrome.storage.local.get(["collectorStatus", "lastScan"]).then((data) => sendResponse({ ok: true, ...data }));
     return true;
+  }
+
+  if (message?.type === "PAGE_PROGRESS") {
+    if (state.active && sender.tab?.id === state.tabId) {
+      saveStatus("scanning", {
+        currentPage: state.pageCount + 1,
+        currentPageUrl: sender.tab.url ?? state.startUrl,
+        stage: message.stage || `正在处理第 ${state.pageCount + 1} 页…`,
+        scrollRound: message.scrollRound,
+        pageHeight: message.pageHeight,
+      });
+    }
+    return;
   }
 
   if (message?.type === "PAIR_ACCESS_TOKEN") {

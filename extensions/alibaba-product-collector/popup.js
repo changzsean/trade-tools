@@ -1,8 +1,49 @@
 const statusEl = document.getElementById("status");
 const scanButton = document.getElementById("scan");
 const syncButton = document.getElementById("sync");
+const statusTitleEl = document.getElementById("status-title");
+const statusStageEl = document.getElementById("status-stage");
+const statusPageEl = document.getElementById("status-page");
+const statusItemsEl = document.getElementById("status-items");
+const statusProgressEl = document.getElementById("status-progress");
+const statusPercentEl = document.getElementById("status-percent");
+const statusUpdatedEl = document.getElementById("status-updated");
 
-function show(text, className = "") { statusEl.textContent = text; statusEl.className = `status ${className}`; }
+function show(text, className = "") {
+  statusTitleEl.textContent = text;
+  statusStageEl.textContent = "";
+  statusPageEl.textContent = "—";
+  statusItemsEl.textContent = "—";
+  statusPercentEl.textContent = "";
+  statusProgressEl.style.width = "0%";
+  statusUpdatedEl.textContent = "";
+  statusEl.className = `status ${className}`;
+}
+
+function formatTime(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : `最近更新 ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`;
+}
+
+function renderStatus(status, scan) {
+  const currentStatus = status?.status;
+  const pageCount = Number(status?.pageCount ?? scan?.pageCount ?? 0);
+  const itemCount = Number(status?.itemCount ?? scan?.items?.length ?? 0);
+  const pageLimit = Number(status?.pageLimit ?? 20);
+  const currentPage = Number(status?.currentPage ?? pageCount);
+  const progress = currentStatus === "complete" ? 100 : Math.min(96, Math.max(currentPage, pageCount) / pageLimit * 100);
+
+  statusEl.className = `status ${currentStatus === "complete" ? "ok" : currentStatus === "error" ? "error" : ""}`;
+  statusTitleEl.textContent = currentStatus === "scanning" ? "正在采集" : currentStatus === "complete" ? "采集完成" : currentStatus === "error" ? "采集失败" : itemCount ? "已有采集结果" : "等待开始采集";
+  statusStageEl.textContent = status?.stage || (currentStatus === "error" ? status?.error || "请重试" : itemCount ? "可同步到 MEEKA 后台" : "请在 Alibaba 店铺集合页开始采集");
+  statusPageEl.textContent = currentStatus === "scanning" ? `${currentPage}/${pageLimit}` : `${pageCount}`;
+  statusItemsEl.textContent = `${itemCount}`;
+  statusProgressEl.style.width = `${Math.max(0, progress)}%`;
+  statusPercentEl.textContent = currentStatus === "scanning" ? `${Math.round(progress)}%` : currentStatus === "complete" ? "100%" : "";
+  statusUpdatedEl.textContent = formatTime(status?.updatedAt || scan?.savedAt);
+  scanButton.disabled = currentStatus === "scanning";
+}
 
 async function currentTab() {
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -11,21 +52,20 @@ async function currentTab() {
 
 async function refreshStatus() {
   const result = await chrome.runtime.sendMessage({ type: "GET_STATUS" });
-  const status = result?.collectorStatus;
-  const scan = result?.lastScan;
-  if (status?.status === "scanning") show(`采集中：第 ${status.pageCount ?? 0} 页，已识别 ${status.itemCount ?? 0} 个商品`);
-  else if (status?.status === "error") show(status.error || "采集失败", "error");
-  else if (scan?.items?.length) show(`已准备 ${scan.items.length} 个商品，可同步到后台`, "ok");
-  else show("请在 Alibaba 店铺集合页开始采集");
+  renderStatus(result?.collectorStatus, result?.lastScan);
 }
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (message?.type === "COLLECTOR_STATUS") renderStatus(message.collectorStatus, null);
+});
 
 scanButton.addEventListener("click", async () => {
   scanButton.disabled = true;
   const tab = await currentTab();
   const result = await chrome.runtime.sendMessage({ type: "START_AUTO_SCAN", tab: { id: tab?.id, url: tab?.url } });
   if (!result?.ok) show(result?.error || "无法开始采集", "error");
-  else show("已开始采集，页面会自动处理后续分页");
-  window.setTimeout(() => { scanButton.disabled = false; }, 1200);
+  else refreshStatus().catch(() => undefined);
+  window.setTimeout(() => refreshStatus().catch(() => undefined), 1200);
 });
 
 syncButton.addEventListener("click", async () => {
@@ -52,3 +92,4 @@ document.getElementById("clear").addEventListener("click", async () => {
 });
 
 refreshStatus().catch(() => show("扩展状态读取失败", "error"));
+window.setInterval(() => refreshStatus().catch(() => undefined), 1000);

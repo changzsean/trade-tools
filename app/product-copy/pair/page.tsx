@@ -6,8 +6,20 @@ import { ArrowLeft, CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getSupabase, SUPABASE_READY } from "@/lib/supabase/client";
+import { ProductCopyAccessGate } from "@/components/product-copy/product-copy-access-gate";
+import { getProductCopyAccessPassword, hasProductCopyAccess } from "@/lib/product-copy/access";
 
-export default function ProductCopyPairPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ProductCopyPairPage() {
+  if (!(await hasProductCopyAccess())) {
+    return <ProductCopyAccessGate configured={Boolean(getProductCopyAccessPassword())} />;
+  }
+
+  return <ProductCopyPairPanel />;
+}
+
+function ProductCopyPairPanel() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("扩展尚未配对");
   const [paired, setPaired] = useState(false);
