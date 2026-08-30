@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { ArrowRight, CheckCircle2, ClipboardPaste, ExternalLink, Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -64,7 +65,10 @@ export function ProductCopyPanel() {
               <h1 className="mt-2 text-2xl font-semibold tracking-tight">商品链接 → 可编辑发布草稿</h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">读取公开页面的标题、描述、主图和价格信息，先由你确认并改写，再进入阿里国际站发品流程。</p>
             </div>
-            <div className="rounded-lg border border-border bg-white px-3 py-2 text-xs text-muted"><ShieldCheck className="mr-1 inline h-3.5 w-3.5 text-emerald-600" />当前仅生成草稿，不自动上架</div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link href="/product-copy/pair" className="rounded-lg border border-brand/30 bg-brand-soft px-3 py-2 text-xs font-medium text-brand">配对批量采集扩展</Link>
+              <div className="rounded-lg border border-border bg-white px-3 py-2 text-xs text-muted"><ShieldCheck className="mr-1 inline h-3.5 w-3.5 text-emerald-600" />当前仅生成草稿，不自动上架</div>
+            </div>
           </div>
         </div>
 

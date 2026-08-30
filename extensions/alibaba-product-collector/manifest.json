@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "MEEKA Alibaba Product Collector",
+  "version": "0.1.0",
+  "description": "扫描 Alibaba 国际站店铺集合页的公开商品卡片并同步到 MEEKA。",
+  "permissions": ["activeTab", "storage", "tabs"],
+  "host_permissions": [
+    "*://*.en.alibaba.com/*",
+    "*://*.fm.alibaba.com/*",
+    "*://*.trustpass.alibaba.com/*",
+    "https://meeka.com.cn/*"
+  ],
+  "action": {
+    "default_title": "MEEKA 快速搬品",
+    "default_popup": "popup.html"
+  },
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": ["*://*.en.alibaba.com/*", "*://*.fm.alibaba.com/*", "*://*.trustpass.alibaba.com/*"],
+      "js": ["collector.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://meeka.com.cn/product-copy/pair*"],
+      "js": ["pair.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

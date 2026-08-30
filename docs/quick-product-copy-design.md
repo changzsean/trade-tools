@@ -117,3 +117,9 @@ POST /api/product-copy/items/:itemId/alibaba-draft
 ## MVP 取舍
 
 先实现 Alibaba 集合页的“当前页批量采集 + 后台入库 + 去重 + 进度展示”，再实现自动翻页和详情字段队列。这样即使目标页面的分页组件改版，也不会影响后台数据和发品流程。
+
+## 当前实现状态
+
+- 已实现：Chrome 扩展、商品卡片 DOM 扫描、懒加载自动滚动、最多 20 页连续采集、商品 ID 去重、MEEKA 批量入库 API、登录用户配对页。
+- 需上线前执行：在 Supabase SQL Editor 执行 `supabase/migrations/202608300001_product_copy.sql`，并在 Vercel 配置 `NEXT_PUBLIC_SUPABASE_URL` 与 `NEXT_PUBLIC_SUPABASE_ANON_KEY`。
+- 当前未实现：详情页逐个抓取、图片中心上传、类目 Schema 转换、阿里草稿/正式发布。扩展识别不到“下一页”控件时会安全停止在当前页已加载商品。

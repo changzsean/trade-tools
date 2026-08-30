@@ -1,0 +1,78 @@
+const MAX_PAGES = 20;
+const state = { active: false, tabId: null, startUrl: "", items: {}, pageCount: 0 };
+
+function supportedStorePage(url) {
+  try {
+    const parsed = new URL(url);
+    return [".en.alibaba.com", ".fm.alibaba.com", ".trustpass.alibaba.com"].some((suffix) => parsed.hostname.endsWith(suffix))
+      && ["/productlist.html", "/featureproductlist.html", "/search/product"].includes(parsed.pathname);
+  } catch {
+    return false;
+  }
+}
+
+async function saveStatus(status, extra = {}) {
+  await chrome.storage.local.set({ collectorStatus: { status, pageCount: state.pageCount, itemCount: Object.keys(state.items).length, ...extra } });
+}
+
+async function finish() {
+  state.active = false;
+  const items = Object.values(state.items);
+  await chrome.storage.local.set({ lastScan: { sourceStoreUrl: state.startUrl, items, pageCount: state.pageCount, savedAt: new Date().toISOString() } });
+  await saveStatus("complete", { sourceStoreUrl: state.startUrl });
+}
+
+async function scanTab() {
+  if (!state.active || state.tabId === null) return;
+  try {
+    const result = await chrome.tabs.sendMessage(state.tabId, { type: "SCAN_PAGE", autoScroll: true });
+    state.pageCount += 1;
+    for (const item of result?.items ?? []) state.items[item.sourceProductId] = item;
+    await saveStatus("scanning", { currentPageUrl: result?.pageUrl ?? "" });
+    const nextUrl = typeof result?.nextUrl === "string" ? result.nextUrl : "";
+    if (!nextUrl || nextUrl === result.pageUrl || state.pageCount >= MAX_PAGES) return finish();
+    await chrome.tabs.update(state.tabId, { url: nextUrl });
+  } catch (error) {
+    state.active = false;
+    await saveStatus("error", { error: error instanceof Error ? error.message : "页面扫描失败" });
+  }
+}
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message?.type === "START_AUTO_SCAN") {
+    const tab = message.tab;
+    if (!tab?.id || !supportedStorePage(tab.url ?? "")) {
+      sendResponse({ ok: false, error: "请先打开 Alibaba 国际站店铺产品集合页" });
+      return;
+    }
+    state.active = true;
+    state.tabId = tab.id;
+    state.startUrl = tab.url;
+    state.items = {};
+    state.pageCount = 0;
+    saveStatus("scanning", { sourceStoreUrl: state.startUrl }).then(() => scanTab());
+    sendResponse({ ok: true });
+    return;
+  }
+
+  if (message?.type === "GET_STATUS") {
+    chrome.storage.local.get(["collectorStatus", "lastScan"]).then((data) => sendResponse({ ok: true, ...data }));
+    return true;
+  }
+
+  if (message?.type === "PAIR_ACCESS_TOKEN") {
+    const token = typeof message.accessToken === "string" ? message.accessToken.trim() : "";
+    if (!token) { sendResponse({ ok: false, error: "缺少访问令牌" }); return; }
+    chrome.storage.local.set({ supabaseAccessToken: token }).then(() => sendResponse({ ok: true }));
+    return true;
+  }
+
+  if (message?.type === "CLEAR_PAIR") {
+    chrome.storage.local.remove("supabaseAccessToken").then(() => sendResponse({ ok: true }));
+    return true;
+  }
+});
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  if (state.active && state.tabId === tabId && changeInfo.status === "complete") scanTab();
+});

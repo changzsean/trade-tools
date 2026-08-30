@@ -55,6 +55,8 @@ docs/                # 产品与设计文档
 
 访问 `/product-copy`，粘贴你有权使用的公开商品链接，可提取页面元数据并编辑标题、描述、关键词和类目 ID，再保存到浏览器本机草稿箱。当前版本不会自动复制受保护素材，也不会自动上架；阿里国际站草稿提交需要下一阶段接入类目 Schema、图片中心上传和发布接口。
 
+集合页批量采集：先在 `/product-copy/pair` 配对 Chrome 扩展 `extensions/alibaba-product-collector`，再打开 Alibaba 店铺产品集合页，扩展会自动滚动并尝试连续采集最多 20 页，完成后可同步到 MEEKA 后台。首次部署还需在 Supabase SQL Editor 执行 `supabase/migrations/202608300001_product_copy.sql`。
+
 ## 品牌与素材版权
 
 MEEKA 品牌名称、Logo 与米卡（Meeka）IP 形象为项目自有资产，未经授权请勿商用。
