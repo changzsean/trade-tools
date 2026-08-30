@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowLeft, CheckCircle2, Chrome, Loader2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getSupabase, SUPABASE_READY } from "@/lib/supabase/client";
@@ -48,7 +48,7 @@ export default function ProductCopyPairPage() {
       <div className="mx-auto max-w-2xl">
         <Link href="/product-copy" className="inline-flex items-center gap-2 text-sm text-muted hover:text-foreground"><ArrowLeft className="h-4 w-4" />返回快速搬品</Link>
         <Card className="mt-6 p-7">
-          <div className="flex items-center gap-2 text-sm font-semibold text-brand"><Chrome className="h-4 w-4" />配对 Chrome 采集扩展</div>
+          <div className="flex items-center gap-2 text-sm font-semibold text-brand"><span aria-hidden="true" className="text-base">◈</span>配对 Chrome 采集扩展</div>
           <h1 className="mt-3 text-2xl font-semibold">让采集结果进入你的 MEEKA 后台</h1>
           <p className="mt-2 text-sm leading-6 text-muted">配对只把当前登录用户的短期 Supabase 访问令牌交给本机扩展，用于调用 MEEKA 入库接口。不会读取或上传 Alibaba Cookie、密码、App Secret。</p>
           <div className="mt-6 space-y-3 rounded-xl border border-border bg-surface-muted p-4 text-sm leading-6">
