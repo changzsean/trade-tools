@@ -77,7 +77,8 @@ async function scanTab() {
       stage: `第 ${currentPage} 页完成，已识别 ${Object.keys(state.items).length} 个商品，正在判断下一页…`,
     });
     let nextUrl = typeof result?.nextUrl === "string" ? result.nextUrl : "";
-    if (!nextUrl && (result?.items?.length ?? 0) > 0 && state.pageCount < MAX_PAGES) {
+    const hasItems = (result?.items?.length ?? 0) > 0;
+    if ((nextUrl === pageUrl || !nextUrl) && hasItems && state.pageCount < MAX_PAGES) {
       nextUrl = sequentialPageUrl(pageUrl || state.startUrl, pageNumberFromUrl(pageUrl || state.startUrl) + 1);
     }
     if (!nextUrl || nextUrl === result.pageUrl || state.pageCount >= MAX_PAGES) return finish();
