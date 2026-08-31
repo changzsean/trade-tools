@@ -1,12 +1,16 @@
 const MAX_PAGES = 20;
-const state = { active: false, tabId: null, startUrl: "", items: {}, pageCount: 0 };
+const state = { active: false, tabId: null, startUrl: "", items: {}, pageCount: 0, visitedUrls: new Set() };
 let scanInFlight = false;
+
+function supportedListPath(pathname) {
+  return /^\/(?:productlist|featureproductlist)(?:-\d+)?\.html$/i.test(pathname) || pathname === "/search/product";
+}
 
 function supportedStorePage(url) {
   try {
     const parsed = new URL(url);
     return [".en.alibaba.com", ".fm.alibaba.com", ".trustpass.alibaba.com"].some((suffix) => parsed.hostname.endsWith(suffix))
-      && ["/productlist.html", "/featureproductlist.html", "/search/product"].includes(parsed.pathname);
+      && supportedListPath(parsed.pathname);
   } catch {
     return false;
   }
@@ -39,6 +43,8 @@ async function scanTab() {
     const currentPage = state.pageCount + 1;
     await saveStatus("scanning", { currentPage, stage: `正在加载第 ${currentPage} 页，触发懒加载…` });
     const result = await chrome.tabs.sendMessage(state.tabId, { type: "SCAN_PAGE", autoScroll: true });
+    const pageUrl = typeof result?.pageUrl === "string" ? result.pageUrl : "";
+    if (pageUrl) state.visitedUrls.add(pageUrl);
     state.pageCount += 1;
     for (const item of result?.items ?? []) state.items[item.sourceProductId] = item;
     await saveStatus("scanning", {
@@ -48,6 +54,7 @@ async function scanTab() {
     });
     const nextUrl = typeof result?.nextUrl === "string" ? result.nextUrl : "";
     if (!nextUrl || nextUrl === result.pageUrl || state.pageCount >= MAX_PAGES) return finish();
+    if (state.visitedUrls.has(nextUrl)) return finish();
     await saveStatus("scanning", { currentPage: currentPage + 1, stage: `准备打开第 ${currentPage + 1} 页…` });
     await chrome.tabs.update(state.tabId, { url: nextUrl });
   } catch (error) {
@@ -70,6 +77,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     state.startUrl = tab.url;
     state.items = {};
     state.pageCount = 0;
+    state.visitedUrls = new Set();
     saveStatus("scanning", { sourceStoreUrl: state.startUrl }).then(() => scanTab());
     sendResponse({ ok: true });
     return;

@@ -2,7 +2,11 @@ function isSupportedPage() {
   const path = window.location.pathname;
   const host = window.location.hostname;
   return [".en.alibaba.com", ".fm.alibaba.com", ".trustpass.alibaba.com"].some((suffix) => host.endsWith(suffix))
-    && ["/productlist.html", "/featureproductlist.html", "/search/product"].includes(path);
+    && supportedListPath(path);
+}
+
+function supportedListPath(pathname) {
+  return /^\/(?:productlist|featureproductlist)(?:-\d+)?\.html$/i.test(pathname) || pathname === "/search/product";
 }
 
 function clean(value, max = 500) {
@@ -68,8 +72,22 @@ function pageNumberFromUrl(url) {
       const value = Number(parsed.searchParams.get(key));
       if (Number.isFinite(value) && value > 0) return value;
     }
+    const pathMatch = parsed.pathname.match(/(?:productlist|featureproductlist)-(\d+)\.html$/i);
+    if (pathMatch) return Number(pathMatch[1]);
   } catch { /* ignore malformed candidate URLs */ }
   return 0;
+}
+
+function pageUrlFor(page) {
+  const parsed = new URL(window.location.href);
+  const pathMatch = parsed.pathname.match(/^(.*\/)(productlist|featureproductlist)(?:-\d+)?(\.html)$/i);
+  if (pathMatch) {
+    parsed.pathname = `${pathMatch[1]}${pathMatch[2]}${page > 1 ? `-${page}` : ""}${pathMatch[3]}`;
+    for (const key of ["page", "pageNo", "pageNum", "currentPage", "pageIndex"]) parsed.searchParams.delete(key);
+  } else {
+    parsed.searchParams.set("page", String(page));
+  }
+  return parsed.toString();
 }
 
 function currentPageNumber() {
@@ -100,14 +118,18 @@ function nextPageUrl() {
       const label = clean(`${element.textContent} ${element.getAttribute("aria-label")} ${element.getAttribute("title")} ${element.getAttribute("data-spm-anchor-id")} ${element.className}`, 300).toLowerCase();
       const paginationAncestor = element.closest("[class*='pagination'], [class*='pager'], nav, ul");
       const disabled = element.hasAttribute("disabled") || element.getAttribute("aria-disabled") === "true" || /disabled|disable/.test(label);
-      const page = candidatePageNumber(element, href);
-      return { element, href, label, page, inPagination: Boolean(paginationAncestor), disabled };
+      const page = candidatePageNumber(element, href) || (/next|下一页|下页|nextpage|next-page/.test(label) ? currentPage + 1 : 0);
+      let candidateUrl = page ? pageUrlFor(page) : "";
+      if (href) {
+        try { candidateUrl = new URL(href, window.location.href).toString(); } catch { candidateUrl = ""; }
+      }
+      return { element, href: candidateUrl, label, page, inPagination: Boolean(paginationAncestor), disabled };
     })
     .filter((candidate) => {
       if (candidate.disabled || !candidate.href || candidate.href.startsWith("javascript:")) return false;
       try {
         const parsed = new URL(candidate.href, window.location.href);
-        return parsed.protocol === "https:" && parsed.hostname.endsWith(".alibaba.com") && ["/productlist.html", "/featureproductlist.html", "/search/product"].includes(parsed.pathname);
+        return parsed.protocol === "https:" && parsed.hostname.endsWith(".alibaba.com") && supportedListPath(parsed.pathname);
       } catch { return false; }
     })
     .map((candidate) => {

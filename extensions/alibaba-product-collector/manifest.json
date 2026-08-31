@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "MEEKA Alibaba Product Collector",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "扫描 Alibaba 国际站店铺集合页的公开商品卡片并同步到 MEEKA。",
   "permissions": ["activeTab", "storage", "tabs"],
   "host_permissions": [
