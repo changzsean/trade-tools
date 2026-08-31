@@ -111,7 +111,7 @@ function candidatePageNumber(element, href) {
 
 function nextPageUrl() {
   const currentPage = currentPageNumber();
-  const candidates = [...document.querySelectorAll("a[href], [role='link'][href], button, [role='button']")]
+  const candidates = [...document.querySelectorAll("a, [role='link'], button, [role='button']")]
     .map((element) => {
       const childLink = element.querySelector?.("a[href]");
       const href = element.getAttribute("href") || element.getAttribute("data-href") || element.getAttribute("data-url") || childLink?.getAttribute("href") || "";
