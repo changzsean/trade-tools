@@ -27,7 +27,17 @@ function scanCards() {
     const sourceProductId = id || productIdFromUrl(href);
     if (!sourceProductId || !href) continue;
     const image = card.querySelector("img[src], img[data-src]");
-    const title = clean(card.querySelector("h1,h2,h3,[class*='title'],[class*='name']")?.textContent || link?.textContent);
+    const imageTitle = image?.getAttribute("alt") || image?.getAttribute("title") || "";
+    const title = clean(
+      card.getAttribute("data-title")
+      || card.getAttribute("title")
+      || card.querySelector("[data-title]")?.getAttribute("data-title")
+      || card.querySelector("[aria-label]")?.getAttribute("aria-label")
+      || card.querySelector("h1,h2,h3,[class*='product-title'],[class*='product-name'],[class*='title'],[class*='name']")?.textContent
+      || link?.getAttribute("title")
+      || link?.textContent
+      || imageTitle,
+    );
     items.set(sourceProductId, {
       sourceProductId,
       sourceUrl: href,

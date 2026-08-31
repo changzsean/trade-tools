@@ -94,7 +94,7 @@ export function ProductCopyPanel() {
           </div>
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
             <div className="space-y-4">
-              <label className="block text-sm font-medium">英文标题（建议重写）<input value={product.title} onChange={(event) => setProduct({ ...product, title: event.target.value })} maxLength={128} className="mt-2 h-11 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-brand" /></label>
+              <label className="block text-sm font-medium">英文标题（来源标题，不修改）<input value={product.title} readOnly placeholder="来源页未采集到标题，请重新采集该商品" maxLength={128} className="mt-2 h-11 w-full rounded-lg border border-border bg-surface-muted px-3 text-sm text-muted outline-none" /></label>
               <label className="block text-sm font-medium">商品描述<textarea value={product.description} onChange={(event) => setProduct({ ...product, description: event.target.value })} rows={10} className="mt-2 w-full rounded-lg border border-border p-3 text-sm leading-6 outline-none focus:border-brand" /></label>
               <label className="block text-sm font-medium">关键词（最多 3 个，逗号分隔）<input value={product.keywords.join(", ")} onChange={(event) => setProduct({ ...product, keywords: event.target.value.split(/[,，]/).map((item) => item.trim()).filter(Boolean).slice(0, 3) })} className="mt-2 h-11 w-full rounded-lg border border-border px-3 text-sm outline-none focus:border-brand" /></label>
             </div>
@@ -134,6 +134,7 @@ type BatchItem = {
   source_title: string | null;
   source_image_url: string | null;
   status: string;
+  raw_payload: Record<string, unknown>;
   normalized_payload: Record<string, unknown>;
   error_message: string | null;
 };
@@ -149,8 +150,6 @@ type EditableProduct = {
   images: string[];
 };
 
-type BulkField = "title" | "description" | "brand" | "keywords" | "categoryId" | "price" | "moq";
-
 function objectValue(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
 }
@@ -165,8 +164,9 @@ function stringList(value: unknown): string[] {
 
 function editableFromItem(item: BatchItem): EditableProduct {
   const payload = objectValue(item.normalized_payload);
+  const rawPayload = objectValue(item.raw_payload);
   return {
-    title: stringValue(payload.title) || item.source_title || "",
+    title: stringValue(payload.title) || item.source_title || stringValue(rawPayload.title || rawPayload.sourceTitle),
     description: stringValue(payload.description),
     keywords: stringList(payload.keywords),
     brand: stringValue(payload.brand || payload.trademark),
@@ -189,7 +189,6 @@ function ProductCopyRunsPanel() {
   const [accountUserId, setAccountUserId] = useState("");
   const [drafts, setDrafts] = useState<Record<string, EditableProduct>>({});
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [bulkField, setBulkField] = useState<BulkField>("brand");
   const [bulkFind, setBulkFind] = useState("");
   const [bulkReplace, setBulkReplace] = useState("");
   const [saving, setSaving] = useState(false);
@@ -229,7 +228,7 @@ function ProductCopyRunsPanel() {
       }
       const { data: itemData, error: itemError } = await client
         .from("product_copy_items")
-        .select("id, run_id, source_product_id, source_url, source_title, source_image_url, status, normalized_payload, error_message")
+        .select("id, run_id, source_product_id, source_url, source_title, source_image_url, status, raw_payload, normalized_payload, error_message")
         .eq("user_id", userData.user.id)
         .eq("run_id", latestRun.id)
         .order("created_at", { ascending: true })
@@ -277,14 +276,7 @@ function ProductCopyRunsPanel() {
       for (const id of selectedIds) {
         const source = next[id];
         if (!source) continue;
-        if (bulkField === "keywords") {
-          const value = find ? source.keywords.map((item) => item.split(find).join(replacement)).join(", ") : replacement;
-          next[id] = { ...source, keywords: value.split(/[,，]/).map((item) => item.trim()).filter(Boolean).slice(0, 3) };
-        } else {
-          const currentValue = source[bulkField];
-          const value = Array.isArray(currentValue) ? currentValue.join(", ") : currentValue;
-          next[id] = { ...source, [bulkField]: find ? value.split(find).join(replacement) : replacement };
-        }
+        next[id] = { ...source, brand: find ? source.brand.split(find).join(replacement) : replacement };
       }
       return next;
     });
@@ -298,7 +290,19 @@ function ProductCopyRunsPanel() {
     await Promise.all(ids.map(async (id) => {
       const product = drafts[id];
       if (!product) return;
-      const { error } = await client.from("product_copy_items").update({ normalized_payload: product, status: "needs_review", error_message: null, updated_at: new Date().toISOString() }).eq("id", id).eq("user_id", accountUserId);
+      const sourceItem = items.find((item) => item.id === id);
+      const existingPayload = objectValue(sourceItem?.normalized_payload);
+      // Brand is the only field this editor intentionally overwrites. Keep
+      // previously collected values when a card did not contain full detail data.
+      const normalizedPayload = { ...existingPayload, brand: product.brand };
+      if (product.title) normalizedPayload.title = product.title;
+      if (product.description) normalizedPayload.description = product.description;
+      if (product.keywords.length) normalizedPayload.keywords = product.keywords;
+      if (product.categoryId) normalizedPayload.categoryId = product.categoryId;
+      if (product.price) normalizedPayload.price = product.price;
+      if (product.moq) normalizedPayload.moq = product.moq;
+      if (product.images.length) normalizedPayload.images = product.images;
+      const { error } = await client.from("product_copy_items").update({ normalized_payload: normalizedPayload, status: "needs_review", error_message: null, updated_at: new Date().toISOString() }).eq("id", id).eq("user_id", accountUserId);
       if (error) throw error;
     }));
   }
@@ -374,7 +378,7 @@ function ProductCopyRunsPanel() {
           <div className="mb-4 rounded-xl border border-brand/20 bg-brand-soft/20 p-4">
             <div className="flex flex-wrap items-center gap-2 text-sm font-semibold"><WandSparkles className="h-4 w-4 text-brand" />批量修改</div>
             <div className="mt-3 grid gap-2 md:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)_auto]">
-              <select value={bulkField} onChange={(event) => setBulkField(event.target.value as BulkField)} className="h-10 rounded-lg border border-border bg-white px-3 text-sm"><option value="brand">商标 / 品牌名</option><option value="title">英文标题</option><option value="description">商品描述</option><option value="keywords">关键词</option><option value="categoryId">叶子类目 ID</option><option value="price">价格</option><option value="moq">起订量 MOQ</option></select>
+              <div className="flex h-10 items-center rounded-lg border border-border bg-white px-3 text-sm">修改字段：商标 / 品牌名</div>
               <input value={bulkFind} onChange={(event) => setBulkFind(event.target.value)} placeholder="查找内容（留空=直接覆盖）" className="h-10 rounded-lg border border-border bg-white px-3 text-sm" />
               <input value={bulkReplace} onChange={(event) => setBulkReplace(event.target.value)} placeholder="替换为 / 统一设置为" className="h-10 rounded-lg border border-border bg-white px-3 text-sm" />
               <Button size="sm" onClick={applyBulkEdit}><WandSparkles className="h-4 w-4" />生成预览</Button>
@@ -390,10 +394,10 @@ function ProductCopyRunsPanel() {
                 <div className="flex items-start gap-3">
                   <button type="button" aria-label={selected ? "取消选择商品" : "选择商品"} onClick={() => toggleSelected(item.id)} className="mt-1 text-brand">{selected ? <CheckSquare className="h-5 w-5" /> : <Square className="h-5 w-5 text-muted" />}</button>
                   {item.source_image_url ? <img src={item.source_image_url} alt="来源商品" className="h-16 w-16 shrink-0 rounded-lg border border-border object-cover" /> : <div className="h-16 w-16 shrink-0 rounded-lg bg-surface-muted" />}
-                  <div className="min-w-0 flex-1"><div className="flex flex-wrap items-center justify-between gap-2"><div className="text-sm font-medium">{item.source_title || `商品 ${item.source_product_id}`}</div><span className={`text-xs ${item.status === "failed" ? "text-red-600" : item.status === "draft_ready" ? "text-emerald-700" : "text-muted"}`}>{statusLabel(item.status)}</span></div><a href={item.source_url} target="_blank" rel="noreferrer" className="mt-1 block truncate text-xs text-brand">查看来源页面</a>{item.error_message ? <div className="mt-2 text-xs text-red-600">{item.error_message}</div> : null}</div>
+                  <div className="min-w-0 flex-1"><div className="flex flex-wrap items-center justify-between gap-2"><div className="text-sm font-medium">{product.title || item.source_title || `商品 ${item.source_product_id}`}</div><span className={`text-xs ${item.status === "failed" ? "text-red-600" : item.status === "draft_ready" ? "text-emerald-700" : "text-muted"}`}>{statusLabel(item.status)}</span></div><a href={item.source_url} target="_blank" rel="noreferrer" className="mt-1 block truncate text-xs text-brand">查看来源页面</a>{item.error_message ? <div className="mt-2 text-xs text-red-600">{item.error_message}</div> : null}</div>
                 </div>
                 <div className="mt-4 grid gap-3 md:grid-cols-2">
-                  <label className="text-xs font-medium">英文标题<input value={product.title} onChange={(event) => updateDraft(item.id, { title: event.target.value })} maxLength={128} className="mt-1 h-10 w-full rounded-lg border border-border bg-white px-3 text-sm font-normal outline-none focus:border-brand" /></label>
+                  <label className="text-xs font-medium">英文标题（来源标题，不修改）<input value={product.title} readOnly placeholder="来源页未采集到标题，请重新采集该商品" maxLength={128} className="mt-1 h-10 w-full rounded-lg border border-border bg-surface-muted px-3 text-sm font-normal text-muted outline-none" /></label>
                   <label className="text-xs font-medium">商标 / 品牌名<input value={product.brand} onChange={(event) => updateDraft(item.id, { brand: event.target.value })} className="mt-1 h-10 w-full rounded-lg border border-border bg-white px-3 text-sm font-normal outline-none focus:border-brand" /></label>
                   <label className="text-xs font-medium md:col-span-2">商品描述<textarea value={product.description} onChange={(event) => updateDraft(item.id, { description: event.target.value })} rows={3} className="mt-1 w-full rounded-lg border border-border bg-white p-3 text-sm font-normal outline-none focus:border-brand" /></label>
                   <label className="text-xs font-medium">关键词（最多 3 个）<input value={product.keywords.join(", ")} onChange={(event) => updateDraft(item.id, { keywords: event.target.value.split(/[,，]/).map((value) => value.trim()).filter(Boolean).slice(0, 3) })} className="mt-1 h-10 w-full rounded-lg border border-border bg-white px-3 text-sm font-normal outline-none focus:border-brand" /></label>
