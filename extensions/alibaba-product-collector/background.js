@@ -16,6 +16,30 @@ function supportedStorePage(url) {
   }
 }
 
+function pageNumberFromUrl(url) {
+  try {
+    const parsed = new URL(url);
+    for (const key of ["page", "pageNo", "pageNum", "currentPage", "pageIndex"]) {
+      const value = Number(parsed.searchParams.get(key));
+      if (Number.isFinite(value) && value > 0) return value;
+    }
+    const pathMatch = parsed.pathname.match(/(?:productlist|featureproductlist)-(\d+)\.html$/i);
+    if (pathMatch) return Number(pathMatch[1]);
+  } catch { /* ignore malformed URLs */ }
+  return 1;
+}
+
+function sequentialPageUrl(url, page) {
+  try {
+    const parsed = new URL(url);
+    const pathMatch = parsed.pathname.match(/^(.*\/)(productlist|featureproductlist)(?:-\d+)?(\.html)$/i);
+    if (!pathMatch) return "";
+    parsed.pathname = `${pathMatch[1]}${pathMatch[2]}${page > 1 ? `-${page}` : ""}${pathMatch[3]}`;
+    for (const key of ["page", "pageNo", "pageNum", "currentPage", "pageIndex"]) parsed.searchParams.delete(key);
+    return parsed.toString();
+  } catch { return ""; }
+}
+
 async function saveStatus(status, extra = {}) {
   const collectorStatus = {
     status,
@@ -52,7 +76,10 @@ async function scanTab() {
       currentPageUrl: result?.pageUrl ?? "",
       stage: `第 ${currentPage} 页完成，已识别 ${Object.keys(state.items).length} 个商品，正在判断下一页…`,
     });
-    const nextUrl = typeof result?.nextUrl === "string" ? result.nextUrl : "";
+    let nextUrl = typeof result?.nextUrl === "string" ? result.nextUrl : "";
+    if (!nextUrl && (result?.items?.length ?? 0) > 0 && state.pageCount < MAX_PAGES) {
+      nextUrl = sequentialPageUrl(pageUrl || state.startUrl, pageNumberFromUrl(pageUrl || state.startUrl) + 1);
+    }
     if (!nextUrl || nextUrl === result.pageUrl || state.pageCount >= MAX_PAGES) return finish();
     if (state.visitedUrls.has(nextUrl)) return finish();
     await saveStatus("scanning", { currentPage: currentPage + 1, stage: `准备打开第 ${currentPage + 1} 页…` });
