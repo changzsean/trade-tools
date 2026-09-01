@@ -28,9 +28,14 @@ export function ProductCopyPanel() {
   const [status, setStatus] = useState<"idle" | "loading" | "saved" | "error">("idle");
   const [message, setMessage] = useState("");
   const [connected, setConnected] = useState(false);
+  const [authMessage, setAuthMessage] = useState("");
 
   useEffect(() => {
     fetch("/api/alibaba/session").then((response) => response.json()).then((data) => setConnected(Boolean(data.connected))).catch(() => undefined);
+    const result = new URLSearchParams(window.location.search).get("alibaba");
+    if (result === "connected") setAuthMessage("国际站授权已完成，现在可以同步到阿里国际站草稿箱。");
+    if (result === "denied") setAuthMessage("你取消了国际站授权；如需同步草稿，请重新点击授权。");
+    if (result === "error") setAuthMessage("国际站授权未完成，请确认使用的是国际站卖家账号，并检查 Vercel 中的 App Key、App Secret 和回调地址。");
   }, []);
 
   async function inspect() {
@@ -71,6 +76,7 @@ export function ProductCopyPanel() {
               <div className="rounded-lg border border-border bg-white px-3 py-2 text-xs text-muted"><ShieldCheck className="mr-1 inline h-3.5 w-3.5 text-emerald-600" />当前仅生成草稿，不自动上架</div>
             </div>
           </div>
+          {authMessage ? <p className="mt-4 rounded-lg bg-brand-soft px-3 py-2 text-sm text-brand">{authMessage}</p> : null}
         </div>
 
         <div className="space-y-4 p-6">
@@ -106,7 +112,7 @@ export function ProductCopyPanel() {
           </div>
           <div className="flex flex-wrap items-center gap-3 border-t border-border pt-4">
             <Button onClick={saveDraft}><CheckCircle2 className="h-4 w-4" />保存本机草稿</Button>
-            <span className="text-xs text-muted">阿里授权状态：{connected ? <span className="text-emerald-700">已连接</span> : <a className="text-brand" href="/api/alibaba/oauth/start">未连接，先授权</a>}</span>
+            <span className="text-xs text-muted">阿里授权状态：{connected ? <span className="text-emerald-700">已连接</span> : <a className="text-brand" href="/api/alibaba/oauth/start?returnTo=%2Fproduct-copy">未连接，点击国际站登录授权</a>}</span>
             {status === "saved" ? <span className="text-sm text-emerald-700">{message}</span> : null}
           </div>
         </Card>

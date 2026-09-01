@@ -2,6 +2,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 
 export const ALIBABA_STATE_COOKIE = "alibaba_oauth_state";
 export const ALIBABA_SESSION_COOKIE = "alibaba_session";
+export const ALIBABA_RETURN_TO_COOKIE = "alibaba_oauth_return_to";
 export const ALIBABA_CALLBACK_PATH = "/api/alibaba/oauth/callback";
 
 type StringMap = Record<string, string>;
@@ -44,11 +45,9 @@ export function buildAlibabaAuthorizeUrl(state: string): string {
   url.searchParams.set("state", state);
   url.searchParams.set("view", "web");
   url.searchParams.set("sp", "icbu");
-  // Alibaba's ICBU OAuth flow can return to the account selector without
-  // issuing a code when the existing browser session is only partially
-  // authenticated. The documented force_login flag makes the user complete
-  // a fresh seller login before showing the authorization page.
-  if (process.env.ALIBABA_FORCE_LOGIN !== "false") {
+  // Do not force a fresh login by default. For ICBU seller accounts this can
+  // send an already-authenticated user back through the account selector.
+  if (process.env.ALIBABA_FORCE_LOGIN === "true") {
     url.searchParams.set("force_login", "true");
   }
   if (process.env.ALIBABA_FORCE_AUTH === "true") {
