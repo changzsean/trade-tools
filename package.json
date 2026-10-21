@@ -1,33 +1,36 @@
 {
-  "name": "trademind",
-  "version": "0.1.0",
+  "name": "aihot",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "industry",
+    "site",
+    "modules/*"
+  ],
+  "engines": {
+    "node": ">=24.11"
   },
-  "dependencies": {
-    "@supabase/supabase-js": "^2.58.0",
-    "@radix-ui/react-slot": "^1.3.0",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "lucide-react": "^1.23.0",
-    "next": "^15.5.9",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "tailwind-merge": "^3.6.0"
+  "overrides": {
+    "fflate": "0.7.5"
+  },
+  "scripts": {
+    "db:migrate": "node --env-file-if-exists=.env scripts/migrate.ts",
+    "dev:api": "npm run dev -w @aihot/api",
+    "dev:worker": "npm run dev -w @aihot/worker",
+    "dev:web": "npm run dev -w @aihot/web",
+    "typecheck": "tsc -p packages/contracts && tsc -p packages/backend && tsc -p apps/api && tsc -p apps/worker && tsc -p tests && tsc -p modules && npm run typecheck -w @aihot/web",
+    "test": "node --test-global-setup=tests/databases.ts --import ./tests/databases.ts --test --test-concurrency=6 --test-timeout=120000 \"tests/*.test.ts\" \"modules/*/tests/*.test.ts\"",
+    "test:standalone": "node --import ./tests/standalone.ts --test --test-concurrency=6 --test-timeout=120000 \"tests/*.standalone.test.ts\" \"modules/*/tests/*.standalone.test.ts\""
   },
   "devDependencies": {
-    "@babel/core": "^7.29.7",
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "^16.2.10",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "@modelcontextprotocol/client": "2.2.0",
+    "@playwright/test": "1.61.1",
+    "@types/node": "26.6.3",
+    "@types/sanitize-html": "2.16.1",
+    "@types/turndown": "5.0.6",
+    "opentype.js": "1.3.4",
+    "typescript": "7.0.2"
   }
 }

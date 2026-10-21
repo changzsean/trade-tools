@@ -1,0 +1,275 @@
+{
+  "$comment": "MEEKA 初始信源：AI官方、贸易机构和跨境平台。均仅展示摘要与原文链接；首次回填各4条。存量库需在后台停用旧信源。",
+  "sources": [
+    {
+      "id": "rss-openai-news",
+      "name": "OpenAI News",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://openai.com/news/rss.xml",
+        "_aihot": {
+          "initialBackfillLimit": 4
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": "openai",
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-google-deepmind",
+      "name": "Google DeepMind",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://deepmind.google/blog/rss.xml",
+        "_aihot": {
+          "initialBackfillLimit": 4
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": "google",
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-hugging-face",
+      "name": "Hugging Face Blog",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://huggingface.co/blog/feed.xml",
+        "_aihot": {
+          "initialBackfillLimit": 4
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": "hugging-face",
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方",
+        "开源"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": false
+    },
+    {
+      "id": "rss-microsoft-research",
+      "name": "Microsoft Research",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://www.microsoft.com/en-us/research/feed/",
+        "_aihot": {
+          "initialBackfillLimit": 4
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": "microsoft",
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方",
+        "研究"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-aws-ml",
+      "name": "AWS Machine Learning Blog",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://aws.amazon.com/blogs/machine-learning/feed/",
+        "_aihot": {
+          "initialBackfillLimit": 4
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": "amazon",
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方",
+        "教程"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-simon-willison",
+      "name": "Simon Willison",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://simonwillison.net/atom/everything/",
+        "_aihot": {
+          "initialBackfillLimit": 4
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "个人"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-wto-news",
+      "name": "WTO · 国际贸易动态",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://www.wto.org/library/rss/latest_news_e.xml",
+        "_aihot": {
+          "initialBackfillLimit": 4
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": "wto",
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方",
+        "外贸"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-mofcom-news",
+      "name": "商务部 · 新闻与政策",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.mofcom.gov.cn/",
+        "parseMode": "html",
+        "itemSelector": "li:has(a.prolink[href*=\"/xwfb/\"])",
+        "linkSelector": "a.prolink",
+        "titleSelector": "a.prolink",
+        "allowUrlPrefixes": [
+          "https://www.mofcom.gov.cn/xwfb/"
+        ],
+        "publishedAtUtcOffset": "+08:00",
+        "detail": {
+          "publishedAtSelector": "meta[name=\"PubDate\"]",
+          "maxFetches": 12
+        },
+        "_aihot": {
+          "initialBackfillLimit": 4
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": "mofcom",
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方",
+        "外贸",
+        "政策"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-customs-news",
+      "name": "海关总署 · 今日海关",
+      "kind": "web_list",
+      "config": {
+        "url": "http://www.customs.gov.cn/customs/xwfb34/302425/index.html",
+        "parseMode": "html",
+        "itemSelector": ".news_list > li",
+        "linkSelector": "a",
+        "titleSelector": "a",
+        "publishedAtSelector": "span",
+        "publishedAtUtcOffset": "+08:00",
+        "allowUrlPrefixes": [
+          "http://www.customs.gov.cn/customs/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 4
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": "customs",
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方",
+        "外贸",
+        "海关"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": false
+    },
+    {
+      "id": "rss-amazon-innovation",
+      "name": "Amazon · 业务与创新",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://www.aboutamazon.com/news/innovation-at-amazon.rss",
+        "_aihot": {
+          "initialBackfillLimit": 4
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": "amazon",
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方",
+        "跨境电商",
+        "AI"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-shopify-blog",
+      "name": "Shopify · 电商方法与案例",
+      "kind": "web_list",
+      "config": {
+        "url": "https://www.shopify.com/blog/latest",
+        "parseMode": "html",
+        "itemSelector": "a[href^=\"/blog/\"]:not(:has(img)):not([data-secondary-nav-tier]):not([href=\"/blog/\"])",
+        "allowUrlPrefixes": [
+          "https://www.shopify.com/blog/"
+        ],
+        "denyUrlPrefixes": [
+          "https://www.shopify.com/blog/topics",
+          "https://www.shopify.com/blog/latest",
+          "https://www.shopify.com/blog/author"
+        ],
+        "detail": {
+          "publishedAtSelector": "meta[itemprop=\"datePublished\"]",
+          "maxFetches": 8
+        },
+        "_aihot": {
+          "initialBackfillLimit": 4
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": "shopify",
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "官方",
+        "跨境电商",
+        "方法",
+        "案例"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    }
+  ]
+}
