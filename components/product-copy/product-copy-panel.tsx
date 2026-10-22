@@ -300,7 +300,7 @@ function ProductCopyRunsPanel() {
       const existingPayload = objectValue(sourceItem?.normalized_payload);
       // Brand is the only field this editor intentionally overwrites. Keep
       // previously collected values when a card did not contain full detail data.
-      const normalizedPayload = { ...existingPayload, brand: product.brand };
+      const normalizedPayload: BatchItem["normalized_payload"] = { ...existingPayload, brand: product.brand };
       if (product.title) normalizedPayload.title = product.title;
       if (product.description) normalizedPayload.description = product.description;
       if (product.keywords.length) normalizedPayload.keywords = product.keywords;
@@ -425,3 +425,4 @@ function ProductImage({ src }: { src: string }) {
   // eslint-disable-next-line @next/next/no-img-element
   return <img src={src} alt="来源商品图片" className="aspect-square rounded-lg border border-border object-cover" />;
 }
+

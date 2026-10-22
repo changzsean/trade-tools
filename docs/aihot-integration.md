@@ -39,6 +39,8 @@ npm test
 node scripts/smoke.ts --base https://<独立热点站预览地址>
 ```
 
+新增门户的本地 npm run typecheck、npm test（5 项）及 npm run build 均通过，原站主要入口与新栏目共 11 条 HTTP 检查通过。构建前发现原站搬品面板的 normalizedPayload 只被推断为 brand，补上现有 BatchItem 数据结构的类型标注后通过，运行行为未变。
+
 根目录测试覆盖栏目筛选、来源链接、故障状态及 HTTP 边界。AIHOT 原有完整测试在整站独立版本中曾 935 项通过，smoke 通过；不能用那次结果代替新增 Next.js 栏目的构建和生产验证。
 
 先验证分支预览中的原首页、社区、资讯列表/搜索/分页、详情、热点和日报及手机导航，再发布门户项目。先前源码上传只产生分支，不等于已经发布；正式地址仍需部署成功才能出现新栏目。
