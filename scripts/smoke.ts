@@ -1,0 +1,33 @@
+// Portal smoke checks. The complete engine checks remain in aihot/scripts/smoke.ts.
+const baseAt = process.argv.indexOf("--base");
+const base = baseAt >= 0 ? process.argv[baseAt + 1] : "http://localhost:3000";
+if (!base || !/^https?:\/\//.test(base)) throw new Error("Use --base http(s)://host");
+const checks = [
+  ["/", ["社区互动", 'href="/aihot"']],
+  ["/community/feed", ["MEEKA"]],
+  ["/resources", ["MEEKA"]],
+  ["/growth", ["MEEKA"]],
+  ["/lab", ["MEEKA"]],
+  ["/workspace", ["MEEKA"]],
+  ["/aihot", ["AI与外贸资讯", "AI动态", "AI方法", "AI+外贸案例", "外贸动态", "市场机会", "新产品"]],
+  ["/aihot?category=ai-trade", ["AI+外贸案例"]],
+  ["/aihot?view=hot", ["热点榜"]],
+  ["/aihot?view=daily", ["每日简报"]],
+] as const;
+
+let failed = 0;
+for (const [route, expected] of checks) {
+  try {
+    const response = await fetch(new URL(route, base), { redirect: "error", signal: AbortSignal.timeout(15_000) });
+    const html = await response.text();
+    if (response.status !== 200 || expected.some(text => !html.includes(text))) throw new Error(`HTTP ${response.status} or missing page content`);
+    console.log(`PASS ${route}`);
+  } catch (error) {
+    failed += 1;
+    console.error(`FAIL ${route}: ${error instanceof Error ? error.message : "request failed"}`);
+  }
+}
+if (failed) process.exitCode = 1;
+else console.log("All portal smoke checks passed.");
+
+export {};
