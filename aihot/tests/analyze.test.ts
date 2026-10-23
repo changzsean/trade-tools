@@ -56,7 +56,8 @@ const provider = await stub((_hit, req) => {
   }
   if (step === "understand") {
     if (marker === "SENSITIVE") return new Reply(400, { contentFilter: [{ level: 1, role: "user" }], error: { code: "1301", message: "系统检测到输入或生成内容可能包含不安全或敏感内容" } });
-    return answer({ itemType: "model_release", authorRole: "principal", tags: ["模型发布", "开源", "Agent", "不存在的标签"], editorialJudgment: `理由 ${marker}`, titleZh: `理解标题 ${marker}`, summaryZh: `理解摘要 ${marker}。第二句补充一个关键数字。` });
+    return answer({ itemType: "model_release", authorRole: "principal", tags: ["模型发布", "开源", "Agent", "不存在的标签"], editorialJudgment: `理由 ${marker}`, titleZh: `理解标题 ${marker}`, summaryZh: `理解摘要 ${marker}。第二句补充一个关键数字。`,
+      ...(marker === "CLEAR" ? { bodyZh: "## 编辑部观察\n\n可独立阅读的编辑稿，和列表摘要分开。" } : {}) });
   }
   if (step === "structure") return answer({ category: "ai-models", tags: ["模型发布", "推理"], subjects: ["anthropic", "unknown-co"], scope: "single", fact: { title: `事实 ${marker}`, subject: "某公司", action: "发布", object: "模型", occurredAt: null, evidence: "a lab released a model", conditions: [] } });
   return answer(`title_zh: 翻译标题 ${marker}\nsummary_zh: 翻译摘要 ${marker}。第二句补充影响。`);
@@ -98,6 +99,7 @@ test("a selected item: prefilter, two scores, the content understanding and the 
   assert.deepEqual(r.tags, ["模型发布", "推理", "Anthropic"], "category and tags come from the same structural judgement, plus the verified subject tag");
   assert.deepEqual(r.subjects, ["anthropic"]);
   assert.deepEqual([r.output.writer, r.output.itemType, r.output.prefilter.label, r.output.fact.title], ["understand", "model_release", "PASS", "事实 CLEAR"]);
+  assert.equal(r.output.editorialBody, "## 编辑部观察\n\n可独立阅读的编辑稿，和列表摘要分开。", "the same paid writing response stores the editorial body without another call");
   assert.equal(r.output.scope, "single");
   assert.equal(r.output.fact.evidence, "a lab released a model");
   const score = requests.find((q) => q.marker === "CLEAR" && q.step === "score")!;

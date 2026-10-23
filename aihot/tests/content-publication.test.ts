@@ -66,6 +66,26 @@ async function report(sourceId: string, group: Awaited<ReturnType<typeof story>>
   return id;
 }
 
+test("editorial body uses current material, audited edits and publication visibility", async () => {
+  const s = await source("editorial-reading", "T1");
+  const g = await story();
+  const id = await report(s, g, { title: "可独立阅读的站内编辑稿", hours: 1, selected: false });
+  await sql`UPDATE analyses SET output=jsonb_set(output,'{editorialBody}',to_jsonb('模型编辑稿'::text)) WHERE article_id=${id}`;
+  let detail = await loadItemDetail(id);
+  assert.equal(detail.kind === "found" && detail.item.editorialBody, "模型编辑稿");
+  await overrideFields(id, { fields: { editorialBody: { revision: 1, text: "核对后的编辑稿" } }, version: 0, reason: "reviewed copy" }, "test");
+  detail = await loadItemDetail(id);
+  assert.equal(detail.kind === "found" && detail.item.editorialBody, "核对后的编辑稿");
+  assert.equal((await sql`SELECT 1 FROM audit_log WHERE subject=${`content:${id}`} AND action='content.override'`).length, 1);
+  await assert.rejects(overrideFields(id, { fields: { editorialBody: { revision: 2, text: "错误版本" } }, version: 1, reason: "stale" }, "test"), /原始资料已更新/);
+  await sql`UPDATE articles SET revision=2 WHERE id=${id}`;
+  detail = await loadItemDetail(id);
+  assert.equal(detail.kind === "found" && detail.item.editorialBody, null, "neither an old manual draft nor an old model draft remains public");
+  await setVisibility(id, { visibility: "summary-only", version: 1, reason: "restricted" }, "test");
+  detail = await loadItemDetail(id);
+  assert.equal(detail.kind === "found" && detail.item.editorialBody, undefined);
+});
+
 test("source tier and event ownership are separate; mentions of an entity do not establish authority", () => {
   const row = { body_mode: "full" as const, score: 70, timeline_at: now, source_tier: "T2", publisher_role: null, owner_entity_id: null, fact_subject: "OpenAI" };
   const org = { ...row, source_tier: "T1_5", publisher_role: "organization", owner_entity_id: "openai", score: 60 };
