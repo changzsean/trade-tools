@@ -2,7 +2,7 @@
 // to the existing object store (Tencent COS through its S3-compatible API, AWS Signature V4) under
 // daily/ (Sundays also weekly/, the 1st also monthly/). A few local copies are kept.
 import { execFile } from "node:child_process";
-import { createHash, createHmac } from "node:crypto";
+import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
 import { mkdir, readdir, rm, stat } from "node:fs/promises";
 import path from "node:path";
@@ -10,6 +10,8 @@ import { promisify } from "node:util";
 import { beijingDate, beijingWeekday } from "@aihot/contracts/time";
 import { config } from "../config.ts";
 import { sql } from "../db.ts";
+import { materializeUploadsForBackup } from "../media/stored-files.ts";
+import { signV4 } from "../providers/s3.ts";
 import { screenshotsForwarded } from "./feedback.ts";
 
 const run = promisify(execFile);
@@ -37,29 +39,6 @@ function store(): Store | null {
   if (!secretId || !secretKey || !bucket || !region) return null;
   const domain = process.env.DB_BACKUP_STORE_DOMAIN;
   return { secretId, secretKey, bucket, region, endpoint: domain ? `https://${domain.replace(/^https?:\/\//, "")}` : `https://${bucket}.cos.${region}.myqcloud.com` };
-}
-
-const hex = (b: Buffer | string) => createHash("sha256").update(b).digest("hex");
-const hmac = (key: Buffer | string, data: string) => createHmac("sha256", key).update(data).digest();
-
-/** AWS Signature V4 headers for one S3 request. */
-function signV4(opts: {
-  method: string; url: URL; region: string; accessKey: string; secretKey: string; payloadHash: string; headers?: Record<string, string>;
-}): Record<string, string> {
-  const amzDate = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-  const day = amzDate.slice(0, 8);
-  const service = "s3";
-  const headers: Record<string, string> = { ...(opts.headers ?? {}), host: opts.url.host, "x-amz-content-sha256": opts.payloadHash, "x-amz-date": amzDate };
-  const names = Object.keys(headers).map((h) => h.toLowerCase()).sort();
-  const lower = Object.fromEntries(Object.entries(headers).map(([k, v]) => [k.toLowerCase(), String(v).trim()]));
-  const canonicalQuery = [...opts.url.searchParams.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join("&");
-  const canonicalPath = opts.url.pathname.split("/").map((s) => encodeURIComponent(decodeURIComponent(s))).join("/");
-  const canonical = [opts.method, canonicalPath, canonicalQuery, names.map((n) => `${n}:${lower[n]}\n`).join(""), names.join(";"), opts.payloadHash].join("\n");
-  const scope = `${day}/${opts.region}/${service}/aws4_request`;
-  const toSign = ["AWS4-HMAC-SHA256", amzDate, scope, hex(canonical)].join("\n");
-  const kSigning = hmac(hmac(hmac(hmac(`AWS4${opts.secretKey}`, day), opts.region), service), "aws4_request");
-  const signature = createHmac("sha256", kSigning).update(toSign).digest("hex");
-  return { ...headers, authorization: `AWS4-HMAC-SHA256 Credential=${opts.accessKey}/${scope}, SignedHeaders=${names.join(";")}, Signature=${signature}` };
 }
 
 async function fileSha256(file: string): Promise<string> {
@@ -105,11 +84,12 @@ export async function runBackup(now = new Date()) {
   const files = path.join(dir, `${name}-files-${stamp}.tar.gz`);
   // An empty archive only when there is nothing to keep. A failure to read or pack existing files is
   // tried once more and otherwise reported: the database dump still ships, but the run fails.
+  const originals = await materializeUploadsForBackup(config.dataDir);
   const kept: string[] = [];
   // Feedback screenshots only waiting to be forwarded are not kept (once forwarded, only the Feishu image
   // key remains). Without the internal chat they stay here for good, referred to as local: files.
   for (const d of screenshotsForwarded() ? ["uploads"] : ["uploads", "feedback-screenshots"]) {
-    const info = await stat(path.join(config.dataDir, d)).catch((error: NodeJS.ErrnoException) => {
+    const info = await stat(path.join(originals, d)).catch((error: NodeJS.ErrnoException) => {
       if (error.code === "ENOENT") return null;
       throw error;
     });
@@ -120,7 +100,7 @@ export async function runBackup(now = new Date()) {
   let filesError: string | null = null;
   if (!kept.length) await run("tar", ["-czf", files, "-T", "/dev/null"]);
   else {
-    const pack = () => run("tar", ["-czf", files, "-C", config.dataDir, ...kept]);
+    const pack = () => run("tar", ["-czf", files, "-C", originals, ...kept]);
     await pack().catch(() => pack()).catch((error: unknown) => {
       // tar's own words: the message starts with the whole command line, which can fill the excerpt.
       const stderr = (error as { stderr?: unknown })?.stderr;

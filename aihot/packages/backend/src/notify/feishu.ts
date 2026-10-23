@@ -2,7 +2,7 @@
 // feedback chat, operations alert chat, image upload). Content groups use custom bot webhooks.
 // Alerts and feedback never go to content groups, and content never goes to internal chats.
 // Everything outward is off unless explicitly enabled (development and tests stay silent).
-import { readFile, unlink } from "node:fs/promises";
+import { readStoredFile, deleteStoredFile } from "../media/stored-files.ts";
 import path from "node:path";
 import { beijingStamp } from "@aihot/contracts/time";
 import { config, credential } from "../config.ts";
@@ -135,7 +135,7 @@ async function screenshotFor(fb: { id: number; screenshot_key: string | null; cr
   if (key === "gone:missing") return { imageKey: null, note: "（截图文件已不存在）" };
   if (!key?.startsWith("local:")) return { imageKey: null, note: null };
   const file = path.join(config.dataDir, "feedback-screenshots", key.slice("local:".length));
-  const data = await readFile(file).catch(() => null);
+  const data = await readStoredFile("feedback-screenshots", path.basename(file));
   if (!data) {
     await sql`UPDATE feedback SET screenshot_key = 'gone:missing' WHERE id = ${fb.id}`;
     return { imageKey: null, note: "（截图文件已不存在）" };
@@ -143,14 +143,14 @@ async function screenshotFor(fb: { id: number; screenshot_key: string | null; cr
   try {
     const imageKey = await uploadImage(data, path.basename(file));
     await sql`UPDATE feedback SET screenshot_key = ${`feishu:${imageKey}`} WHERE id = ${fb.id}`;
-    await unlink(file).catch(() => {});
+    await deleteStoredFile("feedback-screenshots", path.basename(file));
     return { imageKey, note: null };
   } catch (error) {
     // The forwarding sweep tries again; after a day, or at once when Feishu refuses the picture itself,
     // the text goes without it.
     if (!(error instanceof ImageRefusedError) && Date.now() - fb.created_at.getTime() < SCREENSHOT_GIVE_UP_MS) throw error;
     await sql`UPDATE feedback SET screenshot_key = 'gone:upload' WHERE id = ${fb.id}`;
-    await unlink(file).catch(() => {});
+    await deleteStoredFile("feedback-screenshots", path.basename(file));
     return { imageKey: null, note: "（截图未能上传，已删除）" };
   }
 }

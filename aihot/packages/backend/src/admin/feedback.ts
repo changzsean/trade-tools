@@ -1,7 +1,7 @@
 // Feedback handling: list, status and note, per-source bans, and deletion on request
 // (privacy notice: feedback material is removed once handling ends or when the sender asks).
 import type { AdminFeedback, BeforeJson } from "@aihot/contracts/admin";
-import { unlink } from "node:fs/promises";
+import { deleteStoredFile } from "../media/stored-files.ts";
 import path from "node:path";
 import { config } from "../config.ts";
 import { sql } from "../db.ts";
@@ -96,7 +96,7 @@ export async function eraseFeedback(id: number, reason: string, actor: string) {
   const [row] = await sql<{ screenshot_key: string | null }[]>`SELECT screenshot_key FROM feedback WHERE id = ${id}`;
   if (!row) return null;
   const file = screenshotPath(row.screenshot_key);
-  if (file) await unlink(file).catch(() => {});
+  if (file) await deleteStoredFile("feedback-screenshots", path.basename(file));
   await sql`UPDATE feedback SET content = '（已按要求删除）', email = NULL, page_url = NULL, screenshot_key = NULL, updated_at = now() WHERE id = ${id}`;
   await audit(actor, "feedback.erase", `feedback:${id}`, reason, null, null);
   return { erased: true };

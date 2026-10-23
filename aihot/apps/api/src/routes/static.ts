@@ -1,3 +1,4 @@
+import { readStoredFile } from "@aihot/backend/media/stored-files";
 // Discovery and static files: sitemap, llms.txt, the site's public files (robots.txt, security.txt, the web
 // manifest, the OpenAPI document), icons, the IndexNow key and the about page's contact codes.
 import { readFile, stat } from "node:fs/promises";
@@ -157,8 +158,9 @@ export function registerStatic(app: FastifyInstance) {
     if (!/^[\w.-]+\.(png|jpg|jpeg|webp)$/.test(file)) return reply.code(404).send();
     const hashed = /-[0-9a-f]{8}\./.test(file);
     const cacheControl = hashed ? "public, max-age=31536000, immutable" : "public, max-age=3600";
-    const uploaded = path.join(config.dataDir, "uploads", file);
-    const target = (await stat(uploaded).then(() => true, () => false)) ? uploaded : path.join(BRAND, "contact", file);
+    const uploaded = await readStoredFile("uploads", file);
+    if (uploaded) return reply.header("Cache-Control", cacheControl).type(/\.png$/.test(file) ? "image/png" : /\.webp$/.test(file) ? "image/webp" : "image/jpeg").send(uploaded);
+    const target = path.join(BRAND, "contact", file);
     return sendFile(req, reply, target, { cacheControl });
   });
 }

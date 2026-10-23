@@ -4,9 +4,8 @@
 // limits, temporary bans and exact-submission retry deduplication. Confirmed email abuse can be
 // paused by a moderator; unverified contact details never link automatic bans across sources.
 import { createHash, createHmac, randomUUID } from "node:crypto";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
-import path from "node:path";
 import sharp from "sharp";
+import { deleteStoredFile, writeStoredFile } from "../media/stored-files.ts";
 import { config, credential } from "../config.ts";
 import { sql, type Db } from "../db.ts";
 import { audit } from "../audit.ts";
@@ -147,10 +146,8 @@ export async function submitFeedback(input: FeedbackInput): Promise<{ id: number
       let screenshotKey: string | null = null;
       if (input.screenshot && mime) {
         const name = `${randomUUID()}.${mime.split("/")[1]}`;
-        const dir = path.join(config.dataDir, "feedback-screenshots");
-        await mkdir(dir, { recursive: true });
-        file = path.join(dir, name);
-        await writeFile(file, input.screenshot.data);
+        file = name;
+        await writeStoredFile("feedback-screenshots", name, input.screenshot.data);
         screenshotKey = `local:${name}`;
       }
       const [row] = await tx<{ id: number }[]>`
@@ -166,7 +163,7 @@ export async function submitFeedback(input: FeedbackInput): Promise<{ id: number
     if (result.fresh) void forwardFeedbackToFeishu(result.id).catch(() => {});
     return { id: result.id };
   } catch (error) {
-    if (file) await unlink(file).catch(() => {});
+    if (file) await deleteStoredFile("feedback-screenshots", file).catch(() => {});
     throw error;
   }
 }

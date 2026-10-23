@@ -2,10 +2,9 @@
 // (switching a group on records enabled_at so older content is never back-filled) and per-service
 // request budgets (the circuit breaker paid calls check before sending).
 import type { AdminBudget, AdminNotifyTarget, AdminSettings, BeforeJson } from "@aihot/contracts/admin";
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
 import sharp from "sharp";
 import { config } from "../config.ts";
+import { writeStoredFile } from "../media/stored-files.ts";
 import { sql } from "../db.ts";
 import { sha256 } from "../lib/ids.ts";
 import { loadContact, type ContactSettings } from "../site/contact.ts";
@@ -21,9 +20,7 @@ export async function replaceContactQr(input: { slot: keyof ContactSettings; dat
   if ((meta.width ?? 0) < 120 || (meta.height ?? 0) < 120) throw new Error("图片太小，二维码可能扫不出来");
   const ext = meta.format === "jpeg" ? "jpg" : meta.format!;
   const name = `qr-${input.slot === "wechatQr" ? "wechat" : "feishu"}-${sha256(input.data).slice(0, 8)}.${ext}`;
-  const dir = path.join(config.dataDir, "uploads");
-  await mkdir(dir, { recursive: true });
-  await writeFile(path.join(dir, name), input.data);
+  await writeStoredFile("uploads", name, input.data);
   const before = await loadContact();
   const next = { ...before, [input.slot]: `/contact/${name}` };
   await sql`INSERT INTO settings (key, value, updated_by) VALUES ('contact_qr', ${sql.json(next)}, ${actor})

@@ -1,6 +1,7 @@
 // /api/admin/*: queries are GET, creation POST, edits PATCH, business commands POST.
 // Every route goes through adminHandler (session + CSRF); manual changes are audited in the modules.
-import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { readStoredFile } from "@aihot/backend/media/stored-files";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import type { AdminSourceUpdate } from "@aihot/contracts/admin";
 import { actorOf } from "@aihot/backend/admin/auth";
@@ -73,7 +74,7 @@ export function registerAdmin(app: FastifyInstance) {
   app.post("/api/admin/feedback/:id/erase", adminHandler(async (req, reply, admin) => orNotFound(req, reply, await eraseFeedback(Number(param(req, "id")), String(body(req).reason ?? ""), actorOf(admin)))));
   app.get("/api/admin/feedback/:id/screenshot", adminHandler(async (req, reply) => {
     const file = await feedbackScreenshot(Number(param(req, "id")));
-    const data = file ? await readFile(file).catch(() => null) : null;
+    const data = file ? await readStoredFile("feedback-screenshots", path.basename(file)) : null;
     if (!data) return notFound(req, reply);
     const ext = file!.split(".").pop();
     return reply.type(ext === "jpeg" || ext === "jpg" ? "image/jpeg" : `image/${ext}`).send(data);

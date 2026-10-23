@@ -1,0 +1,40 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": [
+    "iad1"
+  ],
+  "daemons": {
+    "worker": {
+      "root": "backend",
+      "entrypoint": "Dockerfile.vercel",
+      "command": [
+        "node",
+        "scripts/cloud-worker.ts"
+      ],
+      "instances": {
+        "iad1": 1
+      },
+      "resources": {
+        "requests": {
+          "memory": "1Gi"
+        }
+      },
+      "terminationGracePeriodSeconds": 120
+    }
+  },
+  "services": {
+    "api": {
+      "root": "backend",
+      "runtime": "container",
+      "entrypoint": "Dockerfile.vercel"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "api"
+      }
+    }
+  ]
+}
