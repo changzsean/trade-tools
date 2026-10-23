@@ -1,9 +1,25 @@
 import assert from "node:assert/strict";
 import { after, test } from "node:test";
-import { newsFilters, newsHref, readNews, safeSourceUrl, validHot, validPool } from "../lib/aihot/api.ts";
+import { newsFilters, newsHref, readNews, safeSourceUrl, validDetail, validHot, validPool } from "../lib/aihot/api.ts";
+import { editorialBlocks } from "../lib/aihot/editorial.ts";
 
 const originalFetch = globalThis.fetch;
 const originalBase = process.env.AIHOT_API_BASE_URL;
+
+test("editorial paragraphs and lists stay plain text, with no HTML or executable links", () => {
+  assert.deepEqual(editorialBlocks("## 业务影响\n\n事实和分析。\n\n- 核对价格\n- 保留人工审核"), [
+    { kind: "heading", text: "业务影响" }, { kind: "paragraph", text: "事实和分析。" },
+    { kind: "list", text: "", items: ["核对价格", "保留人工审核"] },
+  ]);
+  assert.deepEqual(editorialBlocks('<script>alert(1)</script>\n\n[危险链接](javascript:alert(1))'), [
+    { kind: "paragraph", text: '<script>alert(1)</script>' }, { kind: "paragraph", text: '[危险链接](javascript:alert(1))' },
+  ]);
+  const detail = { id: "example", title: "标题", source: { name: "来源" }, summary: "摘要", reason: null,
+    publishedAt: null, timelineAt: "2026-10-23T00:00:00Z", selected: false, originalTitle: null, links: { original: "https://example.com" } };
+  assert.equal(validDetail({ ...detail, editorialBody: "编辑稿", author: "来源作者" }), true);
+  assert.equal(validDetail({ ...detail, editorialBody: { html: "<script>" } }), false);
+  assert.equal(validDetail({ ...detail, editorialBody: "x".repeat(12001) }), false);
+});
 after(() => { globalThis.fetch = originalFetch; if (originalBase === undefined) delete process.env.AIHOT_API_BASE_URL; else process.env.AIHOT_API_BASE_URL = originalBase; });
 
 test("filters keep the six configured categories and bound search and paging", () => {

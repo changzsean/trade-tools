@@ -144,6 +144,7 @@ const UnderstandSchema = z.object({
   editorialJudgment: z.string().max(400).catch(""),
   titleZh: z.string().trim().min(1).max(200),
   summaryZh: z.string().trim().min(1).max(4000),
+  bodyZh: z.string().trim().max(12000).catch(""),
 });
 
 const SummarizeSchema = z.object({ titleZh: z.string(), summaryZh: z.string(), bodyZh: z.string() });
@@ -202,6 +203,7 @@ export interface AnalysisRun {
     model: string | null;
     titleZh: string;
     summaryZh: string;
+    bodyZh?: string;
     reasonZh: string | null;
     itemType?: string;
     authorRole?: string;
@@ -362,6 +364,7 @@ export async function runUnderstand(a: AnalyzeInputArticle, opts: StepOpts = {})
   const copy = finalizeCopy(translateInputOf(a), { titleZh: d.titleZh, summaryZh: d.summaryZh });
   return {
     kind: "understand", model: res.model, titleZh: copy.titleZh, summaryZh: copy.summaryZh, reasonZh: d.editorialJudgment.trim() || null,
+    ...(d.bodyZh && copy.identityGuard?.outcome !== "fallback" ? { bodyZh: d.bodyZh } : {}),
     itemType: d.itemType, authorRole: d.authorRole, identityGuard: copy.identityGuard, receiptIds: [res.receiptId], reused: res.reused,
   };
 }
@@ -435,7 +438,7 @@ async function runSummarize(a: AnalyzeInputArticle, opts: StepOpts): Promise<Non
     json: false,
     parse: parseTranslateOutput,
     temperature: 0.2,
-    maxTokens: 2048,
+    maxTokens: 4096,
     attemptTag: tagged(opts.attemptTag, "summarize"),
   });
   const p = res.data;
@@ -445,7 +448,9 @@ async function runSummarize(a: AnalyzeInputArticle, opts: StepOpts): Promise<Non
       ? { titleZh: p.titleZh, summaryZh: p.summaryZh || p.bodyZh }
       : { titleZh: p.titleZh || (looksZh(t.title) ? t.title : ""), summaryZh: p.summaryZh };
   const copy = finalizeCopy(t, draft);
-  return { kind: "summarize", model: res.model, titleZh: copy.titleZh, summaryZh: copy.summaryZh, reasonZh: null, identityGuard: copy.identityGuard, receiptIds: [res.receiptId], reused: res.reused };
+  return { kind: "summarize", model: res.model, titleZh: copy.titleZh, summaryZh: copy.summaryZh,
+    ...(!isX && p.bodyZh && copy.identityGuard?.outcome !== "fallback" ? { bodyZh: p.bodyZh } : {}),
+    reasonZh: null, identityGuard: copy.identityGuard, receiptIds: [res.receiptId], reused: res.reused };
 }
 
 /** Only a title, and no displayable original post: nothing to judge until a material revision arrives. */
@@ -568,6 +573,7 @@ export async function analyzeArticle(articleId: string, opts: StepOpts = {}): Pr
     ...(w ? { writer: w.kind, writerModel: w.model, itemType: w.itemType ?? null, authorRole: w.authorRole ?? null } : {}),
     ...(w?.identityGuard?.outcome === "fallback" ? { identityGuard: w.identityGuard } : {}),
     scope: out.scope, fact: out.fact,
+    ...(w?.bodyZh ? { editorialBody: w.bodyZh } : {}),
   };
   const committed = await sql.begin(async (tx) => {
     const [current] = await tx<{ revision: number }[]>`SELECT revision FROM articles WHERE id = ${articleId} FOR UPDATE`;

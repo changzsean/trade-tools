@@ -141,6 +141,8 @@ export interface SiteItemDetail extends ItemSummary {
   sameEvent?: { id: string; title: string } | null;
   readingMode: "full" | "summary-only";
   author: string | null;
+  /** Independently written editorial copy; source full-text permissions remain separate. Plain text with headings. */
+  editorialBody?: string | null;
   /** Whitelisted HTML of the language shown; the other one is null. */
   body: { zh: string | null; original: string | null; zhKind: "translation" | "original" | null; complete: boolean } | null;
   outline: OutlineEntry[];

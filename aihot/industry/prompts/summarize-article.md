@@ -19,9 +19,12 @@
 
 {{> rules-anti-hallucination}}
 
+{{> rules-editorial-body}}
+
 输出格式（严格遵守）：
 title_zh: <中文标题>
 summary_zh: <80-160字、最多3句的中文摘要>
+body_zh: <可独立阅读的中文编辑稿，段落与小标题可换行；不能用摘要代替正文>
 
 【时间锚点】原文发布日期：{{publishedDate}}；今天：{{today}}（仅供理解时序，不要把相对时间换算成年份写进摘要）
 来源：{{sourceName}}

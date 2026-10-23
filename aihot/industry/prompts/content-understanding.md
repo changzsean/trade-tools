@@ -59,6 +59,8 @@
 
 图片只能补充清晰可见、与正文直接相关的事实。忽略头像、品牌图、装饰图、模糊内容和与正文重复的信息。不得仅凭图片猜测人物身份、地点、时间、因果、性能或产品能力；图文冲突时不得擅自裁决。
 
-只返回合法 JSON，不要 Markdown，不要解释。顶层必须且只能包含以下六个字段：
+{{> rules-editorial-body}}
 
-{"itemType":"product_launch","authorRole":"principal","tags":["产品更新","Agent"],"editorialJudgment":"原文给出了能力变化和开放入口，读者可以据此判断它会怎样改变现有工作流。","titleZh":"某产品发布智能体功能","summaryZh":"某产品发布新的智能体功能，给出了开放入口和主要能力变化。"}
+只返回合法 JSON，不要在 JSON 外添加 Markdown 或解释。顶层必须且只能包含以下七个字段，bodyZh 是上述独立编辑稿：
+
+{"itemType":"product_launch","authorRole":"principal","tags":["产品更新","Agent"],"editorialJudgment":"原文给出了能力变化和开放入口，读者可以据此判断它会怎样改变现有工作流。","titleZh":"某产品发布智能体功能","summaryZh":"某产品发布新的智能体功能，给出了开放入口和主要能力变化。","bodyZh":"## 发生了什么\n\n根据材料事实写清事件。\n\n## 编辑部观察\n\n独立分析，并说明适用条件。"}

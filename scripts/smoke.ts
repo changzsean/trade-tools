@@ -30,4 +30,15 @@ for (const [route, expected] of checks) {
 if (failed) process.exitCode = 1;
 else console.log("All portal smoke checks passed.");
 
+if (process.argv.includes("--require-editorial")) {
+  const index = await fetch(new URL("/aihot", base), { signal: AbortSignal.timeout(15_000) }).then(r => r.text());
+  const path = index.match(/href="(\/aihot\/items\/[^"?#]+)"/)?.[1];
+  if (!path) throw new Error("No published article to verify editorial reading");
+  const response = await fetch(new URL(path, base), { redirect: "error", signal: AbortSignal.timeout(15_000) });
+  const html = await response.text();
+  if (response.status !== 200 || !html.includes("作者：meeka编辑部") || !html.includes("信息来源：")
+    || html.includes("查看原文") || html.includes("编辑稿正在整理中")) throw new Error("Editorial body, byline or source footer is missing");
+  console.log(`PASS ${path} editorial body, byline and source footer`);
+}
+
 export {};

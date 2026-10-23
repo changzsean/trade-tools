@@ -295,6 +295,7 @@ const FieldsSchema = z
     score: z.number().min(0).max(100).nullable(),
     selected: z.boolean(),
     silent: z.boolean(),
+    editorialBody: z.object({ revision: z.number().int().positive(), text: z.string().trim().min(1).max(12000) }).strict(),
   })
   .partial()
   .strict();
@@ -306,6 +307,10 @@ export async function overrideFields(id: string, input: { fields: unknown; clear
   const published = await sql.begin(async (tx) => {
     const before = await overrideRow(id, tx);
     if (before.version !== input.version) throw new Conflict(STALE);
+    if (fields.editorialBody) {
+      const [article] = await tx<{ revision: number }[]>`SELECT revision FROM articles WHERE id = ${id} FOR UPDATE`;
+      if (article?.revision !== fields.editorialBody.revision) throw new Conflict("原始资料已更新，请重新核对编辑稿");
+    }
     const next: Record<string, unknown> = { ...before.fields, ...fields };
     for (const k of input.clear ?? []) delete next[k];
     await tx`
