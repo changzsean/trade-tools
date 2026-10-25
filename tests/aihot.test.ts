@@ -23,8 +23,10 @@ test("editorial paragraphs and lists stay plain text, with no HTML or executable
 after(() => { globalThis.fetch = originalFetch; if (originalBase === undefined) delete process.env.AIHOT_API_BASE_URL; else process.env.AIHOT_API_BASE_URL = originalBase; });
 
 test("filters keep the six configured categories and bound search and paging", () => {
-  assert.deepEqual(newsFilters({ category: "ai-trade", page: "900", q: " x ", view: "hot" }), { category: "ai-trade", page: 50, q: "x", view: "hot" });
-  assert.deepEqual(newsFilters({ category: "unknown", view: ["hot"], page: "-4" }), { category: "", view: "latest", page: 1, q: "" });
+  assert.deepEqual(newsFilters({ category: "ai-trade", page: "900", q: " x ", view: "hot" }), { category: "ai-trade", page: 50, order: "updated", q: "x", view: "hot" });
+  assert.deepEqual(newsFilters({ category: "unknown", view: ["hot"], page: "-4" }), { category: "", view: "latest", page: 1, order: "updated", q: "" });
+  assert.equal(newsFilters({ order: "source" }).order, "source");
+  assert.equal(newsHref({ order: "source", category: "ai-trade", page: 2 }), "/aihot?category=ai-trade&order=source&page=2");
   assert.equal(newsFilters({ q: "a".repeat(201) }).q.length, 200);
   assert.equal(newsHref({ category: "ai-trade", q: "客户 开发", page: 2 }), "/aihot?category=ai-trade&q=%E5%AE%A2%E6%88%B7+%E5%BC%80%E5%8F%91&page=2");
 });

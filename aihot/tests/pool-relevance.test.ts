@@ -81,6 +81,30 @@ test("search terms split where Han meets a Latin word, not before digits", () =>
   assert.deepEqual(searchTerms("10月"), ["10月"]);
 });
 
+test("site update ordering brings delayed editions forward without changing source dates or release rules", async () => {
+  const updateTag = `${T}-updates`;
+  await add("update-delayed", "siteupdate", "", { age: 3600, tags: [updateTag] });
+  await add("update-source-new", "siteupdate", "", { age: 60, tags: [updateTag] });
+  await add("update-withdrawn", "siteupdate", "", { tags: [updateTag], visibility: "withdrawn" });
+  await add("update-unreleased", "siteupdate", "", { tags: [updateTag], future: true });
+  const recentUpdate = new Date(+now - 10_000);
+  const oldSourceDate = new Date(+now - 86_400_000);
+  await sql`UPDATE publications SET updated_at = ${recentUpdate}, published_at = ${oldSourceDate}
+    WHERE article_id = ${id("update-delayed")}`;
+  await sql`UPDATE publications SET updated_at = ${new Date(+now - 120_000)}
+    WHERE article_id = ${id("update-source-new")}`;
+  const filters = { channel: "all" as const, category: null, tag: updateTag, now };
+  const bySource = await loadPool(filters);
+  assert.deepEqual(bySource.items.map(item => item.id), ["update-source-new", "update-delayed"].map(id));
+  const byUpdate = await loadPool({ ...filters, order: "updated" });
+  assert.deepEqual(byUpdate.items.map(item => item.id), ["update-delayed", "update-source-new"].map(id));
+  assert.equal(byUpdate.items[0]!.updatedAt, recentUpdate.toISOString());
+  assert.equal(byUpdate.items[0]!.publishedAt, oldSourceDate.toISOString());
+  assert.deepEqual((await loadPool({ ...filters, order: "updated", q: "siteupdate" })).items.map(item => item.id), byUpdate.items.map(item => item.id));
+  const second = await loadPool({ ...filters, order: "updated", page: 2 });
+  assert.deepEqual([second.items, second.total, second.pageCount], [[], 2, 1]);
+});
+
 test("public search needs a plain Latin term to start a word in the body", async () => {
   await add("kv-word", "", "a kv pipeline");
   await add("kv-han", "", "多模态kv系统");

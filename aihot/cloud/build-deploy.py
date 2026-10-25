@@ -14,6 +14,9 @@ for item in root.rglob("*"):
         continue
     if item.name.startswith(".env") or item.name.endswith(".test.ts"):
         continue
+    # Documentation is not runtime input; the Dockerfile fetches the two pinned OG fonts itself.
+    if rel.parts[0] == "docs" or rel.parts[:2] == ("assets", "og-fonts"):
+        continue
     if rel.parts[:2] == ("apps", "web") and rel.as_posix() != "apps/web/package.json":
         continue
     files.append(item)

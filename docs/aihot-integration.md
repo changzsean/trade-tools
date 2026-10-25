@@ -47,6 +47,8 @@ node scripts/smoke.ts --base https://<独立热点站预览地址>
 
 首次运行新资讯处理后台之前，按 `aihot/AGENTS.md` 确认运营主体、联系方式、使用规则及隐私说明。不得以虚构新闻或虚构评分填满栏目。
 
+2026-10-26：门户默认使用 `order=updated` 读取公开资讯池，以本站编辑内容的 `updatedAt` 降序展示。卡片分开展示本站更新日期和来源发布日期；`order=source` 保留原有来源时间视图。后台 `/api/site/pool` 未提供 `order` 时仍按原时间线返回，不改变其他客户端。筛选、搜索和分页在排序之前执行，撤回与延迟发布规则保持有效。原来按后台 `updated_at` 统计的每日更新数不能当作当天来源发文数。
+
 参考文档（2026-10-22 核对）：
 - https://vercel.com/docs/functions/runtimes/container
 - https://vercel.com/docs/daemons/limits

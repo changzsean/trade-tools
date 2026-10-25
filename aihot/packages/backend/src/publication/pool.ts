@@ -124,13 +124,14 @@ const poolTotal = cachedByKey((f: TimelineFilters) => JSON.stringify([f.channel,
 export interface PoolQuery extends TimelineFilters {
   q?: string | null;
   tab?: "time" | "relevance";
+  order?: "timeline" | "updated";
   page?: number;
   now?: Date;
 }
 
 // Identical searches share their read before taking search capacity.
 const searchPool = sharedSearch(
-  (q: PoolQuery) => JSON.stringify([q.channel, q.category, q.tag, q.q, q.tab, q.page]),
+  (q: PoolQuery) => JSON.stringify([q.channel, q.category, q.tag, q.q, q.tab, q.page, q.order]),
   queryPool, (q) => !!q.q?.trim(),
 );
 
@@ -147,6 +148,7 @@ async function queryPool(query: PoolQuery, now: Date): Promise<PoolResponse> {
   const filters = sql`${channelCondition(query.channel)} ${categoryCondition(query.category)} ${tagCondition(query.tag)}`;
   const offset = (page - 1) * POOL_PAGE_SIZE;
   const cap = POOL_MAX_PAGES * POOL_PAGE_SIZE;
+  const ordering = query.order === "updated" ? sql`p.updated_at DESC, p.article_id DESC` : sql`p.timeline_at DESC, p.article_id DESC`;
 
   // Searches go through pool_search (eligible items only): trigram indexes for longer terms, a small
   // table to scan for one- and two-character ones.
@@ -158,9 +160,9 @@ async function queryPool(query: PoolQuery, now: Date): Promise<PoolResponse> {
       const rows = await db<ItemRow[]>`
         WITH page AS (
           SELECT p.article_id FROM publications p WHERE ${listedCondition(now)} ${filters}
-          ORDER BY p.timeline_at DESC, p.article_id DESC LIMIT ${POOL_PAGE_SIZE} OFFSET ${offset})
+          ORDER BY ${ordering} LIMIT ${POOL_PAGE_SIZE} OFFSET ${offset})
         SELECT ${ITEM_COLUMNS} ${ITEM_FROM} WHERE p.article_id IN (SELECT article_id FROM page)
-        ORDER BY p.timeline_at DESC, p.article_id DESC`;
+        ORDER BY ${ordering}`;
       // A fixed clock (tests, replays) never shares cached totals.
       return { rows, total: query.now ? await listedCount(query, now) : await poolTotal(query) };
     }
@@ -214,9 +216,9 @@ async function queryPool(query: PoolQuery, now: Date): Promise<PoolResponse> {
     const rows = await db<ItemRow[]>`
       WITH page AS (
         SELECT p.article_id FROM publications p WHERE ${listedCondition(now)} ${filters} ${matchOrSubject(directMatchCondition(terms))}
-        ORDER BY p.timeline_at DESC, p.article_id DESC LIMIT ${POOL_PAGE_SIZE} OFFSET ${offset})
+        ORDER BY ${ordering} LIMIT ${POOL_PAGE_SIZE} OFFSET ${offset})
       SELECT ${ITEM_COLUMNS} ${ITEM_FROM} WHERE p.article_id IN (SELECT article_id FROM page)
-      ORDER BY p.timeline_at DESC, p.article_id DESC`;
+      ORDER BY ${ordering}`;
     const direct = terms.reduce((acc, t) => sql`${acc} AND ${like(sql`ps.direct`, t)}`, sql``);
     const { n } = one(await db<{ n: number }[]>`
       SELECT count(*) AS n FROM (SELECT 1 FROM pool_search ps JOIN publications p ON p.article_id = ps.article_id

@@ -24,21 +24,26 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
     <NewsRefresh />
     {filters.view === "latest" ? <>
       <div className="flex flex-wrap gap-2" aria-label="资讯分类">
-        {[["", "全部"], ...NEWS_CATEGORIES].map(([key, label]) => <Link key={key} href={newsHref({ category: key, q: filters.q })} aria-current={filters.category === key ? "page" : undefined} className={`rounded-full border px-3 py-1.5 text-sm ${filters.category === key ? "border-teal-700 bg-teal-700 text-white" : "border-border bg-white text-slate-600 hover:border-teal-500"}`}>{label}</Link>)}
+        {[["", "全部"], ...NEWS_CATEGORIES].map(([key, label]) => <Link key={key} href={newsHref({ category: key, q: filters.q, order: filters.order })} aria-current={filters.category === key ? "page" : undefined} className={`rounded-full border px-3 py-1.5 text-sm ${filters.category === key ? "border-teal-700 bg-teal-700 text-white" : "border-border bg-white text-slate-600 hover:border-teal-500"}`}>{label}</Link>)}
       </div>
       <form action="/aihot" className="flex min-w-0 gap-2">
         {filters.category ? <input type="hidden" name="category" value={filters.category} /> : null}
+        {filters.order === "source" ? <input type="hidden" name="order" value="source" /> : null}
         <label htmlFor="news-search" className="sr-only">搜索资讯</label>
         <input id="news-search" name="q" maxLength={200} defaultValue={filters.q} placeholder="搜索 AI 方法、市场、产品或案例" className="min-w-0 flex-1 rounded-lg border border-border bg-white px-4 py-2.5 text-sm" />
         <button className="flex shrink-0 items-center gap-2 rounded-lg bg-teal-700 px-4 py-2 text-sm font-medium text-white"><Search className="h-4 w-4" />搜索</button>
       </form>
+      <nav aria-label="资讯排序" className="flex flex-wrap items-center gap-2 text-sm">
+        <span className="mr-1 text-muted">排序</span>
+        {([["updated", "本站最近更新"], ["source", "来源时间"]] as const).map(([order, label]) => <Link key={order} href={newsHref({ ...filters, order, page: 1 })} aria-current={filters.order === order ? "page" : undefined} className={`rounded-lg px-3 py-2 ${filters.order === order ? "bg-teal-50 font-medium text-teal-800" : "text-muted hover:bg-white"}`}>{label}</Link>)}
+      </nav>
       <Latest filters={filters} />
     </> : filters.view === "hot" ? <Hot /> : <Daily />}
   </div>;
 }
 
 async function Latest({ filters }: { filters: ReturnType<typeof newsFilters> }) {
-  const params = new URLSearchParams({ page: String(filters.page), channel: "all" });
+  const params = new URLSearchParams({ page: String(filters.page), channel: "all", order: filters.order === "source" ? "timeline" : "updated" });
   if (filters.category) params.set("category", filters.category);
   if (filters.q) params.set("q", filters.q);
   const result = await readNews<NewsPool>("/api/site/pool", validPool, params);
@@ -46,9 +51,10 @@ async function Latest({ filters }: { filters: ReturnType<typeof newsFilters> }) 
   const data = result.data;
   if (!data.items.length) return <NewsState state="empty" emptyTitle={filters.q || filters.category ? "暂时没有符合条件的资讯" : undefined} emptyText={filters.q || filters.category ? "试试其他关键词，或查看全部动态。" : undefined} />;
   return <section aria-label="资讯列表" className="space-y-3">
-    <div className="flex flex-wrap justify-between gap-2 text-xs text-muted"><span>共 {data.total} 条动态 · 按来源发布时间排序</span><span>{data.freshness ? `本站内容更新于 ${time(data.freshness)}` : ""}</span></div>
+    <div className="flex flex-wrap justify-between gap-2 text-xs text-muted"><span>共 {data.total} 条动态 · {filters.order === "source" ? "按来源时间排序" : "按本站更新时间排序"}</span><span>{data.freshness ? `本站内容更新于 ${time(data.freshness)}` : ""}</span></div>
+    <p className="text-xs leading-6 text-muted">本站更新时间表示编辑内容在这里的更新日期，来源发布日期保留原始资料的时间。</p>
     {data.items.map(item => <article key={item.id} className="rounded-xl border border-border bg-white p-5">
-      <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-muted"><span>{item.source.name}</span><span>·</span><span>{item.publishedAt ? "来源发布于 " : "收录于 "}<time dateTime={item.publishedAt || item.timelineAt}>{time(item.publishedAt || item.timelineAt)}</time></span>{item.selected ? <span className="rounded bg-amber-50 px-2 py-0.5 text-amber-800">精选</span> : null}</div>
+      <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-muted"><span>{item.source.name}</span>{item.updatedAt ? <span className="font-medium text-teal-800">本站更新 <time dateTime={item.updatedAt}>{time(item.updatedAt)}</time></span> : null}<span>{item.publishedAt ? "来源发布于 " : "资料收录于 "}<time dateTime={item.publishedAt || item.timelineAt}>{time(item.publishedAt || item.timelineAt)}</time></span>{item.selected ? <span className="rounded bg-amber-50 px-2 py-0.5 text-amber-800">精选</span> : null}</div>
       <h2 className="text-lg font-semibold leading-7"><Link href={`/aihot/items/${encodeURIComponent(item.id)}`} className="hover:text-teal-700">{item.title}</Link></h2>
       {item.summary ? <p className="mt-2 whitespace-pre-line text-sm leading-7 text-slate-600">{item.summary}</p> : null}
       {item.reason ? <p className="mt-3 border-l-2 border-teal-500 pl-3 text-sm leading-6 text-teal-800">{item.reason}</p> : null}

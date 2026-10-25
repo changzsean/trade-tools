@@ -8,6 +8,7 @@ export type NewsView = "latest" | "hot" | "daily";
 export interface NewsItem {
   id: string; title: string; summary: string | null; reason: string | null;
   source: { name: string }; publishedAt: string | null; timelineAt: string;
+  updatedAt?: string;
   category: string | null; selected: boolean; tags: string[];
 }
 export interface NewsPool { items: NewsItem[]; total: number; page: number; pageCount: number; freshness: string }
@@ -34,14 +35,16 @@ export function newsFilters(query: Record<string, string | string[] | undefined>
   const view: NewsView = one("view") === "hot" ? "hot" : one("view") === "daily" ? "daily" : "latest";
   const category = NEWS_CATEGORIES.some(([key]) => key === one("category")) ? one("category") : "";
   const page = Math.min(50, Math.max(1, Number.parseInt(one("page"), 10) || 1));
-  return { view, category, page, q: one("q").trim().slice(0, 200) };
+  const order = one("order") === "source" ? "source" as const : "updated" as const;
+  return { view, category, page, order, q: one("q").trim().slice(0, 200) };
 }
 
-export function newsHref(query: { view?: NewsView; category?: string; page?: number; q?: string }) {
+export function newsHref(query: { view?: NewsView; category?: string; page?: number; q?: string; order?: "updated" | "source" }) {
   const params = new URLSearchParams();
   if (query.view && query.view !== "latest") params.set("view", query.view);
   if (query.category) params.set("category", query.category);
   if (query.q) params.set("q", query.q);
+  if (query.order === "source") params.set("order", "source");
   if (query.page && query.page > 1) params.set("page", String(query.page));
   return `/aihot${params.size ? `?${params}` : ""}`;
 }
@@ -74,7 +77,7 @@ const record = (value: unknown): value is Record<string, unknown> => !!value && 
 const text = (value: unknown) => value === null || typeof value === "string";
 const source = (value: unknown) => record(value) && typeof value.name === "string";
 const reportItem = (value: unknown) => record(value) && typeof value.id === "string" && typeof value.title === "string" && source(value.source) && text(value.summary);
-const item = (value: unknown) => reportItem(value) && record(value) && text(value.reason) && text(value.publishedAt) && typeof value.timelineAt === "string" && typeof value.selected === "boolean";
+const item = (value: unknown) => reportItem(value) && record(value) && text(value.reason) && text(value.publishedAt) && typeof value.timelineAt === "string" && typeof value.selected === "boolean" && (value.updatedAt === undefined || (typeof value.updatedAt === "string" && Number.isFinite(Date.parse(value.updatedAt))));
 const citation = (value: unknown) => record(value) && typeof value.title === "string" && text(value.itemId) && text(value.summary) && typeof value.sourceName === "string" && typeof value.available === "boolean";
 export const validPool = (value: unknown) => record(value) && Array.isArray(value.items) && value.items.every(item) && typeof value.freshness === "string" && [value.total, value.page, value.pageCount].every(n => typeof n === "number" && Number.isFinite(n));
 export const validHot = (value: unknown) => record(value) && text(value.computedAt) && typeof value.windowHours === "number" && Array.isArray(value.entries) && value.entries.every(entry => record(entry) && typeof entry.rank === "number" && typeof entry.sourceCount === "number" && text(entry.summary) && text(entry.latest) && record(entry.story) && typeof entry.story.publicId === "string" && typeof entry.story.title === "string" && Array.isArray(entry.sourceNames) && entry.sourceNames.every(name => typeof name === "string"));
