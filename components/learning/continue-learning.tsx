@@ -6,8 +6,8 @@ import type { LearningProgress } from "@/types/growth";
 
 export function ContinueLearning({ learning }: { learning: LearningProgress }) {
   return (
-    <section>
-      <SectionHeading title="继续学习" href="/growth/pathways" />
+    <section id="pathways" className="scroll-mt-24">
+      <SectionHeading title="继续学习" />
       <Card className="p-5">
         <div className="flex items-start gap-4">
           <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-brand-soft text-brand">
@@ -24,7 +24,7 @@ export function ContinueLearning({ learning }: { learning: LearningProgress }) {
         </div>
         <div className="mt-5 flex items-center justify-between gap-3">
           <p className="text-sm text-slate-600">{learning.nextAction}</p>
-          <Button>继续</Button>
+          <Button disabled>课程筹备中</Button>
         </div>
       </Card>
     </section>

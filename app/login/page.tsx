@@ -19,6 +19,7 @@ export default function LoginPage() {
           <p className="mt-1 text-sm text-muted">登录 MEEKA，接着上次的进度学习和交流。</p>
 
           <AuthForm mode="login" />
+          <Link href="/forgot-password" className="mt-3 inline-block text-sm text-brand underline">忘记密码？</Link>
 
           <p className="mt-6 text-sm text-muted">
             还没有账号？

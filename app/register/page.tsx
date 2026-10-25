@@ -16,10 +16,10 @@ export default function RegisterPage() {
             <img src="/assets/logo/logo-meeka-nav.png" alt="MEEKA" className="h-6 w-auto" />
           </Link>
           <h1 className="mt-8 text-xl font-semibold">一起开启 AI 外贸成长吧。</h1>
-          <p className="mt-1 text-sm text-muted">注册后完成新人引导，社区会为你定制学习路径。</p>
+          <p className="mt-1 text-sm text-muted">注册后可在社区交流外贸经验，管理自己的发布。</p>
 
           <AuthForm mode="register" />
-          <p className="mt-3 text-xs text-muted">注册后可在新人引导里补充身份、主营平台与行业，系统据此推荐内容。</p>
+          <p className="mt-3 text-xs text-muted">个人资料可见范围与数据处理安排请阅读上方隐私说明。</p>
 
           <p className="mt-6 text-sm text-muted">
             已有账号？

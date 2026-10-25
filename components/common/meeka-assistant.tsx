@@ -71,7 +71,7 @@ function resolveState(pathname: string): MeekaState {
 const quickLinks = [
   { title: "找资源", href: "/resources" },
   { title: "提问", href: "/community/questions" },
-  { title: "今日任务", href: "/growth/tasks" },
+  { title: "今日任务", href: "/growth#tasks" },
 ];
 
 export function MeekaAssistant({ state }: { state?: MeekaState }) {

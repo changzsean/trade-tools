@@ -13,8 +13,8 @@ const iconMap = {
 
 export function DailyTasks({ tasks }: { tasks: DailyTask[] }) {
   return (
-    <section className="mt-5">
-      <SectionHeading title="今日任务" description="用 10 分钟完成一个小动作，持续累积成长值" href="/growth/tasks" />
+    <section id="tasks" className="mt-5 scroll-mt-24">
+      <SectionHeading title="今日任务" description="用 10 分钟完成一个小动作，持续累积成长值" />
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {tasks.map((task) => {
           const Icon = iconMap[task.category];
@@ -30,7 +30,7 @@ export function DailyTasks({ tasks }: { tasks: DailyTask[] }) {
                 </div>
               </div>
               <div className="mt-auto flex items-center justify-between gap-3 pt-5">
-                <Button size="sm">{task.status === "completed" ? "已完成" : "去完成"}</Button>
+                <Button size="sm" disabled>功能预览</Button>
                 <span className="inline-flex h-8 min-w-12 shrink-0 items-center justify-center rounded-full bg-brand-soft px-3 text-sm font-semibold text-brand">
                   +{task.rewardPoints}
                 </span>
