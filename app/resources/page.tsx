@@ -30,16 +30,17 @@ export default async function ResourcesPage({
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">统一资源市场</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">
-              课程、文档、Skills、Workflow、Prompt、Agent、模板与案例使用同一资源模型。通过标签筛选快速定位业务场景、行业方向和购买方式。
+              查找适合外贸业务的手册、工具、工作流和模板。
             </p>
+            <p role="note" className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">资源目录预览：下方资源条目的价格、评分与使用人数为示例，尚未开放购买。手册可直接在线阅读。</p>
           </div>
         </Card>
         <Card className="p-6">
           <div className="flex items-center gap-2">
             <Download className="h-5 w-5 text-brand" />
-            <h2 className="text-lg font-semibold">手册与工具（免费下载）</h2>
+            <h2 className="text-lg font-semibold">手册与工具（在线阅读）</h2>
           </div>
-          <p className="mt-1 text-sm text-muted">MEEKA 原创外贸手册，注册会员免费在线阅读。</p>
+          <p className="mt-1 text-sm text-muted">以下手册已开放在线阅读。</p>
           <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             {manuals.map((m) => (
               <a key={m.title} href={m.href} target="_blank" rel="noopener noreferrer" className="block">

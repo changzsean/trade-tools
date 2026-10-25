@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getFeaturedResources, getResourceBySlug } from "@/lib/data/trademind";
-import { resolveResourceEntitlement } from "@/lib/services/entitlements";
 
 export async function generateStaticParams() {
   const resources = await getFeaturedResources();
@@ -16,7 +15,6 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
   const { slug } = await params;
   const resource = await getResourceBySlug(slug);
   if (!resource) notFound();
-  const entitlement = resolveResourceEntitlement(resource);
 
   return (
     <AppShell>
@@ -36,15 +34,16 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
               </div>
             </div>
             <Card className="w-full p-4 sm:w-[280px]">
-              <div className="text-sm text-muted">访问状态</div>
-              <div className="mt-2 text-lg font-semibold">{entitlement.canUse ? "可直接使用" : "需要解锁"}</div>
+              <div className="text-sm text-muted">目录预览 · 示例价格</div>
+              <div className="mt-2 text-lg font-semibold">资源交付与购买筹备中</div>
               <div className="mt-3 text-2xl font-semibold">
                 {resource.priceCents === 0 ? "免费" : `¥${resource.priceCents / 100}`}
               </div>
               {resource.originalPriceCents ? (
                 <div className="text-sm text-muted line-through">¥{resource.originalPriceCents / 100}</div>
               ) : null}
-              <Button className="mt-4 w-full">{entitlement.canUse ? "打开资源" : "解锁资源"}</Button>
+              <Button className="mt-4 w-full" disabled>暂未开放</Button>
+              <p className="mt-3 text-xs leading-5 text-muted">本页价格、评分与使用人数为示例数据。</p>
             </Card>
           </div>
         </Card>

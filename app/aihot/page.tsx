@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, Flame, Newspaper, Search } from "lucide-react";
 import { NewsState } from "@/components/aihot/news-state";
+import { NewsRefresh } from "@/components/aihot/news-refresh";
 import { NEWS_CATEGORIES, newsFilters, newsHref, readNews, validDaily, validHot, validPool } from "@/lib/aihot/api";
 import type { DailyNews, HotNews, NewsPool, ReportCitation } from "@/lib/aihot/api";
 
@@ -20,6 +21,7 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
     <nav aria-label="资讯栏目" className="flex gap-1 overflow-x-auto border-b border-border">
       {tabs.map(([view, label]) => <Link key={view} href={newsHref({ view })} aria-current={filters.view === view ? "page" : undefined} className={`shrink-0 border-b-2 px-5 py-3 text-sm font-medium ${filters.view === view ? "border-teal-700 text-teal-800" : "border-transparent text-muted hover:text-foreground"}`}>{label}</Link>)}
     </nav>
+    <NewsRefresh />
     {filters.view === "latest" ? <>
       <div className="flex flex-wrap gap-2" aria-label="资讯分类">
         {[["", "全部"], ...NEWS_CATEGORIES].map(([key, label]) => <Link key={key} href={newsHref({ category: key, q: filters.q })} aria-current={filters.category === key ? "page" : undefined} className={`rounded-full border px-3 py-1.5 text-sm ${filters.category === key ? "border-teal-700 bg-teal-700 text-white" : "border-border bg-white text-slate-600 hover:border-teal-500"}`}>{label}</Link>)}
@@ -44,9 +46,9 @@ async function Latest({ filters }: { filters: ReturnType<typeof newsFilters> }) 
   const data = result.data;
   if (!data.items.length) return <NewsState state="empty" emptyTitle={filters.q || filters.category ? "暂时没有符合条件的资讯" : undefined} emptyText={filters.q || filters.category ? "试试其他关键词，或查看全部动态。" : undefined} />;
   return <section aria-label="资讯列表" className="space-y-3">
-    <div className="flex flex-wrap justify-between gap-2 text-xs text-muted"><span>共 {data.total} 条动态</span><span>{data.freshness ? `更新于 ${time(data.freshness)}` : ""}</span></div>
+    <div className="flex flex-wrap justify-between gap-2 text-xs text-muted"><span>共 {data.total} 条动态 · 按来源发布时间排序</span><span>{data.freshness ? `本站内容更新于 ${time(data.freshness)}` : ""}</span></div>
     {data.items.map(item => <article key={item.id} className="rounded-xl border border-border bg-white p-5">
-      <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-muted"><span>{item.source.name}</span><span>·</span><time dateTime={item.publishedAt || item.timelineAt}>{time(item.publishedAt || item.timelineAt)}</time>{item.selected ? <span className="rounded bg-amber-50 px-2 py-0.5 text-amber-800">精选</span> : null}</div>
+      <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-muted"><span>{item.source.name}</span><span>·</span><span>{item.publishedAt ? "来源发布于 " : "收录于 "}<time dateTime={item.publishedAt || item.timelineAt}>{time(item.publishedAt || item.timelineAt)}</time></span>{item.selected ? <span className="rounded bg-amber-50 px-2 py-0.5 text-amber-800">精选</span> : null}</div>
       <h2 className="text-lg font-semibold leading-7"><Link href={`/aihot/items/${encodeURIComponent(item.id)}`} className="hover:text-teal-700">{item.title}</Link></h2>
       {item.summary ? <p className="mt-2 whitespace-pre-line text-sm leading-7 text-slate-600">{item.summary}</p> : null}
       {item.reason ? <p className="mt-3 border-l-2 border-teal-500 pl-3 text-sm leading-6 text-teal-800">{item.reason}</p> : null}
