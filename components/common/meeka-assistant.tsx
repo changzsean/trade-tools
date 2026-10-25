@@ -79,12 +79,16 @@ export function MeekaAssistant({ state }: { state?: MeekaState }) {
   const [open, setOpen] = useState(false);
   const currentState = useMemo(() => state ?? resolveState(pathname ?? "/"), [state, pathname]);
 
+  if (["/login", "/register", "/forgot-password", "/reset-password"].includes(pathname ?? "")) return null;
+
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-2">
+    <div className="pointer-events-none fixed bottom-5 right-5 z-50 flex flex-col items-end gap-2">
       <div
         className={`w-72 rounded-2xl border border-border bg-white p-4 shadow-lg transition-all duration-200 ${
           open ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"
         }`}
+        aria-hidden={!open}
+        inert={!open}
         role="dialog"
         aria-label="Meeka 学习伙伴"
       >
@@ -113,7 +117,7 @@ export function MeekaAssistant({ state }: { state?: MeekaState }) {
         type="button"
         aria-label={open ? "收起 Meeka 助手" : "打开 Meeka 助手"}
         onClick={() => setOpen((v) => !v)}
-        className="h-[72px] w-[72px] overflow-hidden rounded-full border border-border bg-white p-1 shadow-md transition-transform duration-200 hover:scale-105"
+        className="pointer-events-auto h-[72px] w-[72px] overflow-hidden rounded-full border border-border bg-white p-1 shadow-md transition-transform duration-200 hover:scale-105"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={assetMap[currentState]} alt="Meeka" className="h-full w-full object-contain" />
